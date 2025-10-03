@@ -7,10 +7,10 @@
   "license": "UNLICENSED",
   "scripts": {
     "format": "prettier --write \"app/**/*.ts\" \"test/**/*.ts\"",
-    "start": "ts-node app/programa",
+    "start": "REDIS_URL=redis://localhost:6378 ts-node app/programa",
     "lint": "eslint \"{app,test}/**/*.ts\"",
-    "test": "jest --runInBand",
-    "test:cov": "jest --runInBand --coverage"
+    "test": "REDIS_URL=redis://localhost:6377 jest --runInBand",
+    "test:cov": "REDIS_URL=redis://localhost:6377 jest --runInBand --coverage"
   },
   "dependencies": {
     "express": "^4.21.2",

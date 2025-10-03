@@ -1,14 +1,14 @@
-import { Calculadora } from "./calculadora";
+import SistemaAlumnos from "./dominio/sistema-alumnos";
 import express, { Request, Response } from "express";
+
 const app = express();
 const port = 3000;
 
-app.get("/sumar", (req: Request, res: Response) => {
-  const a = parseInt(req.query["a"]);
-  const b = parseInt(req.query["b"]);
-  const calc = new Calculadora();
-  const r = calc.sumar(a, b);
-  res.send({ resultado: r });
+const sistemaAlumnos = new SistemaAlumnos();
+
+app.get("/alumnos", (req: Request, res: Response) => {
+  const alumnos = sistemaAlumnos.obtenerAlumnos();
+  res.json(JSON.stringify(alumnos));
 });
 
 const server = app
