@@ -643,6 +643,33 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.1.tgz#1ec17e2edbec25c8306d424ecfbf13c7de1aaa31"
   integrity sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==
 
+"@redis/bloom@5.8.3":
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/@redis/bloom/-/bloom-5.8.3.tgz#c0f04cba102eeb3a68792a599f7c320915eba366"
+  integrity sha512-1eldTzHvdW3Oi0TReb8m1yiFt8ZwyF6rv1NpZyG5R4TpCwuAdKQetBKoCw7D96tNFgsVVd6eL+NaGZZCqhRg4g==
+
+"@redis/client@5.8.3":
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/@redis/client/-/client-5.8.3.tgz#186ebdd30ff874eae35b8d0ea3151137c22802be"
+  integrity sha512-MZVUE+l7LmMIYlIjubPosruJ9ltSLGFmJqsXApTqPLyHLjsJUSAbAJb/A3N34fEqean4ddiDkdWzNu4ZKPvRUg==
+  dependencies:
+    cluster-key-slot "1.1.2"
+
+"@redis/json@5.8.3":
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/@redis/json/-/json-5.8.3.tgz#f4efab4245b9f5c1d4ab80ec6f3c13aecb663c1e"
+  integrity sha512-DRR09fy/u8gynHGJ4gzXYeM7D8nlS6EMv5o+h20ndTJiAc7RGR01fdk2FNjnn1Nz5PjgGGownF+s72bYG4nZKQ==
+
+"@redis/search@5.8.3":
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/@redis/search/-/search-5.8.3.tgz#eb1159d1f6576244f47d779535515e83561ec1a4"
+  integrity sha512-EMIvEeGRR2I0BJEz4PV88DyCuPmMT1rDtznlsHY3cKSDcc9vj0Q411jUnX0iU2vVowUgWn/cpySKjpXdZ8m+5g==
+
+"@redis/time-series@5.8.3":
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/@redis/time-series/-/time-series-5.8.3.tgz#d20158dceba05fd456f2abc58b05fe16c736d18e"
+  integrity sha512-5Jwy3ilsUYQjzpE7WZ1lEeG1RkqQ5kHtwV1p8yxXHSEmyUbC/T/AVgyjMcm52Olj/Ov/mhDKjx6ndYUi14bXsw==
+
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
@@ -1177,6 +1204,11 @@ cliui@^8.0.1:
     string-width "^4.2.0"
     strip-ansi "^6.0.1"
     wrap-ansi "^7.0.0"
+
+cluster-key-slot@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/cluster-key-slot/-/cluster-key-slot-1.1.2.tgz#88ddaa46906e303b5de30d3153b7d9fe0a0c19ac"
+  integrity sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==
 
 co@^4.6.0:
   version "4.6.0"
@@ -2969,6 +3001,17 @@ react-is@^18.0.0:
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.3.1.tgz#e83557dc12eae63a99e003a46388b1dcbb44db7e"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
+
+redis@^5.8.3:
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/redis/-/redis-5.8.3.tgz#c65d52ff9099579e278bf8ce100efbadafe5580a"
+  integrity sha512-MfSrfV6+tEfTw8c4W0yFp6XWX8Il4laGU7Bx4kvW4uiYM1AuZ3KGqEGt1LdQHeD1nEyLpIWetZ/SpY3kkbgrYw==
+  dependencies:
+    "@redis/bloom" "5.8.3"
+    "@redis/client" "5.8.3"
+    "@redis/json" "5.8.3"
+    "@redis/search" "5.8.3"
+    "@redis/time-series" "5.8.3"
 
 require-directory@^2.1.1:
   version "2.1.1"
