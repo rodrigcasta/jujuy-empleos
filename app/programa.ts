@@ -1,7 +1,8 @@
-import SistemaAlumnos from "./dominio/sistema-alumnos";
 import Alumno from "./dominio/alumno";
 import AlumnoNoEncontradoError from "../app/dominio/alumno-no-encontrado-error";
 import express, { Request, Response } from "express";
+import PadronDeAlumnoInvalido from "../app/dominio/padron-de-alumno-invalido";
+import SistemaAlumnos from "./dominio/sistema-alumnos";
 
 const app = express();
 const port = 3000;
@@ -31,14 +32,24 @@ app.get("/alumnos/:padron", async (req: Request, res: Response) => {
 });
 
 app.post("/alumnos", async (req: Request, res: Response) => {
-  const alumnoCreado: Alumno = await sistemaAlumnos.crearAlumno(
-    req.body.padron,
-    req.body.nombre,
-    req.body.apellido,
-    req.body.fechaNacimiento,
-  );
+  try {
+    const alumnoCreado: Alumno = await sistemaAlumnos.crearAlumno(
+      req.body.padron,
+      req.body.nombre,
+      req.body.apellido,
+      req.body.fechaNacimiento,
+    );
 
-  res.json(alumnoCreado);
+    res.json(alumnoCreado);
+  } catch (error: any) {
+    if (error instanceof PadronDeAlumnoInvalido) {
+      res.status(400).json({
+        error: "El campo padron es obligatorio",
+      });
+    } else {
+      res.status(500);
+    }
+  }
 });
 
 app.delete("/alumnos/:padron", async (req: Request, res: Response) => {

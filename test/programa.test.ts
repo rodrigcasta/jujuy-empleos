@@ -26,6 +26,17 @@ describe("POST /alumnos", () => {
     expect(respuesta.body.apellido).toEqual("Lopez");
     expect(respuesta.body.fechaNacimiento).toEqual("01/01/2000");
   });
+
+  test("deberia devolver estado 400 y mensaje de error si no se incluye el campo padron", async () => {
+    const respuesta = await requestWithSupertest
+      .post("/alumnos")
+      .send({ nombre: "Juana", apellido: "Lopez", fechaNacimiento: "01/01/2000" });
+
+    expect(respuesta.status).toEqual(400);
+    expect(respuesta.body).toEqual({
+      error: "El campo padron es obligatorio",
+    });
+  });
 });
 
 describe("GET /alumnos", () => {
