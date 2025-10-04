@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { createClient, RedisClientType } from "redis";
 
 export default async function <T>(callback: (cliente: RedisClientType<any>) => Promise<T>): Promise<T> {

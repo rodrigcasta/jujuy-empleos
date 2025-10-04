@@ -40,3 +40,5 @@ src/coverage
 
 #Prisma
 /prisma/migrations
+
+.env*

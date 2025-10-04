@@ -1,0 +1,15 @@
+image: node:22.13.1-slim
+
+services:
+  - redis:8.2-alpine
+
+variables:
+  REDIS_URL: redis://redis:6379
+
+stages:
+  - build
+
+build_job:
+  stage: build
+  script:
+    ./build.sh
