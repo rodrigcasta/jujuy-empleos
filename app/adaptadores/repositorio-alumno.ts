@@ -1,13 +1,8 @@
 import Alumno from "../dominio/alumno";
+import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
 import clienteRedis from "./cliente-redis";
 
 const OPERACION_REDIS_EXITOSA = "OK";
-
-export class AlumnoNoEncontradoError extends Error {
-  constructor(padronAlumno: string) {
-    super(`No se encontró el alumno con padron ${padronAlumno}`);
-  }
-}
 
 export class NoSePuedeCalcularClaveError extends Error {
   constructor() {
@@ -56,6 +51,17 @@ export default class RepositorioAlumno {
       return values
         .filter((v) => v !== null)
         .map((alumnoComoString) => this.deserializarAlumno(JSON.parse(alumnoComoString!)));
+    });
+  }
+
+  public eliminar(padron: string): Promise<void> {
+    return clienteRedis(async (cliente) => {
+      const clave = this.obtenerClaveParaPadronDeAlumno(padron);
+      const resultado = await cliente.del(clave);
+
+      if (resultado === 0) {
+        throw new AlumnoNoEncontradoError(padron);
+      }
     });
   }
 

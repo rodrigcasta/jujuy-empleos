@@ -1,10 +1,8 @@
 import Alumno from "../../app/dominio/alumno";
+import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-error";
 import clienteRedis from "../../app/adaptadores/cliente-redis";
 import { describe, expect, test } from "@jest/globals";
-import RepositorioAlumno, {
-  AlumnoNoEncontradoError,
-  NoSePuedeCalcularClaveError,
-} from "../../app/adaptadores/repositorio-alumno";
+import RepositorioAlumno, { NoSePuedeCalcularClaveError } from "../../app/adaptadores/repositorio-alumno";
 
 describe("RepositorioAlumno", () => {
   afterEach(async () => {
@@ -139,6 +137,40 @@ describe("RepositorioAlumno", () => {
       expect(padronDeAlumnosListados).toContain("123456");
       expect(padronDeAlumnosListados).toContain("987654");
       expect(padronDeAlumnosListados).toContain("456123");
+    });
+  });
+
+  describe("eliminar", () => {
+    test("deberia eliminar el alumno de Redis cuando existe", async () => {
+      const alumno = new Alumno("Juan", "Perez", "12345", "01/01/1990");
+      await repositorioAlumno.guardar(alumno);
+
+      await repositorioAlumno.eliminar("12345");
+
+      await expect(repositorioAlumno.recuperar("12345")).rejects.toThrowError(AlumnoNoEncontradoError);
+    });
+
+    test("deberia eliminar solo el alumno especificado cuando hay varios", async () => {
+      const alumno1 = new Alumno("Juan", "Perez", "11111", "01/01/1990");
+      const alumno2 = new Alumno("Ana", "Garcia", "22222", "02/02/1995");
+      const alumno3 = new Alumno("Carlos", "Lopez", "33333", "03/03/1998");
+      await repositorioAlumno.guardar(alumno1);
+      await repositorioAlumno.guardar(alumno2);
+      await repositorioAlumno.guardar(alumno3);
+
+      await repositorioAlumno.eliminar("22222");
+
+      await expect(repositorioAlumno.recuperar("22222")).rejects.toThrowError(AlumnoNoEncontradoError);
+      await expect(repositorioAlumno.recuperar("11111")).resolves.not.toThrowError();
+      await expect(repositorioAlumno.recuperar("33333")).resolves.not.toThrowError();
+    });
+
+    test("deberia arrojar AlumnoNoEncontradoError si el alumno no existe", async () => {
+      await expect(repositorioAlumno.eliminar("99999")).rejects.toThrowError(AlumnoNoEncontradoError);
+    });
+
+    test("deberia arrojar NoSePuedeCalcularClaveError si el padron es vacio", async () => {
+      await expect(repositorioAlumno.eliminar("")).rejects.toThrowError(NoSePuedeCalcularClaveError);
     });
   });
 });
