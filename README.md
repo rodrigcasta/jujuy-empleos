@@ -7,9 +7,9 @@ Esta simple aplicación web implementa una API para el manejo de alumnos. Se uti
 Instalar las dependencias con `yarn`:
 
 ```
-    nvm use
-    corepack enable
-    yarn install
+  nvm use
+  corepack enable
+  yarn install
 ```
 
 Crear los archivos con las variables de ambiente para acceder a la BD en los ambientes de desarrollo y test:
