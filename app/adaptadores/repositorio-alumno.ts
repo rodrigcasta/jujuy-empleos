@@ -1,5 +1,5 @@
 import Alumno from "../dominio/alumno";
-import { createClient, RedisClientType } from "redis";
+import clienteRedis from "./cliente-redis";
 
 const OPERACION_REDIS_EXITOSA = "OK";
 
@@ -17,7 +17,7 @@ export class NoSePuedeCalcularClaveError extends Error {
 
 export default class RepositorioAlumno {
   public guardar(alumno: Alumno): Promise<boolean> {
-    return this.clienteRedis(async (cliente) => {
+    return clienteRedis(async (cliente) => {
       const clave = this.obtenerClaveParaPadronDeAlumno(alumno.getPadron());
       const alumnoSerializado = {
         nombre: alumno.getNombre(),
@@ -31,7 +31,7 @@ export default class RepositorioAlumno {
   }
 
   public recuperar(padron: string): Promise<Alumno> {
-    return this.clienteRedis(async (cliente) => {
+    return clienteRedis(async (cliente) => {
       const clave = this.obtenerClaveParaPadronDeAlumno(padron);
       const alumnoComoString = await cliente.get(clave);
 
@@ -45,7 +45,7 @@ export default class RepositorioAlumno {
   }
 
   public listarAlumnos(): Promise<Alumno[]> {
-    return this.clienteRedis(async (cliente) => {
+    return clienteRedis(async (cliente) => {
       const clavesDeAlumnosExistentes = await cliente.keys("a:*");
 
       if (clavesDeAlumnosExistentes.length === 0) {
@@ -65,18 +65,6 @@ export default class RepositorioAlumno {
     }
 
     throw new NoSePuedeCalcularClaveError();
-  }
-
-  private async clienteRedis<T>(callback: (cliente: RedisClientType<any>) => Promise<T>): Promise<T> {
-    const url = process.env.REDIS_URL;
-    const cliente: RedisClientType<any> = createClient({ url });
-
-    await cliente.connect();
-    try {
-      return await callback(cliente);
-    } finally {
-      await cliente.quit();
-    }
   }
 
   private deserializarAlumno(alumnoComoJson: any): Alumno {

@@ -1,5 +1,5 @@
 import Alumno from "../../app/dominio/alumno";
-import { createClient, RedisClientType } from "redis";
+import clienteRedis from "../../app/adaptadores/cliente-redis";
 import { describe, expect, test } from "@jest/globals";
 import RepositorioAlumno, {
   AlumnoNoEncontradoError,
@@ -7,8 +7,8 @@ import RepositorioAlumno, {
 } from "../../app/adaptadores/repositorio-alumno";
 
 describe("RepositorioAlumno", () => {
-  beforeEach(async () => {
-    // Borrar todos los datos en Redis antes de ejecutar cada prueba
+  afterEach(async () => {
+    // Borrar todos los datos en Redis despuúes de ejecutar cada prueba
     await clienteRedis((cliente) => cliente.flushDb());
   });
 
@@ -142,14 +142,3 @@ describe("RepositorioAlumno", () => {
     });
   });
 });
-
-async function clienteRedis<T>(callback: (cliente: RedisClientType<any>) => Promise<T>): Promise<T> {
-  const url = process.env.REDIS_URL;
-  const cliente: RedisClientType<any> = createClient({ url });
-  await cliente.connect();
-  try {
-    return await callback(cliente);
-  } finally {
-    await cliente.quit();
-  }
-}
