@@ -21,16 +21,14 @@ app.get("/", (_req: Request, res: Response) => {
     const pkgContent = fs.readFileSync(pkgPath, { encoding: "utf8" });
     const pkg = JSON.parse(pkgContent) as { version?: string };
     res.json({ version: pkg.version ?? "unknown" });
-  } catch (e) {
+  } catch {
     res.status(500).json({ error: "No se pudo leer la versión" });
   }
 });
 
 app.get("/", async (req: Request, res: Response) => {
-
   res.json({});
 });
-
 
 app.get("/alumnos", async (req: Request, res: Response) => {
   const alumnos = await sistemaAlumnos.obtenerAlumnos();
