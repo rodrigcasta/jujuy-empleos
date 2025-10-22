@@ -20,7 +20,7 @@ app.get("/", (_req: Request, res: Response) => {
     const pkgPath = path.resolve(process.cwd(), "package.json");
     const pkgContent = fs.readFileSync(pkgPath, { encoding: "utf8" });
     const pkg = JSON.parse(pkgContent) as { version?: string };
-    res.json({ version: pkg.version ?? "unknown" });
+    res.json({ equipo: "caseros", version: pkg.version ?? "unknown" });
   } catch {
     res.status(500).json({ error: "No se pudo leer la versión" });
   }
