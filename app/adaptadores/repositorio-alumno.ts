@@ -1,17 +1,12 @@
 import Alumno from "../dominio/alumno";
 import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
 import clienteRedis from "./cliente-redis";
+import { IRepositorioAlumno, NoSePuedeCalcularClaveError } from "../dominio/puerto-repositorio-alumno";
 
 const OPERACION_REDIS_EXITOSA = "OK";
 
-export class NoSePuedeCalcularClaveError extends Error {
-  constructor() {
-    super("No se puede calcular la clave para persistir al alumno, el Padrón debe ser un string no vacío");
-  }
-}
-
-export default class RepositorioAlumno {
-  public guardar(alumno: Alumno): Promise<boolean> {
+export default class RepositorioAlumno implements IRepositorioAlumno {
+  guardar(alumno: Alumno): Promise<boolean> {
     return clienteRedis(async (cliente) => {
       const clave = this.obtenerClaveParaPadronDeAlumno(alumno.getPadron());
       const alumnoSerializado = {
@@ -25,7 +20,7 @@ export default class RepositorioAlumno {
     });
   }
 
-  public recuperar(padron: string): Promise<Alumno> {
+  recuperar(padron: string): Promise<Alumno> {
     return clienteRedis(async (cliente) => {
       const clave = this.obtenerClaveParaPadronDeAlumno(padron);
       const alumnoComoString = await cliente.get(clave);
@@ -39,7 +34,7 @@ export default class RepositorioAlumno {
     });
   }
 
-  public listarAlumnos(): Promise<Alumno[]> {
+  listarAlumnos(): Promise<Alumno[]> {
     return clienteRedis(async (cliente) => {
       const clavesDeAlumnosExistentes = await cliente.keys("a:*");
 
@@ -54,7 +49,7 @@ export default class RepositorioAlumno {
     });
   }
 
-  public eliminar(padron: string): Promise<void> {
+  eliminar(padron: string): Promise<void> {
     return clienteRedis(async (cliente) => {
       const clave = this.obtenerClaveParaPadronDeAlumno(padron);
       const resultado = await cliente.del(clave);

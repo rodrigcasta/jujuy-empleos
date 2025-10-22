@@ -3,13 +3,14 @@ import AlumnoNoEncontradoError from "../app/dominio/alumno-no-encontrado-error";
 import express, { Request, Response } from "express";
 import PadronDeAlumnoInvalido from "../app/dominio/padron-de-alumno-invalido";
 import SistemaAlumnos from "./dominio/sistema-alumnos";
+import RepositorioAlumno from "./adaptadores/repositorio-alumno";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-const sistemaAlumnos = new SistemaAlumnos();
+const sistemaAlumnos = new SistemaAlumnos(new RepositorioAlumno());
 
 app.get("/alumnos", async (req: Request, res: Response) => {
   const alumnos = await sistemaAlumnos.obtenerAlumnos();

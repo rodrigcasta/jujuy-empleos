@@ -1,23 +1,20 @@
 import SistemaAlumnos from "../../app/dominio/sistema-alumnos";
 import Alumno from "../../app/dominio/alumno";
 import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-error";
-import RepositorioAlumno, { NoSePuedeCalcularClaveError } from "../../app/adaptadores/repositorio-alumno";
 import PadronDeAlumnoInvalido from "../../app/dominio/padron-de-alumno-invalido";
+import { IRepositorioAlumno, NoSePuedeCalcularClaveError } from "../../app/dominio/puerto-repositorio-alumno";
+import { Mock, mock } from "ts-jest-mocker";
 
 // Mock del repositorio
-jest.mock("../../app/adaptadores/repositorio-alumno");
+//jest.mock("../../app/adaptadores/repositorio-alumno");
 
 describe("SistemaAlumnos", () => {
   let sistemaAlumnos: SistemaAlumnos;
-  let mockRepositorioAlumno: jest.Mocked<RepositorioAlumno>;
+  let mockRepositorioAlumno: Mock<IRepositorioAlumno>;
 
   beforeEach(() => {
-    sistemaAlumnos = new SistemaAlumnos();
-    mockRepositorioAlumno = jest.mocked(sistemaAlumnos["repositorioAlumno"]);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
+    mockRepositorioAlumno = mock<IRepositorioAlumno>();
+    sistemaAlumnos = new SistemaAlumnos(mockRepositorioAlumno);
   });
 
   describe("crearAlumno", () => {
