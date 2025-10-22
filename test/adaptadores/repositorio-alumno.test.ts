@@ -2,7 +2,8 @@ import Alumno from "../../app/dominio/alumno";
 import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-error";
 import clienteRedis from "../../app/adaptadores/cliente-redis";
 import { describe, expect, test } from "@jest/globals";
-import RepositorioAlumno, { NoSePuedeCalcularClaveError } from "../../app/adaptadores/repositorio-alumno";
+import RepositorioAlumno from "../../app/adaptadores/repositorio-alumno";
+import { NoSePuedeCalcularClaveError } from "../../app/dominio/puerto-repositorio-alumno";
 
 describe("RepositorioAlumno", () => {
   afterEach(async () => {

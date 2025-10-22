@@ -1,12 +1,12 @@
 import Alumno from "./alumno";
 import PadronDeAlumnoInvalido from "../dominio/padron-de-alumno-invalido";
-import RepositorioAlumno, { NoSePuedeCalcularClaveError } from "../adaptadores/repositorio-alumno";
+import { IRepositorioAlumno, NoSePuedeCalcularClaveError } from "./puerto-repositorio-alumno";
 
 export default class SistemaAlumnos {
-  private repositorioAlumno: RepositorioAlumno;
+  private repositorioAlumno: IRepositorioAlumno;
 
-  constructor() {
-    this.repositorioAlumno = new RepositorioAlumno();
+  constructor(repoAlumno: IRepositorioAlumno) {
+    this.repositorioAlumno = repoAlumno;
   }
   public async crearAlumno(padron: string, nombre: string, apellido: string, fechaNacimiento: string): Promise<Alumno> {
     try {

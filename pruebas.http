@@ -1,0 +1,35 @@
+### Listar alumnos
+GET http://localhost:3000/alumnos
+
+### Obtener alumno por padrón (existente)
+GET http://localhost:3000/alumnos/12345
+
+### Obtener alumno por padrón (no encontrado)
+GET http://localhost:3000/alumnos/99999
+
+### Crear alumno (válido)
+POST http://localhost:3000/alumnos
+Content-Type: application/json
+
+{
+	"padron": "12345",
+	"nombre": "Juan",
+	"apellido": "Pérez",
+	"fechaNacimiento": "01/01/1990"
+}
+
+### Crear alumno (inválido: padron faltante)
+POST http://localhost:3000/alumnos
+Content-Type: application/json
+
+{
+	"nombre": "Lucía",
+	"apellido": "García",
+	"fechaNacimiento": "15/05/1995"
+}
+
+### Eliminar alumno (existente)
+DELETE http://localhost:3000/alumnos/12345
+
+### Eliminar alumno (no encontrado)
+DELETE http://localhost:3000/alumnos/99999
