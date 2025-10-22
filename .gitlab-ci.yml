@@ -8,8 +8,24 @@ variables:
 
 stages:
   - build
+  - deploy_test
+  - deploy_prod
 
 build_job:
   stage: build
   script:
     ./build.sh
+
+deploy_test_job:
+  stage: deploy_test
+  script:
+    - curl $DEPLOY_TEST_HOOK
+  only:
+    - test
+
+deploy_prod_job:
+  stage: deploy_prod
+  script:
+    - curl $DEPLOY_PROD_HOOK
+  only:
+    - prod
