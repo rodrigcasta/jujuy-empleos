@@ -1,6 +1,8 @@
 import Alumno from "./dominio/alumno";
 import AlumnoNoEncontradoError from "../app/dominio/alumno-no-encontrado-error";
 import express, { Request, Response } from "express";
+import fs from "fs";
+import path from "path";
 import PadronDeAlumnoInvalido from "../app/dominio/padron-de-alumno-invalido";
 import SistemaAlumnos from "./dominio/sistema-alumnos";
 import RepositorioAlumno from "./adaptadores/repositorio-alumno";
@@ -11,6 +13,24 @@ const port = 3000;
 app.use(express.json());
 
 const sistemaAlumnos = new SistemaAlumnos(new RepositorioAlumno());
+
+// Endpoint raíz: devuelve la versión del package.json
+app.get("/", (_req: Request, res: Response) => {
+  try {
+    const pkgPath = path.resolve(process.cwd(), "package.json");
+    const pkgContent = fs.readFileSync(pkgPath, { encoding: "utf8" });
+    const pkg = JSON.parse(pkgContent) as { version?: string };
+    res.json({ version: pkg.version ?? "unknown" });
+  } catch (e) {
+    res.status(500).json({ error: "No se pudo leer la versión" });
+  }
+});
+
+app.get("/", async (req: Request, res: Response) => {
+
+  res.json({});
+});
+
 
 app.get("/alumnos", async (req: Request, res: Response) => {
   const alumnos = await sistemaAlumnos.obtenerAlumnos();

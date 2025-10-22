@@ -1,3 +1,6 @@
+### Obtener versión del servicio
+GET http://localhost:3000/
+
 ### Listar alumnos
 GET http://localhost:3000/alumnos
 
