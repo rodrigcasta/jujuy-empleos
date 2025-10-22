@@ -18,6 +18,7 @@ build_job:
 
 deploy_test_job:
   stage: deploy_test
+  image: alpine/curl
   script:
     - curl $DEPLOY_TEST_HOOK
   only:
@@ -25,6 +26,7 @@ deploy_test_job:
 
 deploy_prod_job:
   stage: deploy_prod
+  image: alpine/curl
   script:
     - curl $DEPLOY_PROD_HOOK
   only:
