@@ -33,3 +33,6 @@ Para correr las pruebas utilizá el comando `yarn test`
 ## Ejecutar la aplicación
 
 Para correr la aplicación utilizá el comando `yarn start`
+
+
+## PostgreSQL y Flyway

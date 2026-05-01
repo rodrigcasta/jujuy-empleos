@@ -5,14 +5,14 @@ import fs from "fs";
 import path from "path";
 import PadronDeAlumnoInvalido from "../app/dominio/padron-de-alumno-invalido";
 import SistemaAlumnos from "./dominio/sistema-alumnos";
-import RepositorioAlumno from "./adaptadores/repositorio-alumno";
+import RepositorioAlumnoSql from "./adaptadores/repositorio-alumno-sql";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-const sistemaAlumnos = new SistemaAlumnos(new RepositorioAlumno());
+const sistemaAlumnos = new SistemaAlumnos(new RepositorioAlumnoSql());
 
 // Endpoint raíz: devuelve la versión del package.json
 app.get("/", (_req: Request, res: Response) => {
@@ -55,8 +55,7 @@ app.post("/alumnos", async (req: Request, res: Response) => {
     const alumnoCreado: Alumno = await sistemaAlumnos.crearAlumno(
       req.body.padron,
       req.body.nombre,
-      req.body.apellido,
-      req.body.fechaNacimiento,
+      req.body.apellido
     );
 
     res.json(alumnoCreado);

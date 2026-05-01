@@ -1,14 +1,20 @@
+import PadronDeAlumnoInvalido from "./padron-de-alumno-invalido";
+
 export default class Alumno {
   private nombre: string;
   private apellido: string;
   private padron: string;
-  private fechaNacimiento: string;
+  private id: number;
 
-  constructor(nombre: string, apellido: string, padron: string, fechaNacimiento: string) {
+
+  constructor(nombre: string, apellido: string, padron: string, id: number = 0) {
+    if (padron == undefined) {
+      throw new PadronDeAlumnoInvalido();
+    }
     this.nombre = nombre;
     this.apellido = apellido;
     this.padron = padron;
-    this.fechaNacimiento = fechaNacimiento;
+    this.id = id;
   }
 
   public getNombre(): string {
@@ -23,7 +29,11 @@ export default class Alumno {
     return this.padron;
   }
 
-  public getFechaNacimiento(): string {
-    return this.fechaNacimiento;
+  public Id(): number {
+    return this.id;
+  }
+
+  public setId(id: number): void {
+    this.id = id;
   }
 }

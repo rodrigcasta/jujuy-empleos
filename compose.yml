@@ -1,14 +1,25 @@
 services:
-  redis-test:
-    image: redis:8.2-alpine
+  test_db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: example
     ports:
-      - 6379:6379
-    expose:
-      - 6377
+      - 5432:5432
+  dev_db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - 5433:5432
 
-  redis-dev:
-    image: redis:8.2-alpine
-    ports:
-      - 6378:6379
-    expose:
-      - 6378
+  flyway-dev:
+    image: flyway/flyway:latest
+    entrypoint: ["flyway", "-url=jdbc:postgresql://dev_db:5432/postgres", "-user=postgres", "-password=example", "-baselineOnMigrate=true", "-connectRetries=60", "migrate"] 
+    volumes:
+      - ./db:/flyway/sql
+
+  flyway-test:
+    image: flyway/flyway:latest
+    entrypoint: ["flyway", "-url=jdbc:postgresql://test_db:5432/postgres", "-user=postgres", "-password=example", "-baselineOnMigrate=true", "-connectRetries=60", "migrate"] 
+    volumes:
+      - ./db:/flyway/sql

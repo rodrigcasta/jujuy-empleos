@@ -5,9 +5,6 @@ import PadronDeAlumnoInvalido from "../../app/dominio/padron-de-alumno-invalido"
 import { IRepositorioAlumno, NoSePuedeCalcularClaveError } from "../../app/dominio/puerto-repositorio-alumno";
 import { Mock, mock } from "ts-jest-mocker";
 
-// Mock del repositorio
-//jest.mock("../../app/adaptadores/repositorio-alumno");
-
 describe("SistemaAlumnos", () => {
   let sistemaAlumnos: SistemaAlumnos;
   let mockRepositorioAlumno: Mock<IRepositorioAlumno>;
@@ -21,7 +18,7 @@ describe("SistemaAlumnos", () => {
     test("deberia crear un objeto Alumno y guardarlo en el repositorio", async () => {
       mockRepositorioAlumno.guardar.mockResolvedValue(true);
 
-      const alumnoCreado = await sistemaAlumnos.crearAlumno("12345", "Juan", "Perez", "01/01/1990");
+      const alumnoCreado = await sistemaAlumnos.crearAlumno("12345", "Juan", "Perez");
 
       expect(mockRepositorioAlumno.guardar).toHaveBeenCalledTimes(1);
 
@@ -29,18 +26,16 @@ describe("SistemaAlumnos", () => {
       expect(alumnoGuardado.getNombre()).toEqual("Juan");
       expect(alumnoGuardado.getApellido()).toEqual("Perez");
       expect(alumnoGuardado.getPadron()).toEqual("12345");
-      expect(alumnoGuardado.getFechaNacimiento()).toEqual("01/01/1990");
 
       expect(alumnoCreado.getNombre()).toEqual("Juan");
       expect(alumnoCreado.getApellido()).toEqual("Perez");
       expect(alumnoCreado.getPadron()).toEqual("12345");
-      expect(alumnoCreado.getFechaNacimiento()).toEqual("01/01/1990");
     });
 
     test("deberia arrojar PadronDeAlumnoInvalido si el repositorio arroja una excepcion de tipo NoSePuedeCalcularClaveError", async () => {
       mockRepositorioAlumno.guardar.mockRejectedValue(new NoSePuedeCalcularClaveError());
 
-      await expect(sistemaAlumnos.crearAlumno("", "Juan", "Perez", "01/01/1990")).rejects.toThrow(
+      await expect(sistemaAlumnos.crearAlumno("", "Juan", "Perez")).rejects.toThrow(
         PadronDeAlumnoInvalido,
       );
 
@@ -60,8 +55,8 @@ describe("SistemaAlumnos", () => {
 
     test("deberia devolver la lista de alumnos devuelta por el repositorio", async () => {
       const alumnosMock = [
-        new Alumno("Juan", "Perez", "12345", "01/01/1990"),
-        new Alumno("Ana", "Garcia", "67890", "15/05/1995"),
+        new Alumno("Juan", "Perez", "12345"),
+        new Alumno("Ana", "Garcia", "67890"),
       ];
       mockRepositorioAlumno.listarAlumnos.mockResolvedValue(alumnosMock);
 
@@ -75,7 +70,7 @@ describe("SistemaAlumnos", () => {
 
   describe("obtenerAlumnoPorPadron", () => {
     test("deberia devolver el alumno obtenido a traves del repositorio", async () => {
-      const alumnoMock = new Alumno("Juan", "Perez", "12345", "01/01/1990");
+      const alumnoMock = new Alumno("Juan", "Perez", "12345");
       mockRepositorioAlumno.recuperar.mockResolvedValue(alumnoMock);
 
       const resultado = await sistemaAlumnos.obtenerAlumnoPorPadron("12345");

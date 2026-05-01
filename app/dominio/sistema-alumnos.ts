@@ -8,9 +8,9 @@ export default class SistemaAlumnos {
   constructor(repoAlumno: IRepositorioAlumno) {
     this.repositorioAlumno = repoAlumno;
   }
-  public async crearAlumno(padron: string, nombre: string, apellido: string, fechaNacimiento: string): Promise<Alumno> {
+  public async crearAlumno(padron: string, nombre: string, apellido: string): Promise<Alumno> {
     try {
-      const alumnoCreado = new Alumno(nombre, apellido, padron, fechaNacimiento);
+      const alumnoCreado = new Alumno(nombre, apellido, padron);
 
       await this.repositorioAlumno.guardar(alumnoCreado);
 
