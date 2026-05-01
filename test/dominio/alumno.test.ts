@@ -19,7 +19,6 @@ describe("Alumno", () => {
       const nombre = "Ana Maria";
       const apellido = "Garcia Lopez";
       const padron = "67890";
-      const fechaNacimiento = "15/12/1995";
 
       const alumno = new Alumno(nombre, apellido, padron);
 
@@ -52,5 +51,4 @@ describe("Alumno", () => {
       expect(alumno.getPadron()).toEqual("33333");
     });
   });
-
 });

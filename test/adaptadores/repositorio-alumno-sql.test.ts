@@ -1,26 +1,23 @@
 import Alumno from "../../app/dominio/alumno";
 import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-error";
 import { describe, expect, test } from "@jest/globals";
-import { NoSePuedeCalcularClaveError } from "../../app/dominio/puerto-repositorio-alumno";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
 import pool from "../../app/adaptadores/pool";
 
 describe("RepositorioAlumno", () => {
-
   const repositorioAlumno = new RepositorioAlumnoSql();
 
   beforeEach(async () => {
     const resultado = await repositorioAlumno.eliminarTodos();
     if (!resultado) {
-      throw new Error('setup failed');
+      throw new Error("setup failed");
     }
   });
 
-  afterAll(done => {
-    // Closing the DB connection allows Jest to exit successfully.
+  afterAll((done) => {
     pool.end();
     done();
-  })
+  });
 
   describe("guardar", () => {
     test("deberia persistir un alumno en sql", async () => {
@@ -32,7 +29,7 @@ describe("RepositorioAlumno", () => {
 
   describe("listar", () => {
     test("deberia devolver todos los objetos almecenados", async () => {
-      const alumna = new Alumno("Ana", "Lopez", '123123');
+      const alumna = new Alumno("Ana", "Lopez", "123123");
       await repositorioAlumno.guardar(alumna);
       const resultado = await repositorioAlumno.listarAlumnos();
       expect(resultado.length).toBe(1);
@@ -46,7 +43,7 @@ describe("RepositorioAlumno", () => {
 
   describe("recuperar", () => {
     test("deberia devolver el objeto almacenado que coincide padron", async () => {
-      const padron = '123123';
+      const padron = "123123";
       const alumna = new Alumno("Ana", "Lopez", padron);
       await repositorioAlumno.guardar(alumna);
       const resultado = await repositorioAlumno.recuperar(padron);
@@ -59,5 +56,4 @@ describe("RepositorioAlumno", () => {
       await expect(repositorioAlumno.recuperar("no-existe")).rejects.toThrowError(AlumnoNoEncontradoError);
     });
   });
-
 });

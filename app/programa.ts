@@ -52,11 +52,7 @@ app.get("/alumnos/:padron", async (req: Request, res: Response) => {
 
 app.post("/alumnos", async (req: Request, res: Response) => {
   try {
-    const alumnoCreado: Alumno = await sistemaAlumnos.crearAlumno(
-      req.body.padron,
-      req.body.nombre,
-      req.body.apellido
-    );
+    const alumnoCreado: Alumno = await sistemaAlumnos.crearAlumno(req.body.padron, req.body.nombre, req.body.apellido);
 
     res.json(alumnoCreado);
   } catch (error: any) {

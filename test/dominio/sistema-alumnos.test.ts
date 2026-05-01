@@ -35,9 +35,7 @@ describe("SistemaAlumnos", () => {
     test("deberia arrojar PadronDeAlumnoInvalido si el repositorio arroja una excepcion de tipo NoSePuedeCalcularClaveError", async () => {
       mockRepositorioAlumno.guardar.mockRejectedValue(new NoSePuedeCalcularClaveError());
 
-      await expect(sistemaAlumnos.crearAlumno("", "Juan", "Perez")).rejects.toThrow(
-        PadronDeAlumnoInvalido,
-      );
+      await expect(sistemaAlumnos.crearAlumno("", "Juan", "Perez")).rejects.toThrow(PadronDeAlumnoInvalido);
 
       expect(mockRepositorioAlumno.guardar).toHaveBeenCalledTimes(1);
     });
@@ -54,10 +52,7 @@ describe("SistemaAlumnos", () => {
     });
 
     test("deberia devolver la lista de alumnos devuelta por el repositorio", async () => {
-      const alumnosMock = [
-        new Alumno("Juan", "Perez", "12345"),
-        new Alumno("Ana", "Garcia", "67890"),
-      ];
+      const alumnosMock = [new Alumno("Juan", "Perez", "12345"), new Alumno("Ana", "Garcia", "67890")];
       mockRepositorioAlumno.listarAlumnos.mockResolvedValue(alumnosMock);
 
       const resultado = await sistemaAlumnos.obtenerAlumnos();

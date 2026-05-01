@@ -6,7 +6,6 @@ export default class Alumno {
   private padron: string;
   private id: number;
 
-
   constructor(nombre: string, apellido: string, padron: string, id: number = 0) {
     if (padron == undefined) {
       throw new PadronDeAlumnoInvalido();
