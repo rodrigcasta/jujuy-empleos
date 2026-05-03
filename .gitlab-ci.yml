@@ -1,14 +1,7 @@
 image: node:22.13.1-slim
 
 services:
-  - postgres:14.4
-
-variables:
-  POSTGRES_DB: mydb
-  POSTGRES_USER: pguser
-  POSTGRES_PASSWORD: example
-  POSTGRES_HOST: postgres
-  POSTGRES_PORT: 5432
+  - docker:dind
 
 stages:
   - build
@@ -17,21 +10,12 @@ stages:
 
 build_job:
   stage: build
+  image: docker:27.4.0
+  variables:
+    CI_DEBUG_TRACE: "true"
   script:
-    ./build.sh
-
-deploy_test_job:
-  stage: deploy_test
-  image: alpine/curl
-  script:
-    - curl $DEPLOY_TEST_HOOK
-  only:
-    - test
-
-deploy_prod_job:
-  stage: deploy_prod
-  image: alpine/curl
-  script:
-    - curl $DEPLOY_PROD_HOOK
-  only:
-    - prod
+    - docker compose -f compose-ci.yml up --abort-on-container-exit --exit-code-from app
+  artifacts:
+      when: always
+      paths:
+        - reports/
