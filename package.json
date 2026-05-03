@@ -9,13 +9,14 @@
     "format": "prettier --write \"app/**/*.ts\" \"test/**/*.ts\"",
     "start": "ts-node app/programa",
     "lint": "eslint \"{app,test}/**/*.ts\"",
-    "test": "jest --runInBand --detectOpenHandles",
+    "test": "jest --runInBand",
     "test:cov": "jest --runInBand --coverage"
   },
   "dependencies": {
     "@types/pg": "^8.20.0",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
+    "jest-html-reporter": "^4.4.0",
     "pg": "^8.20.0",
     "redis": "^5.8.3",
     "ts-jest-mocker": "^1.3.0"

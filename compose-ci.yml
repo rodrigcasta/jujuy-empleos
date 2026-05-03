@@ -1,0 +1,33 @@
+services:
+  test_db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - 5432:5432
+
+  flyway-test:
+    image: flyway/flyway:latest
+    entrypoint: [""]
+    command: ["sh", "-c", "flyway -url=jdbc:postgresql://test_db:5432/postgres -user=postgres -password=example -baselineOnMigrate=true -connectRetries=60 migrate && tail -f /dev/null"]
+    volumes:
+      - ./db:/flyway/sql
+    depends_on:
+      - test_db
+
+  app:
+    environment:
+      POSTGRES_HOST: test_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: postgres
+      POSTGRES_PORT: 5432
+    image: node:22.13.1-slim
+    # command: "/bin/bash"
+    #stdin_open: true # docker run -i
+    #tty: true        # 
+    command: "/app/run_ci.sh"
+    volumes:
+        - .:/app
+    depends_on:
+      - test_db
