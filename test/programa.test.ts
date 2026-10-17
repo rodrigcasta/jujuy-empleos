@@ -53,6 +53,25 @@ describe("GET /", () => {
   });
 });
 
+describe("Bootstrap", () => {
+  test("el layout deberia incluir el CSS y el JS de Bootstrap", async () => {
+    const respuesta = await anonimo.get("/");
+
+    expect(respuesta.text).toContain('href="/vendor/bootstrap/css/bootstrap.min.css"');
+    expect(respuesta.text).toContain('src="/vendor/bootstrap/js/bootstrap.bundle.min.js"');
+  });
+
+  test.each([
+    ["/vendor/bootstrap/css/bootstrap.min.css", "text/css"],
+    ["/vendor/bootstrap/js/bootstrap.bundle.min.js", "application/javascript"],
+  ])("deberia servir %s sin requerir sesion", async (ruta, tipo) => {
+    const respuesta = await anonimo.get(ruta);
+
+    expect(respuesta.status).toEqual(200);
+    expect(respuesta.type).toEqual(tipo);
+  });
+});
+
 describe("POST /alumnos", () => {
   test("deberia redirigir al detalle del alumno creado", async () => {
     const respuesta = await crearAlumno({

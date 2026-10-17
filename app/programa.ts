@@ -17,6 +17,11 @@ app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "vistas"));
 
+// Archivos de Bootstrap (CSS y JS) servidos desde node_modules. Se montan antes del log para no registrar
+// cada request de estos archivos estáticos.
+const directorioBootstrap = path.join(path.dirname(require.resolve("bootstrap/package.json")), "dist");
+app.use("/vendor/bootstrap", express.static(directorioBootstrap));
+
 app.use(logDeRequests);
 
 const sistemaAlumnos = new SistemaAlumnos(new RepositorioAlumnoSql());
