@@ -32,7 +32,7 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
   router.get("/", async (req: Request, res: Response) => {
     try {
       const alumnos = await sistemaAlumnos.obtenerAlumnos();
-      res.render("alumnos", { titulo: "Alumnos", alumnos: alumnos.map(aVista) });
+      res.render("alumnos/listado", { titulo: "Alumnos", alumnos: alumnos.map(aVista) });
     } catch (error: unknown) {
       registrarExcepcion(req, error);
       renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo obtener el listado de alumnos");
@@ -41,13 +41,13 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
 
   // Se declara antes de /:padron para que "nuevo" no se interprete como un padrón
   router.get("/nuevo", (_req: Request, res: Response) => {
-    res.render("alumno-nuevo", { titulo: "Nuevo alumno" });
+    res.render("alumnos/nuevo", { titulo: "Nuevo alumno" });
   });
 
   router.get("/:padron", async (req: Request, res: Response) => {
     try {
       const alumno = await sistemaAlumnos.obtenerAlumnoPorPadron(req.params.padron);
-      res.render("alumno", {
+      res.render("alumnos/detalle", {
         titulo: `Alumno ${alumno.getPadron()}`,
         alumno: aVista(alumno),
       });
@@ -73,7 +73,7 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
     } catch (error: unknown) {
       registrarExcepcion(req, error);
       if (error instanceof PadronDeAlumnoInvalido) {
-        res.status(EstadoHttp.SOLICITUD_INCORRECTA).render("alumno-nuevo", {
+        res.status(EstadoHttp.SOLICITUD_INCORRECTA).render("alumnos/nuevo", {
           titulo: "Nuevo alumno",
           error: error.message,
           nuevo: req.body,

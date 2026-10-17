@@ -40,7 +40,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
     if (req.isAuthenticated()) {
       res.redirect(EstadoHttp.ENCONTRADO, "/alumnos");
     } else {
-      res.render("login", { titulo: "Iniciar sesión" });
+      res.render("autenticacion/login", { titulo: "Iniciar sesión" });
     }
   });
 
@@ -52,7 +52,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
           registrarExcepcion(req, error);
           renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo iniciar la sesión");
         } else if (!usuario) {
-          res.status(EstadoHttp.NO_AUTORIZADO).render("login", {
+          res.status(EstadoHttp.NO_AUTORIZADO).render("autenticacion/login", {
             titulo: "Iniciar sesión",
             error: "Email o contraseña incorrectos",
             email: req.body.email,
@@ -68,7 +68,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
     if (req.isAuthenticated()) {
       res.redirect(EstadoHttp.ENCONTRADO, "/alumnos");
     } else {
-      res.render("registro", { titulo: "Registro" });
+      res.render("autenticacion/registro", { titulo: "Registro" });
     }
   });
 
@@ -76,7 +76,9 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
     const { nombre, apellido, email, contrasena, confirmacion } = req.body;
     // Las contraseñas no se devuelven al formulario
     const renderizarFormulario = (estado: EstadoHttp, error: string) => {
-      res.status(estado).render("registro", { titulo: "Registro", error, nuevo: { nombre, apellido, email } });
+      res
+        .status(estado)
+        .render("autenticacion/registro", { titulo: "Registro", error, nuevo: { nombre, apellido, email } });
     };
 
     try {

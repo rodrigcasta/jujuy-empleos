@@ -8,7 +8,7 @@ export const crearControladorInicio = () => {
   const router = express.Router();
 
   router.get("/", (_req: Request, res: Response) => {
-    res.render("inicio", { titulo: "Inicio" });
+    res.render("inicio/inicio", { titulo: "Inicio" });
   });
 
   // Devuelve la versión del package.json

@@ -100,4 +100,6 @@ Se implementa con [Passport](https://www.passportjs.org/) y su estrategia `passp
 
 Los templates se encuentran en `app/vistas/`. El template `layout.hbs` define el layout común a todas las páginas. El contenido de cada vista se inserta en `{{{body}}}` y el título de la página se toma de la variable `titulo`. Muestra el usuario logueado (`Nombre (email)`) y el botón para cerrar sesión, o los links para iniciar sesión y registrarse.
 
-Para agregar una página nueva, crear el template en `app/vistas/` y renderizarlo desde el controlador con `res.render("nombre-del-template", { titulo: "...", ... })`.
+Las vistas de cada controlador están en un subdirectorio propio (`inicio/`, `autenticacion/`, `alumnos/`). En la raíz quedan solo las compartidas: `layout.hbs` (que `hbs` siempre busca en la raíz) y `error.hbs` (que usan todos los controladores a través de `renderizarError`).
+
+Para agregar una página nueva, crear el template en el subdirectorio del controlador y renderizarlo con la ruta relativa a `app/vistas/`, por ejemplo `res.render("alumnos/nuevo", { titulo: "...", ... })`.
