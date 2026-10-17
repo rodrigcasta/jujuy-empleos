@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_PASSWORD: example
     ports:
-      - 5432:5432
+      - 5434:5432
   dev_db:
     image: postgres
     environment:
@@ -14,12 +14,12 @@ services:
 
   flyway-dev:
     image: flyway/flyway:latest
-    entrypoint: ["flyway", "-url=jdbc:postgresql://dev_db:5432/postgres", "-user=postgres", "-password=example", "-baselineOnMigrate=true", "-connectRetries=60", "migrate"] 
+    entrypoint: ["flyway", "-url=jdbc:postgresql://dev_db:5432/postgres", "-user=postgres", "-password=example", "-baselineOnMigrate=true", "-connectRetries=60", "-locations=filesystem:/flyway/sql", "migrate"]
     volumes:
       - ./db:/flyway/sql
 
   flyway-test:
     image: flyway/flyway:latest
-    entrypoint: ["flyway", "-url=jdbc:postgresql://test_db:5432/postgres", "-user=postgres", "-password=example", "-baselineOnMigrate=true", "-connectRetries=60", "migrate"] 
+    entrypoint: ["flyway", "-url=jdbc:postgresql://test_db:5432/postgres", "-user=postgres", "-password=example", "-baselineOnMigrate=true", "-connectRetries=60", "-locations=filesystem:/flyway/sql", "migrate"]
     volumes:
       - ./db:/flyway/sql
