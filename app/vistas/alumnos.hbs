@@ -1,0 +1,52 @@
+<h1>Alumnos</h1>
+
+{{#if alumnos.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>Padrón</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each alumnos}}
+        <tr>
+          <td><a href="/alumnos/{{padron}}">{{padron}}</a></td>
+          <td>{{nombre}}</td>
+          <td>{{apellido}}</td>
+          <td>
+            <form method="post" action="/alumnos/{{padron}}/eliminar">
+              <button type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+{{else}}
+  <p>No hay alumnos cargados.</p>
+{{/if}}
+
+<h2>Nuevo alumno</h2>
+
+{{#if error}}
+  <p role="alert">{{error}}</p>
+{{/if}}
+
+<form method="post" action="/alumnos">
+  <p>
+    <label for="padron">Padrón</label>
+    <input id="padron" name="padron" value="{{nuevo.padron}}" required />
+  </p>
+  <p>
+    <label for="nombre">Nombre</label>
+    <input id="nombre" name="nombre" value="{{nuevo.nombre}}" />
+  </p>
+  <p>
+    <label for="apellido">Apellido</label>
+    <input id="apellido" name="apellido" value="{{nuevo.apellido}}" />
+  </p>
+  <button type="submit">Crear</button>
+</form>

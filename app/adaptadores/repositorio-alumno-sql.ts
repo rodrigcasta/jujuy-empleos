@@ -1,10 +1,13 @@
 import Alumno from "../dominio/alumno";
 import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
 import pool from "./pool";
-import { IRepositorioAlumno } from "../dominio/puerto-repositorio-alumno";
+import { IRepositorioAlumno, NoSePuedeCalcularClaveError } from "../dominio/puerto-repositorio-alumno";
 
 export default class RepositorioAlumnoSql implements IRepositorioAlumno {
   guardar(alumno: Alumno): Promise<boolean> {
+    if (alumno.getPadron().trim() === "") {
+      return Promise.reject(new NoSePuedeCalcularClaveError());
+    }
     const insertAlumno = "INSERT INTO alumnos (nombre, apellido, padron) VALUES ($1, $2, $3) RETURNING id";
     return pool.query(insertAlumno, [alumno.getNombre(), alumno.getApellido(), alumno.getPadron()]).then((r) => {
       alumno.setId(r.rows[0].id);

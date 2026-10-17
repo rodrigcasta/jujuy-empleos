@@ -10,7 +10,7 @@ import RepositorioAlumnoSql from "./adaptadores/repositorio-alumno-sql";
 const app = express();
 const port = 3000;
 
-app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "vistas"));
 
@@ -32,22 +32,37 @@ app.get("/version", (_req: Request, res: Response) => {
   }
 });
 
-app.get("/alumnos", async (req: Request, res: Response) => {
-  const alumnos = await sistemaAlumnos.obtenerAlumnos();
-  res.json(alumnos);
+const aVista = (alumno: Alumno) => ({
+  padron: alumno.getPadron(),
+  nombre: alumno.getNombre(),
+  apellido: alumno.getApellido(),
+});
+
+const renderizarError = (res: Response, estado: number, mensaje: string) => {
+  res.status(estado).render("error", { titulo: "Error", mensaje });
+};
+
+app.get("/alumnos", async (_req: Request, res: Response) => {
+  try {
+    const alumnos = await sistemaAlumnos.obtenerAlumnos();
+    res.render("alumnos", { titulo: "Alumnos", alumnos: alumnos.map(aVista) });
+  } catch (error: any) {
+    renderizarError(res, 500, "No se pudo obtener el listado de alumnos");
+  }
 });
 
 app.get("/alumnos/:padron", async (req: Request, res: Response) => {
   try {
     const alumno = await sistemaAlumnos.obtenerAlumnoPorPadron(req.params.padron);
-    res.json(alumno);
+    res.render("alumno", {
+      titulo: `Alumno ${alumno.getPadron()}`,
+      alumno: aVista(alumno),
+    });
   } catch (error: any) {
     if (error instanceof AlumnoNoEncontradoError) {
-      res.status(404).json({
-        error: `No se encontró el alumno con padrón ${req.params.padron}`,
-      });
+      renderizarError(res, 404, `No se encontró el alumno con padrón ${req.params.padron}`);
     } else {
-      res.status(500);
+      renderizarError(res, 500, "No se pudo obtener el alumno");
     }
   }
 });
@@ -56,29 +71,35 @@ app.post("/alumnos", async (req: Request, res: Response) => {
   try {
     const alumnoCreado: Alumno = await sistemaAlumnos.crearAlumno(req.body.padron, req.body.nombre, req.body.apellido);
 
-    res.json(alumnoCreado);
+    res.redirect(303, `/alumnos/${encodeURIComponent(alumnoCreado.getPadron())}`);
   } catch (error: any) {
     if (error instanceof PadronDeAlumnoInvalido) {
-      res.status(400).json({
-        error: "El campo padron es obligatorio",
-      });
+      try {
+        const alumnos = await sistemaAlumnos.obtenerAlumnos();
+        res.status(400).render("alumnos", {
+          titulo: "Alumnos",
+          alumnos: alumnos.map(aVista),
+          error: "El campo padron es obligatorio",
+          nuevo: req.body,
+        });
+      } catch {
+        renderizarError(res, 500, "No se pudo obtener el listado de alumnos");
+      }
     } else {
-      res.status(500);
+      renderizarError(res, 500, "No se pudo crear el alumno");
     }
   }
 });
 
-app.delete("/alumnos/:padron", async (req: Request, res: Response) => {
+app.post("/alumnos/:padron/eliminar", async (req: Request, res: Response) => {
   try {
     await sistemaAlumnos.eliminarAlumno(req.params.padron);
-    res.status(200).json({ mensaje: "Alumno eliminado correctamente" });
+    res.redirect(303, "/alumnos");
   } catch (error: any) {
     if (error instanceof AlumnoNoEncontradoError) {
-      res.status(404).json({
-        error: `No se encontró el alumno con padrón ${req.params.padron}`,
-      });
+      renderizarError(res, 404, `No se encontró el alumno con padrón ${req.params.padron}`);
     } else {
-      res.status(500);
+      renderizarError(res, 500, "No se pudo eliminar el alumno");
     }
   }
 });

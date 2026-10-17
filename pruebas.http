@@ -1,5 +1,8 @@
-### Obtener versión del servicio
+### Home page
 GET http://localhost:3000/
+
+### Obtener versión del servicio
+GET http://localhost:3000/version
 
 ### Listar alumnos
 GET http://localhost:3000/alumnos
@@ -12,27 +15,18 @@ GET http://localhost:3000/alumnos/99999
 
 ### Crear alumno (válido)
 POST http://localhost:3000/alumnos
-Content-Type: application/json
+Content-Type: application/x-www-form-urlencoded
 
-{
-	"padron": "12345",
-	"nombre": "Juan",
-	"apellido": "Pérez",
-	"fechaNacimiento": "01/01/1990"
-}
+padron=12345&nombre=Juan&apellido=Pérez
 
 ### Crear alumno (inválido: padron faltante)
 POST http://localhost:3000/alumnos
-Content-Type: application/json
+Content-Type: application/x-www-form-urlencoded
 
-{
-	"nombre": "Lucía",
-	"apellido": "García",
-	"fechaNacimiento": "15/05/1995"
-}
+nombre=Lucía&apellido=García
 
 ### Eliminar alumno (existente)
-DELETE http://localhost:3000/alumnos/12345
+POST http://localhost:3000/alumnos/12345/eliminar
 
 ### Eliminar alumno (no encontrado)
-DELETE http://localhost:3000/alumnos/99999
+POST http://localhost:3000/alumnos/99999/eliminar

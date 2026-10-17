@@ -3,6 +3,7 @@ import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-erro
 import { describe, expect, test } from "@jest/globals";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
 import pool from "../../app/adaptadores/pool";
+import { NoSePuedeCalcularClaveError } from "../../app/dominio/puerto-repositorio-alumno";
 
 describe("RepositorioAlumno", () => {
   const repositorioAlumno = new RepositorioAlumnoSql();
@@ -24,6 +25,11 @@ describe("RepositorioAlumno", () => {
       const alumna = new Alumno("Juana", "Rodriguez", "123456");
       const resultado = await repositorioAlumno.guardar(alumna);
       expect(resultado).toBeTruthy();
+    });
+
+    test("deberia arrojar NoSePuedeCalcularClaveError si el padron esta vacio", async () => {
+      const alumna = new Alumno("Juana", "Rodriguez", "");
+      await expect(repositorioAlumno.guardar(alumna)).rejects.toThrow(NoSePuedeCalcularClaveError);
     });
   });
 
