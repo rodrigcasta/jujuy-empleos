@@ -9,11 +9,18 @@ services:
   flyway-test:
     image: flyway/flyway:latest
     entrypoint: [""]
-    command: ["sh", "-c", "flyway -url=jdbc:postgresql://test_db:5432/postgres -user=postgres -password=example -baselineOnMigrate=true -connectRetries=60 migrate && tail -f /dev/null"]
+    # El contenedor sigue corriendo después de migrar porque --abort-on-container-exit detiene todo cuando
+    # termina cualquier contenedor. El archivo /tmp/migraciones-aplicadas indica que terminó de migrar.
+    command: ["sh", "-c", "flyway -url=jdbc:postgresql://test_db:5432/postgres -user=postgres -password=example -baselineOnMigrate=true -connectRetries=60 migrate && touch /tmp/migraciones-aplicadas && tail -f /dev/null"]
     volumes:
       - ./db:/flyway/sql
     depends_on:
       - test_db
+    healthcheck:
+      test: ["CMD", "test", "-f", "/tmp/migraciones-aplicadas"]
+      interval: 2s
+      timeout: 2s
+      retries: 90
 
   app:
     environment:
@@ -29,5 +36,7 @@ services:
     command: "/app/run_ci.sh"
     volumes:
         - .:/app
+    # Las pruebas necesitan que las migraciones estén aplicadas
     depends_on:
-      - test_db
+      flyway-test:
+        condition: service_healthy
