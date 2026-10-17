@@ -11,9 +11,31 @@ Característica: Autenticación
       | email      | marta@example.com |
       | contraseña | secreta123        |
 
-  Escenario: Un usuario anónimo no puede ver el listado de alumnos
-    Cuando un usuario anónimo intenta ver el listado de alumnos
+  Esquema del escenario: Un usuario anónimo no puede ver las páginas de alumnos
+    Dado que existen los alumnos:
+      | padrón | nombre | apellido |
+      | 11111  | Juana  | Lopez    |
+    Cuando un usuario anónimo intenta ver la página "<página>"
     Entonces es redirigido a la página de inicio de sesión
+
+    Ejemplos:
+      | página             |
+      | listado de alumnos |
+      | alta de alumnos    |
+      | detalle de alumno  |
+
+  Escenario: Un usuario anónimo no puede dar de alta alumnos
+    Cuando un usuario anónimo intenta dar de alta al alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
+    Entonces es redirigido a la página de inicio de sesión
+    Y no se registró ningún alumno
+
+  Escenario: Un usuario anónimo no puede eliminar alumnos
+    Dado que existen los alumnos:
+      | padrón | nombre | apellido |
+      | 11111  | Juana  | Lopez    |
+    Cuando un usuario anónimo intenta eliminar al alumno con padrón "11111"
+    Entonces es redirigido a la página de inicio de sesión
+    Y el alumno con padrón "11111" sigue registrado
 
   Escenario: Inicio de sesión con credenciales correctas
     Cuando inicia sesión con email "marta@example.com" y contraseña "secreta123"

@@ -65,7 +65,7 @@ Las pruebas de aceptación están escritas en [Gherkin](https://cucumber.io/docs
   POSTGRES_PORT=5434 yarn test:aceptacion
 ```
 
-- `features/*.feature`: los escenarios (`autenticacion.feature`, `registro-de-usuarios.feature`).
+- `features/*.feature`: define los escenarios como ejemplos.
 - `features/step_definitions/`: la implementación de los steps. Los que comparten varias features están en `comunes.steps.ts`.
 - `features/support/`: el _world_ de Cucumber (`mundo.ts`, con un navegador simulado con `supertest` que conserva la cookie de sesión), los hooks (limpian la base antes de cada escenario) y las verificaciones comunes.
 - La configuración está en `cucumber.json` y el reporte HTML se genera en `reports/aceptacion.html`.
