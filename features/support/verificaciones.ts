@@ -13,3 +13,10 @@ export const debeRedirigirA = (respuesta: Response, ruta: string) => {
   );
   assert.equal(respuesta.headers.location, ruta);
 };
+
+// Contenido propio de la página, sin la barra de navegación del layout
+export const contenidoPrincipal = (respuesta: Response): string => {
+  const contenido = /<main[^>]*>([\s\S]*)<\/main>/.exec(respuesta.text);
+  assert.ok(contenido, "La página no tiene un elemento <main>");
+  return contenido[1];
+};
