@@ -1,7 +1,7 @@
 import Alumno from "../dominio/alumno";
 import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
 import pool from "./pool";
-import { IRepositorioAlumno, NoSePuedeCalcularClaveError } from "../dominio/puerto-repositorio-alumno";
+import { IRepositorioAlumno } from "../dominio/puerto-repositorio-alumno";
 
 // Fila de la tabla alumnos
 interface FilaAlumno {
@@ -13,9 +13,6 @@ interface FilaAlumno {
 
 export default class RepositorioAlumnoSql implements IRepositorioAlumno {
   guardar(alumno: Alumno): Promise<boolean> {
-    if (alumno.getPadron().trim() === "") {
-      return Promise.reject(new NoSePuedeCalcularClaveError());
-    }
     const insertAlumno = "INSERT INTO alumnos (nombre, apellido, padron) VALUES ($1, $2, $3) RETURNING id";
     return pool
       .query<Pick<FilaAlumno, "id">>(insertAlumno, [alumno.getNombre(), alumno.getApellido(), alumno.getPadron()])

@@ -18,7 +18,8 @@
         <form method="post" action="/alumnos">
           <div class="mb-3">
             <label for="padron" class="form-label">Padrón</label>
-            <input id="padron" name="padron" value="{{nuevo.padron}}" class="form-control" required />
+            <input id="padron" name="padron" value="{{nuevo.padron}}" class="form-control" inputmode="numeric" pattern="[1-9][0-9]*" aria-describedby="ayuda-padron" required />
+            <div id="ayuda-padron" class="form-text">Número mayor a 0, sin puntos ni comas.</div>
           </div>
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>

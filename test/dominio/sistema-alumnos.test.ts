@@ -35,7 +35,7 @@ describe("SistemaAlumnos", () => {
     test("deberia arrojar PadronDeAlumnoInvalido si el repositorio arroja una excepcion de tipo NoSePuedeCalcularClaveError", async () => {
       mockRepositorioAlumno.guardar.mockRejectedValue(new NoSePuedeCalcularClaveError());
 
-      await expect(sistemaAlumnos.crearAlumno("", "Juan", "Perez")).rejects.toThrow(PadronDeAlumnoInvalido);
+      await expect(sistemaAlumnos.crearAlumno("12345", "Juan", "Perez")).rejects.toThrow(PadronDeAlumnoInvalido);
 
       expect(mockRepositorioAlumno.guardar).toHaveBeenCalledTimes(1);
     });

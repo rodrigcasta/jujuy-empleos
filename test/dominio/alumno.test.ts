@@ -1,4 +1,5 @@
 import Alumno from "../../app/dominio/alumno";
+import PadronDeAlumnoInvalido from "../../app/dominio/padron-de-alumno-invalido";
 
 describe("Alumno", () => {
   describe("constructor", () => {
@@ -25,6 +26,37 @@ describe("Alumno", () => {
       expect(alumno.getNombre()).toEqual("Ana Maria");
       expect(alumno.getApellido()).toEqual("Garcia Lopez");
       expect(alumno.getPadron()).toEqual("67890");
+    });
+  });
+
+  describe("validacion del padron", () => {
+    test.each(["1", "12345", "100", "9876543210"])("deberia aceptar el padron %s", (padron) => {
+      expect(new Alumno("Juan", "Perez", padron).getPadron()).toEqual(padron);
+    });
+
+    test("deberia arrojar PadronDeAlumnoInvalido si el padron esta vacio", () => {
+      const crear = () => new Alumno("Juan", "Perez", "");
+
+      expect(crear).toThrow(PadronDeAlumnoInvalido);
+      expect(crear).toThrow("El campo padron es obligatorio");
+    });
+
+    test.each([
+      ["cero", "0"],
+      ["negativo", "-5"],
+      ["con signo +", "+5"],
+      ["con punto", "12.345"],
+      ["con coma", "12,345"],
+      ["con letras", "abc"],
+      ["con letras y numeros", "123a"],
+      ["en notacion cientifica", "1e5"],
+      ["con espacios", " 123 "],
+      ["con ceros a la izquierda", "0123"],
+    ])("deberia arrojar PadronDeAlumnoInvalido si el padron es %s", (_caso, padron) => {
+      const crear = () => new Alumno("Juan", "Perez", padron);
+
+      expect(crear).toThrow(PadronDeAlumnoInvalido);
+      expect(crear).toThrow("El padrón debe ser un número mayor a 0, sin puntos ni comas");
     });
   });
 

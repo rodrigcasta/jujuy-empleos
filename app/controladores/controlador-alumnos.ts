@@ -75,7 +75,7 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
       if (error instanceof PadronDeAlumnoInvalido) {
         res.status(EstadoHttp.SOLICITUD_INCORRECTA).render("alumno-nuevo", {
           titulo: "Nuevo alumno",
-          error: "El campo padron es obligatorio",
+          error: error.message,
           nuevo: req.body,
         });
       } else {

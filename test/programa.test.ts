@@ -109,6 +109,17 @@ describe("POST /alumnos", () => {
     expect(respuesta.text).toContain("El campo padron es obligatorio");
   });
 
+  test.each(["12.345", "12,345", "abc", "0", "-5"])(
+    "deberia devolver estado 400 si el padron es %s",
+    async (padron) => {
+      const respuesta = await crearAlumno({ nombre: "Juana", apellido: "Lopez", padron });
+
+      expect(respuesta.status).toEqual(400);
+      expect(respuesta.text).toContain("El padrón debe ser un número mayor a 0, sin puntos ni comas");
+      expect(await new RepositorioAlumnoSql().listarAlumnos()).toHaveLength(0);
+    },
+  );
+
   test("deberia volver a mostrar el formulario con los datos ingresados si hay un error", async () => {
     const respuesta = await crearAlumno({ nombre: "Juana", apellido: "Lopez" });
 
