@@ -39,6 +39,11 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
     }
   });
 
+  // Se declara antes de /:padron para que "nuevo" no se interprete como un padrón
+  router.get("/nuevo", (_req: Request, res: Response) => {
+    res.render("alumno-nuevo", { titulo: "Nuevo alumno" });
+  });
+
   router.get("/:padron", async (req: Request, res: Response) => {
     try {
       const alumno = await sistemaAlumnos.obtenerAlumnoPorPadron(req.params.padron);
@@ -68,18 +73,11 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
     } catch (error: unknown) {
       registrarExcepcion(req, error);
       if (error instanceof PadronDeAlumnoInvalido) {
-        try {
-          const alumnos = await sistemaAlumnos.obtenerAlumnos();
-          res.status(EstadoHttp.SOLICITUD_INCORRECTA).render("alumnos", {
-            titulo: "Alumnos",
-            alumnos: alumnos.map(aVista),
-            error: "El campo padron es obligatorio",
-            nuevo: req.body,
-          });
-        } catch (error: unknown) {
-          registrarExcepcion(req, error);
-          renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo obtener el listado de alumnos");
-        }
+        res.status(EstadoHttp.SOLICITUD_INCORRECTA).render("alumno-nuevo", {
+          titulo: "Nuevo alumno",
+          error: "El campo padron es obligatorio",
+          nuevo: req.body,
+        });
       } else {
         renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo crear el alumno");
       }

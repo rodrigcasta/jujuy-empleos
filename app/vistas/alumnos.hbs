@@ -1,68 +1,39 @@
-<h1 class="h2 mb-4">Alumnos</h1>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <h1 class="h2 mb-0">Alumnos</h1>
+  <a class="btn btn-primary" href="/alumnos/nuevo">Nuevo alumno</a>
+</div>
 
-<div class="row g-4">
-  <div class="col-lg-8">
-    <div class="card shadow-sm">
-      {{#if alumnos.length}}
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead>
-              <tr>
-                <th scope="col">Padrón</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Apellido</th>
-                <th scope="col"><span class="visually-hidden">Acciones</span></th>
-              </tr>
-            </thead>
-            <tbody>
-              {{#each alumnos}}
-                <tr>
-                  <td><a href="/alumnos/{{padron}}">{{padron}}</a></td>
-                  <td>{{nombre}}</td>
-                  <td>{{apellido}}</td>
-                  <td class="text-end">
-                    <form method="post" action="/alumnos/{{padron}}/eliminar">
-                      <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
-                    </form>
-                  </td>
-                </tr>
-              {{/each}}
-            </tbody>
-          </table>
-        </div>
-      {{else}}
-        <div class="card-body">
-          <p class="text-body-secondary mb-0">No hay alumnos cargados.</p>
-        </div>
-      {{/if}}
+<div class="card shadow-sm">
+  {{#if alumnos.length}}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">Padrón</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col"><span class="visually-hidden">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each alumnos}}
+            <tr>
+              <td><a href="/alumnos/{{padron}}">{{padron}}</a></td>
+              <td>{{nombre}}</td>
+              <td>{{apellido}}</td>
+              <td class="text-end">
+                <form method="post" action="/alumnos/{{padron}}/eliminar">
+                  <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
+                </form>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </div>
-  </div>
-
-  <div class="col-lg-4">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="h5 card-title mb-3">Nuevo alumno</h2>
-
-        {{#if error}}
-          <div class="alert alert-danger" role="alert">{{error}}</div>
-        {{/if}}
-
-        <form method="post" action="/alumnos">
-          <div class="mb-3">
-            <label for="padron" class="form-label">Padrón</label>
-            <input id="padron" name="padron" value="{{nuevo.padron}}" class="form-control" required />
-          </div>
-          <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input id="nombre" name="nombre" value="{{nuevo.nombre}}" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label for="apellido" class="form-label">Apellido</label>
-            <input id="apellido" name="apellido" value="{{nuevo.apellido}}" class="form-control" />
-          </div>
-          <button type="submit" class="btn btn-primary w-100">Crear</button>
-        </form>
-      </div>
+  {{else}}
+    <div class="card-body">
+      <p class="text-body-secondary mb-0">No hay alumnos cargados.</p>
     </div>
-  </div>
+  {{/if}}
 </div>

@@ -109,9 +109,10 @@ describe("POST /alumnos", () => {
     expect(respuesta.text).toContain("El campo padron es obligatorio");
   });
 
-  test("deberia conservar los datos ingresados en el formulario si hay un error", async () => {
+  test("deberia volver a mostrar el formulario con los datos ingresados si hay un error", async () => {
     const respuesta = await crearAlumno({ nombre: "Juana", apellido: "Lopez" });
 
+    expect(respuesta.text).toContain('<form method="post" action="/alumnos">');
     expect(respuesta.text).toContain('value="Juana"');
     expect(respuesta.text).toContain('value="Lopez"');
   });
@@ -126,13 +127,11 @@ describe("GET /alumnos", () => {
     expect(respuesta.text).toContain("No hay alumnos cargados.");
   });
 
-  test("deberia incluir el formulario para crear alumnos", async () => {
+  test("deberia incluir un link a la pagina para crear alumnos, pero no el formulario", async () => {
     const respuesta = await agente.get("/alumnos");
 
-    expect(respuesta.text).toContain('<form method="post" action="/alumnos">');
-    expect(respuesta.text).toContain('name="padron"');
-    expect(respuesta.text).toContain('name="nombre"');
-    expect(respuesta.text).toContain('name="apellido"');
+    expect(respuesta.text).toContain('href="/alumnos/nuevo"');
+    expect(respuesta.text).not.toContain('<form method="post" action="/alumnos">');
   });
 
   test("deberia devolver estado OK y una lista con un alumno si hay uno guardado", async () => {
@@ -182,6 +181,20 @@ describe("GET /alumnos", () => {
 
     expect(respuesta.text).not.toContain("<script>alert(1)</script>");
     expect(respuesta.text).toContain("&lt;script&gt;");
+  });
+});
+
+describe("GET /alumnos/nuevo", () => {
+  test("deberia devolver el formulario para crear alumnos", async () => {
+    const respuesta = await agente.get("/alumnos/nuevo");
+
+    expect(respuesta.status).toEqual(200);
+    expect(respuesta.type).toEqual("text/html");
+    expect(respuesta.text).toContain('<form method="post" action="/alumnos">');
+    expect(respuesta.text).toContain('name="padron"');
+    expect(respuesta.text).toContain('name="nombre"');
+    expect(respuesta.text).toContain('name="apellido"');
+    expect(respuesta.text).toContain('href="/alumnos"');
   });
 });
 
@@ -286,6 +299,7 @@ describe("POST /alumnos/:padron/eliminar", () => {
 describe("Acceso anónimo a las páginas de alumnos", () => {
   test.each([
     ["GET", "/alumnos"],
+    ["GET", "/alumnos/nuevo"],
     ["GET", "/alumnos/12345"],
     ["POST", "/alumnos"],
     ["POST", "/alumnos/12345/eliminar"],

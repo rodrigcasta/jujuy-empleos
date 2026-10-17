@@ -1,0 +1,39 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/alumnos">Alumnos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevo alumno</li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-4">Nuevo alumno</h1>
+
+        {{#if error}}
+          <div class="alert alert-danger" role="alert">{{error}}</div>
+        {{/if}}
+
+        <form method="post" action="/alumnos">
+          <div class="mb-3">
+            <label for="padron" class="form-label">Padrón</label>
+            <input id="padron" name="padron" value="{{nuevo.padron}}" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input id="nombre" name="nombre" value="{{nuevo.nombre}}" class="form-control" />
+          </div>
+          <div class="mb-4">
+            <label for="apellido" class="form-label">Apellido</label>
+            <input id="apellido" name="apellido" value="{{nuevo.apellido}}" class="form-control" />
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Crear</button>
+            <a class="btn btn-outline-secondary" href="/alumnos">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

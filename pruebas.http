@@ -35,6 +35,9 @@ email=juana@example.com&contrasena=incorrecta
 ### Listar alumnos
 GET http://localhost:3000/alumnos
 
+### Formulario para crear un alumno
+GET http://localhost:3000/alumnos/nuevo
+
 ### Obtener alumno por padrón (existente)
 GET http://localhost:3000/alumnos/12345
 
