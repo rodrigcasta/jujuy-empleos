@@ -36,6 +36,18 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 const registrarExcepcion = (req: Request, error: any) => {
   console.error(`!!! ${req.method} ${req.originalUrl} ${error?.constructor?.name}: ${error?.message}`);
+  // Un AggregateError (por ej. cuando no se puede conectar a la BD) tiene el detalle en los errores que agrupa
+  if (Array.isArray(error?.errors)) {
+    for (const causa of error.errors) {
+      console.error(`    causa: ${causa?.constructor?.name}: ${causa?.message}`);
+    }
+  }
+  const stack = String(error?.stack ?? "")
+    .split("\n")
+    .filter((linea) => linea.trimStart().startsWith("at "));
+  if (stack.length > 0) {
+    console.error(stack.join("\n"));
+  }
 };
 
 const sistemaAlumnos = new SistemaAlumnos(new RepositorioAlumnoSql());
