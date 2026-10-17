@@ -61,6 +61,8 @@ Las pruebas usan la base `test_db`. Como el archivo `.env` apunta a la base de d
 
 Para correr la aplicación utilizá el comando `yarn start` y abrí http://localhost:3000 en el navegador.
 
+El servidor corre en modo _watch_ (`node --watch`): cuando se modifica un archivo `.ts` de la aplicación, el proceso se reinicia automáticamente con los cambios. Los templates `.hbs` no necesitan reinicio, ya que Express los vuelve a leer en cada request. Las sesiones se mantienen entre reinicios siempre que `SESSION_SECRET` esté definido, porque se guardan en una cookie del lado del cliente.
+
 ## Autenticación
 
 Se implementa con [Passport](https://www.passportjs.org/) y su estrategia `passport-local` (email y contraseña):
