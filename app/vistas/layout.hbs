@@ -6,6 +6,20 @@
     <title>{{#if titulo}}{{titulo}}{{else}}Alumnos{{/if}}</title>
   </head>
   <body>
+    <header>
+      <nav>
+        <a href="/">Inicio</a>
+        {{#if usuarioActual}}
+          <span>{{usuarioActual.nombre}} ({{usuarioActual.email}})</span>
+          <form method="post" action="/logout" style="display: inline">
+            <button type="submit">Cerrar sesión</button>
+          </form>
+        {{else}}
+          <a href="/login">Iniciar sesión</a>
+          <a href="/registro">Registrarse</a>
+        {{/if}}
+      </nav>
+    </header>
     {{{body}}}
   </body>
 </html>

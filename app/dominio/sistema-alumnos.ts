@@ -15,7 +15,7 @@ export default class SistemaAlumnos {
       await this.repositorioAlumno.guardar(alumnoCreado);
 
       return alumnoCreado;
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof NoSePuedeCalcularClaveError) {
         throw new PadronDeAlumnoInvalido();
       } else {

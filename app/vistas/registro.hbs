@@ -1,0 +1,31 @@
+<h1>Registro</h1>
+
+{{#if error}}
+  <p role="alert">{{error}}</p>
+{{/if}}
+
+<form method="post" action="/registro">
+  <p>
+    <label for="nombre">Nombre</label>
+    <input id="nombre" name="nombre" value="{{nuevo.nombre}}" autocomplete="given-name" maxlength="40" required />
+  </p>
+  <p>
+    <label for="apellido">Apellido</label>
+    <input id="apellido" name="apellido" value="{{nuevo.apellido}}" autocomplete="family-name" maxlength="40" required />
+  </p>
+  <p>
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" value="{{nuevo.email}}" autocomplete="email" maxlength="254" required />
+  </p>
+  <p>
+    <label for="contrasena">Contraseña (mínimo 8 caracteres)</label>
+    <input id="contrasena" name="contrasena" type="password" autocomplete="new-password" minlength="8" required />
+  </p>
+  <p>
+    <label for="confirmacion">Repetir contraseña</label>
+    <input id="confirmacion" name="confirmacion" type="password" autocomplete="new-password" minlength="8" required />
+  </p>
+  <button type="submit">Registrarse</button>
+</form>
+
+<p>¿Ya tenés cuenta? <a href="/login">Iniciá sesión</a></p>

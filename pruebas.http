@@ -4,6 +4,34 @@ GET http://localhost:3000/
 ### Obtener versión del servicio
 GET http://localhost:3000/version
 
+### Registrar usuario (inicia la sesión)
+POST http://localhost:3000/registro
+Content-Type: application/x-www-form-urlencoded
+
+nombre=Juana&apellido=Lopez&email=juana@example.com&contrasena=secreta123&confirmacion=secreta123
+
+### Registrar usuario (inválido: email mal formado)
+POST http://localhost:3000/registro
+Content-Type: application/x-www-form-urlencoded
+
+nombre=Juana&apellido=Lopez&email=no-es-un-email&contrasena=secreta123&confirmacion=secreta123
+
+### Iniciar sesión
+POST http://localhost:3000/login
+Content-Type: application/x-www-form-urlencoded
+
+email=juana@example.com&contrasena=secreta123
+
+### Iniciar sesión (credenciales incorrectas)
+POST http://localhost:3000/login
+Content-Type: application/x-www-form-urlencoded
+
+email=juana@example.com&contrasena=incorrecta
+
+# Las rutas de /alumnos requieren una sesión iniciada: el cliente HTTP debe
+# reenviar las cookies "sesion" y "sesion.sig" que devuelven /registro o /login.
+# Sin ella, todas redirigen a /login.
+
 ### Listar alumnos
 GET http://localhost:3000/alumnos
 
@@ -30,3 +58,6 @@ POST http://localhost:3000/alumnos/12345/eliminar
 
 ### Eliminar alumno (no encontrado)
 POST http://localhost:3000/alumnos/99999/eliminar
+
+### Cerrar sesión
+POST http://localhost:3000/logout
