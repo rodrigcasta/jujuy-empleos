@@ -11,11 +11,17 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "vistas"));
 
 const sistemaAlumnos = new SistemaAlumnos(new RepositorioAlumnoSql());
 
-// Endpoint raíz: devuelve la versión del package.json
 app.get("/", (_req: Request, res: Response) => {
+  res.render("inicio", { titulo: "Inicio" });
+});
+
+// Devuelve la versión del package.json
+app.get("/version", (_req: Request, res: Response) => {
   try {
     const pkgPath = path.resolve(process.cwd(), "package.json");
     const pkgContent = fs.readFileSync(pkgPath, { encoding: "utf8" });
@@ -24,10 +30,6 @@ app.get("/", (_req: Request, res: Response) => {
   } catch {
     res.status(500).json({ error: "No se pudo leer la versión" });
   }
-});
-
-app.get("/", async (req: Request, res: Response) => {
-  res.json({});
 });
 
 app.get("/alumnos", async (req: Request, res: Response) => {
