@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import Alumno from "../dominio/alumno";
 import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
+import AlumnoYaExisteError from "../dominio/alumno-ya-existe-error";
 import PadronDeAlumnoInvalido from "../dominio/padron-de-alumno-invalido";
 import SistemaAlumnos from "../dominio/sistema-alumnos";
 import { registrarExcepcion, renderizarError } from "../web/registrar-excepcion";
@@ -72,8 +73,10 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
       res.redirect(EstadoHttp.VER_OTRO, `/alumnos/${encodeURIComponent(alumnoCreado.getPadron())}`);
     } catch (error: unknown) {
       registrarExcepcion(req, error);
-      if (error instanceof PadronDeAlumnoInvalido) {
-        res.status(EstadoHttp.SOLICITUD_INCORRECTA).render("alumnos/nuevo", {
+      if (error instanceof PadronDeAlumnoInvalido || error instanceof AlumnoYaExisteError) {
+        const estado: EstadoHttp =
+          error instanceof AlumnoYaExisteError ? EstadoHttp.CONFLICTO : EstadoHttp.SOLICITUD_INCORRECTA;
+        res.status(estado).render("alumnos/nuevo", {
           titulo: "Nuevo alumno",
           error: error.message,
           nuevo: req.body,
