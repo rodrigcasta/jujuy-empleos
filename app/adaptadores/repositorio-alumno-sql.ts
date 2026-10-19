@@ -1,9 +1,12 @@
 import Alumno from "../dominio/alumno";
 import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
+import AlumnoYaExisteError from "../dominio/alumno-ya-existe-error";
 import pool from "./pool";
 import { IRepositorioAlumno } from "../dominio/puerto-repositorio-alumno";
+import { DatabaseError } from "pg";
 
-// Fila de la tabla alumnos
+const VIOLACION_DE_UNICIDAD = "23505";
+
 interface FilaAlumno {
   id: number;
   nombre: string;
@@ -12,14 +15,20 @@ interface FilaAlumno {
 }
 
 export default class RepositorioAlumnoSql implements IRepositorioAlumno {
-  guardar(alumno: Alumno): Promise<boolean> {
-    const insertAlumno = "INSERT INTO alumnos (nombre, apellido, padron) VALUES ($1, $2, $3) RETURNING id";
-    return pool
-      .query<Pick<FilaAlumno, "id">>(insertAlumno, [alumno.getNombre(), alumno.getApellido(), alumno.getPadron()])
-      .then((r) => {
-        alumno.setId(r.rows[0].id);
-        return true;
-      });
+  public async guardar(alumno: Alumno): Promise<boolean> {
+    try {
+      const resultado = await pool.query<Pick<FilaAlumno, "id">>(
+        "INSERT INTO alumnos (nombre, apellido, padron) VALUES ($1, $2, $3) RETURNING id",
+        [alumno.getNombre(), alumno.getApellido(), alumno.getPadron()],
+      );
+      alumno.setId(resultado.rows[0].id);
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
+        throw new AlumnoYaExisteError(alumno.getPadron());
+      }
+      throw error;
+    }
   }
 
   eliminarTodos(): Promise<boolean> {

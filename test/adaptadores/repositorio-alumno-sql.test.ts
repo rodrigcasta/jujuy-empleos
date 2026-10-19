@@ -3,6 +3,7 @@ import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-erro
 import { describe, expect, test } from "@jest/globals";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
 import pool from "../../app/adaptadores/pool";
+import AlumnoYaExisteError from "../../app/dominio/alumno-ya-existe-error";
 
 describe("RepositorioAlumno", () => {
   const repositorioAlumno = new RepositorioAlumnoSql();
@@ -24,6 +25,12 @@ describe("RepositorioAlumno", () => {
       const alumna = new Alumno("Juana", "Rodriguez", "123456");
       const resultado = await repositorioAlumno.guardar(alumna);
       expect(resultado).toBeTruthy();
+    });
+
+    test("debería lanzar AlumnoYaExisteError si ya existe un alumno con el mismo padrón", async () => {
+      await repositorioAlumno.guardar(new Alumno("Ana", "Lopez", "123123"));
+      const otraAlumna: Alumno = new Alumno("Juana", "Rodriguez", "123123");
+      await expect(repositorioAlumno.guardar(otraAlumna)).rejects.toThrowError(AlumnoYaExisteError);
     });
   });
 
