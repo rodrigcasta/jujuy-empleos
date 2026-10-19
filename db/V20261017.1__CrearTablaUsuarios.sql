@@ -1,7 +1,7 @@
-CREATE TABLE Usuarios (
-    id serial PRIMARY KEY,
-    nombre           varchar(40) NOT NULL,
-    apellido         varchar(40) NOT NULL,
-    email            varchar(254) NOT NULL UNIQUE,
-    hash_contrasena  varchar(100) NOT NULL
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(40) NOT NULL,
+    apellido VARCHAR(40) NOT NULL,
+    email VARCHAR(254) NOT NULL UNIQUE,
+    hash_contrasena VARCHAR(100) NOT NULL
 );
