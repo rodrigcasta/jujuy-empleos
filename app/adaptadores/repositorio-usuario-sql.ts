@@ -16,36 +16,23 @@ interface FilaUsuario {
 }
 
 export default class RepositorioUsuarioSql implements IRepositorioUsuario {
-  guardar(usuario: Usuario): Promise<boolean> {
-    const insertUsuario =
-      "INSERT INTO usuarios (nombre, apellido, email, hash_contrasena) VALUES ($1, $2, $3, $4) RETURNING id";
-    return pool
-      .query<Pick<FilaUsuario, "id">>(insertUsuario, [
-        usuario.getNombre(),
-        usuario.getApellido(),
-        usuario.getEmail(),
-        usuario.getHashContrasena(),
-      ])
-      .then((r) => {
-        usuario.setId(r.rows[0].id);
-        return true;
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
-          throw new UsuarioYaExisteError(usuario.getEmail());
-        }
-        throw error;
-      });
+  public async guardar(usuario: Usuario): Promise<void> {
+    try {
+      const resultado = await pool.query<Pick<FilaUsuario, "id">>(
+        "INSERT INTO usuarios (nombre, apellido, email, hash_contrasena) VALUES ($1, $2, $3, $4) RETURNING id",
+        [usuario.getNombre(), usuario.getApellido(), usuario.getEmail(), usuario.getHashContrasena()],
+      );
+      usuario.setId(resultado.rows[0].id);
+    } catch (error: unknown) {
+      if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
+        throw new UsuarioYaExisteError(usuario.getEmail());
+      }
+      throw error;
+    }
   }
 
-  eliminarTodos(): Promise<boolean> {
-    return pool
-      .query("DELETE FROM public.usuarios;")
-      .then(() => true)
-      .catch((error: unknown) => {
-        console.log(error);
-        return false;
-      });
+  public async eliminarTodos(): Promise<void> {
+    await pool.query("DELETE FROM public.usuarios;");
   }
 
   recuperarPorEmail(email: string): Promise<Usuario | null> {

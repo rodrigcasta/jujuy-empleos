@@ -15,14 +15,13 @@ interface FilaAlumno {
 }
 
 export default class RepositorioAlumnoSql implements IRepositorioAlumno {
-  public async guardar(alumno: Alumno): Promise<boolean> {
+  public async guardar(alumno: Alumno): Promise<void> {
     try {
       const resultado = await pool.query<Pick<FilaAlumno, "id">>(
         "INSERT INTO alumnos (nombre, apellido, padron) VALUES ($1, $2, $3) RETURNING id",
         [alumno.getNombre(), alumno.getApellido(), alumno.getPadron()],
       );
       alumno.setId(resultado.rows[0].id);
-      return true;
     } catch (error: unknown) {
       if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
         throw new AlumnoYaExisteError(alumno.getPadron());
@@ -31,14 +30,8 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
     }
   }
 
-  eliminarTodos(): Promise<boolean> {
-    return pool
-      .query("DELETE FROM public.alumnos;")
-      .then(() => true)
-      .catch((error: unknown) => {
-        console.log(error);
-        return false;
-      });
+  async eliminarTodos(): Promise<void> {
+    await pool.query("DELETE FROM public.alumnos;");
   }
 
   listarAlumnos(): Promise<Alumno[]> {

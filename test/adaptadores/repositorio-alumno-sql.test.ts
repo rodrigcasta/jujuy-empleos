@@ -9,10 +9,7 @@ describe("RepositorioAlumno", () => {
   const repositorioAlumno = new RepositorioAlumnoSql();
 
   beforeEach(async () => {
-    const resultado = await repositorioAlumno.eliminarTodos();
-    if (!resultado) {
-      throw new Error("setup failed");
-    }
+    await repositorioAlumno.eliminarTodos();
   });
 
   afterAll((done) => {
@@ -22,9 +19,9 @@ describe("RepositorioAlumno", () => {
 
   describe("guardar", () => {
     test("deberia persistir un alumno en sql", async () => {
-      const alumna = new Alumno("Juana", "Rodriguez", "123456");
-      const resultado = await repositorioAlumno.guardar(alumna);
-      expect(resultado).toBeTruthy();
+      const alumna: Alumno = new Alumno("Juana", "Rodriguez", "123456");
+      await repositorioAlumno.guardar(alumna);
+      expect(alumna.Id()).toBeGreaterThan(0);
     });
 
     test("debería lanzar AlumnoYaExisteError si ya existe un alumno con el mismo padrón", async () => {

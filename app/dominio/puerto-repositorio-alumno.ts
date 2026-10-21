@@ -1,7 +1,7 @@
 import Alumno from "./alumno";
 
 export interface IRepositorioAlumno {
-  guardar(alumno: Alumno): Promise<boolean>;
+  guardar(alumno: Alumno): Promise<void>;
 
   recuperar(padron: string): Promise<Alumno>;
 

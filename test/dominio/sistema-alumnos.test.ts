@@ -16,7 +16,7 @@ describe("SistemaAlumnos", () => {
 
   describe("crearAlumno", () => {
     test("deberia crear un objeto Alumno y guardarlo en el repositorio", async () => {
-      mockRepositorioAlumno.guardar.mockResolvedValue(true);
+      mockRepositorioAlumno.guardar.mockResolvedValue(undefined);
 
       const alumnoCreado = await sistemaAlumnos.crearAlumno("12345", "Juan", "Perez");
 

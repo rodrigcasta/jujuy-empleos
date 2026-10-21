@@ -8,10 +8,7 @@ describe("RepositorioUsuario", () => {
   const repositorioUsuario = new RepositorioUsuarioSql();
 
   beforeEach(async () => {
-    const resultado = await repositorioUsuario.eliminarTodos();
-    if (!resultado) {
-      throw new Error("setup failed");
-    }
+    await repositorioUsuario.eliminarTodos();
   });
 
   afterAll((done) => {
@@ -21,9 +18,8 @@ describe("RepositorioUsuario", () => {
 
   describe("guardar", () => {
     test("deberia persistir un usuario en sql y asignarle un id", async () => {
-      const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash");
-      const resultado = await repositorioUsuario.guardar(usuario);
-      expect(resultado).toBeTruthy();
+      const usuario: Usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash");
+      await repositorioUsuario.guardar(usuario);
       expect(usuario.Id()).toBeGreaterThan(0);
     });
 

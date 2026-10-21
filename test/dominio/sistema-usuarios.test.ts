@@ -17,7 +17,7 @@ describe("SistemaUsuarios", () => {
   describe("registrar", () => {
     test("deberia crear un Usuario con la contraseña hasheada y guardarlo en el repositorio", async () => {
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(null);
-      mockRepositorioUsuario.guardar.mockResolvedValue(true);
+      mockRepositorioUsuario.guardar.mockResolvedValue(undefined);
 
       const usuario = await sistemaUsuarios.registrar("Juana", "Lopez", "Juana@Example.com", "secreta123");
 
