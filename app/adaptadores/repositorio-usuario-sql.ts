@@ -1,10 +1,8 @@
 import Usuario from "../dominio/usuario";
 import UsuarioYaExisteError from "../dominio/usuario-ya-existe-error";
-import { DatabaseError } from "pg";
 import pool from "./pool";
+import ErrorPostgres from "./error-postgres";
 import { IRepositorioUsuario } from "../dominio/puerto-repositorio-usuario";
-
-const VIOLACION_DE_UNICIDAD = "23505";
 
 // Fila de la tabla usuarios
 interface FilaUsuario {
@@ -15,49 +13,38 @@ interface FilaUsuario {
   hash_contrasena: string;
 }
 
+const COLUMNAS = "id, nombre, apellido, email, hash_contrasena";
+
 export default class RepositorioUsuarioSql implements IRepositorioUsuario {
-  guardar(usuario: Usuario): Promise<boolean> {
-    const insertUsuario =
-      "INSERT INTO usuarios (nombre, apellido, email, hash_contrasena) VALUES ($1, $2, $3, $4) RETURNING id";
-    return pool
-      .query<Pick<FilaUsuario, "id">>(insertUsuario, [
-        usuario.getNombre(),
-        usuario.getApellido(),
-        usuario.getEmail(),
-        usuario.getHashContrasena(),
-      ])
-      .then((r) => {
-        usuario.setId(r.rows[0].id);
-        return true;
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
-          throw new UsuarioYaExisteError(usuario.getEmail());
-        }
-        throw error;
-      });
+  public async guardar(usuario: Usuario): Promise<void> {
+    try {
+      const resultado = await pool.query<Pick<FilaUsuario, "id">>(
+        "INSERT INTO usuarios (nombre, apellido, email, hash_contrasena) VALUES ($1, $2, $3, $4) RETURNING id",
+        [usuario.obtenerNombre(), usuario.obtenerApellido(), usuario.obtenerEmail(), usuario.obtenerHashContrasena()],
+      );
+      usuario.cambiarId(resultado.rows[0].id);
+    } catch (error: unknown) {
+      if (ErrorPostgres.esViolacionDeUnicidad(error)) {
+        throw new UsuarioYaExisteError(usuario.obtenerEmail());
+      }
+      throw error;
+    }
   }
 
-  eliminarTodos(): Promise<boolean> {
-    return pool
-      .query("DELETE FROM public.usuarios;")
-      .then(() => true)
-      .catch((error: unknown) => {
-        console.log(error);
-        return false;
-      });
+  public async eliminarTodos(): Promise<void> {
+    await pool.query("DELETE FROM public.usuarios;");
   }
 
-  recuperarPorEmail(email: string): Promise<Usuario | null> {
-    return pool
-      .query<FilaUsuario>("SELECT * FROM public.usuarios WHERE email = $1;", [email])
-      .then((result) => (result.rows.length === 0 ? null : this.deserializarUsuario(result.rows[0])));
+  public async recuperarPorEmail(email: string): Promise<Usuario | null> {
+    const resultado = await pool.query<FilaUsuario>(`SELECT ${COLUMNAS} FROM public.usuarios WHERE email = $1;`, [
+      email,
+    ]);
+    return resultado.rows.length === 0 ? null : this.deserializarUsuario(resultado.rows[0]);
   }
 
-  recuperarPorId(id: number): Promise<Usuario | null> {
-    return pool
-      .query<FilaUsuario>("SELECT * FROM public.usuarios WHERE id = $1;", [id])
-      .then((result) => (result.rows.length === 0 ? null : this.deserializarUsuario(result.rows[0])));
+  public async recuperarPorId(id: number): Promise<Usuario | null> {
+    const resultado = await pool.query<FilaUsuario>(`SELECT ${COLUMNAS} FROM public.usuarios WHERE id = $1;`, [id]);
+    return resultado.rows.length === 0 ? null : this.deserializarUsuario(resultado.rows[0]);
   }
 
   private deserializarUsuario(row: FilaUsuario): Usuario {

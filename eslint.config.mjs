@@ -15,7 +15,7 @@ const compat = new FlatCompat({
 });
 
 export default [{
-    ignores: ["**/.eslintrc.js"],
+    ignores: ["dist/**", "coverage/**"],
 }, ...compat.extends("plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"), {
     plugins: {
         "@typescript-eslint": typescriptEslintEslintPlugin,
@@ -28,7 +28,7 @@ export default [{
         },
 
         parser: tsParser,
-        ecmaVersion: 5,
+        ecmaVersion: "latest",
         sourceType: "module",
 
         parserOptions: {
@@ -40,6 +40,6 @@ export default [{
     rules: {
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "error",
-        "prettier/prettier": ["error", { printWidth: 120 }],
+        "prettier/prettier": ["error"],
     },
 }];

@@ -1,7 +1,7 @@
 import Usuario from "./usuario";
 
 export interface IRepositorioUsuario {
-  guardar(usuario: Usuario): Promise<boolean>;
+  guardar(usuario: Usuario): Promise<void>;
 
   recuperarPorEmail(email: string): Promise<Usuario | null>;
 

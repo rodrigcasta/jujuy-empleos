@@ -1,13 +1,7 @@
 import Alumno from "./alumno";
 
-export class NoSePuedeCalcularClaveError extends Error {
-  constructor() {
-    super("No se puede calcular la clave para persistir al alumno, el Padrón debe ser un string no vacío");
-  }
-}
-
 export interface IRepositorioAlumno {
-  guardar(alumno: Alumno): Promise<boolean>;
+  guardar(alumno: Alumno): Promise<void>;
 
   recuperar(padron: string): Promise<Alumno>;
 

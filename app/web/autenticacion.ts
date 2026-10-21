@@ -72,7 +72,7 @@ export const configurarAutenticacion = (app: Express, sistemaUsuarios: SistemaUs
       sistemaUsuarios.autenticar(email, contrasena).then((usuario) => done(null, usuario ?? false), done);
     }),
   );
-  passport.serializeUser((usuario, done) => done(null, (usuario as Usuario).Id()));
+  passport.serializeUser((usuario, done) => done(null, (usuario as Usuario).obtenerId()));
   passport.deserializeUser((id: number, done) => {
     sistemaUsuarios.obtenerPorId(id).then((usuario) => done(null, usuario ?? false), done);
   });
@@ -84,7 +84,7 @@ export const configurarAutenticacion = (app: Express, sistemaUsuarios: SistemaUs
   app.use((req: Request, res: Response, next: NextFunction) => {
     const usuario = usuarioActual(req);
     if (usuario) {
-      res.locals.usuarioActual = { nombre: usuario.getNombre(), email: usuario.getEmail() };
+      res.locals.usuarioActual = { nombre: usuario.obtenerNombre(), email: usuario.obtenerEmail() };
     }
     next();
   });

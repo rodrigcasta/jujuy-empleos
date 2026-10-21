@@ -2,7 +2,7 @@ import SistemaAlumnos from "../../app/dominio/sistema-alumnos";
 import Alumno from "../../app/dominio/alumno";
 import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-error";
 import PadronDeAlumnoInvalido from "../../app/dominio/padron-de-alumno-invalido";
-import { IRepositorioAlumno, NoSePuedeCalcularClaveError } from "../../app/dominio/puerto-repositorio-alumno";
+import { IRepositorioAlumno } from "../../app/dominio/puerto-repositorio-alumno";
 import { Mock, mock } from "ts-jest-mocker";
 
 describe("SistemaAlumnos", () => {
@@ -16,28 +16,26 @@ describe("SistemaAlumnos", () => {
 
   describe("crearAlumno", () => {
     test("deberia crear un objeto Alumno y guardarlo en el repositorio", async () => {
-      mockRepositorioAlumno.guardar.mockResolvedValue(true);
+      mockRepositorioAlumno.guardar.mockResolvedValue(undefined);
 
       const alumnoCreado = await sistemaAlumnos.crearAlumno("12345", "Juan", "Perez");
 
       expect(mockRepositorioAlumno.guardar).toHaveBeenCalledTimes(1);
 
       const alumnoGuardado = mockRepositorioAlumno.guardar.mock.calls[0][0];
-      expect(alumnoGuardado.getNombre()).toEqual("Juan");
-      expect(alumnoGuardado.getApellido()).toEqual("Perez");
-      expect(alumnoGuardado.getPadron()).toEqual("12345");
+      expect(alumnoGuardado.obtenerNombre()).toEqual("Juan");
+      expect(alumnoGuardado.obtenerApellido()).toEqual("Perez");
+      expect(alumnoGuardado.obtenerPadron()).toEqual("12345");
 
-      expect(alumnoCreado.getNombre()).toEqual("Juan");
-      expect(alumnoCreado.getApellido()).toEqual("Perez");
-      expect(alumnoCreado.getPadron()).toEqual("12345");
+      expect(alumnoCreado.obtenerNombre()).toEqual("Juan");
+      expect(alumnoCreado.obtenerApellido()).toEqual("Perez");
+      expect(alumnoCreado.obtenerPadron()).toEqual("12345");
     });
 
-    test("deberia arrojar PadronDeAlumnoInvalido si el repositorio arroja una excepcion de tipo NoSePuedeCalcularClaveError", async () => {
-      mockRepositorioAlumno.guardar.mockRejectedValue(new NoSePuedeCalcularClaveError());
+    test("debería arrojar PadronDeAlumnoInvalido y no guardar nada si el padrón es inválido", async () => {
+      await expect(sistemaAlumnos.crearAlumno("abc", "Juan", "Perez")).rejects.toThrow(PadronDeAlumnoInvalido);
 
-      await expect(sistemaAlumnos.crearAlumno("12345", "Juan", "Perez")).rejects.toThrow(PadronDeAlumnoInvalido);
-
-      expect(mockRepositorioAlumno.guardar).toHaveBeenCalledTimes(1);
+      expect(mockRepositorioAlumno.guardar).not.toHaveBeenCalled();
     });
   });
 

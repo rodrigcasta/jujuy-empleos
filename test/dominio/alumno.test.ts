@@ -11,9 +11,9 @@ describe("Alumno", () => {
       const alumno = new Alumno(nombre, apellido, padron);
 
       expect(alumno).toBeDefined();
-      expect(alumno.getNombre()).toEqual(nombre);
-      expect(alumno.getApellido()).toEqual(apellido);
-      expect(alumno.getPadron()).toEqual(padron);
+      expect(alumno.obtenerNombre()).toEqual(nombre);
+      expect(alumno.obtenerApellido()).toEqual(apellido);
+      expect(alumno.obtenerPadron()).toEqual(padron);
     });
 
     test("deberia crear un alumno con nombres y apellidos compuestos", () => {
@@ -23,15 +23,15 @@ describe("Alumno", () => {
 
       const alumno = new Alumno(nombre, apellido, padron);
 
-      expect(alumno.getNombre()).toEqual("Ana Maria");
-      expect(alumno.getApellido()).toEqual("Garcia Lopez");
-      expect(alumno.getPadron()).toEqual("67890");
+      expect(alumno.obtenerNombre()).toEqual("Ana Maria");
+      expect(alumno.obtenerApellido()).toEqual("Garcia Lopez");
+      expect(alumno.obtenerPadron()).toEqual("67890");
     });
   });
 
   describe("validacion del padron", () => {
     test.each(["1", "12345", "100", "9876543210"])("deberia aceptar el padron %s", (padron) => {
-      expect(new Alumno("Juan", "Perez", padron).getPadron()).toEqual(padron);
+      expect(new Alumno("Juan", "Perez", padron).obtenerPadron()).toEqual(padron);
     });
 
     test("deberia arrojar PadronDeAlumnoInvalido si el padron esta vacio", () => {
@@ -64,7 +64,7 @@ describe("Alumno", () => {
     test("deberia devolver el nombre del alumno", () => {
       const alumno = new Alumno("Carlos", "Martinez", "11111");
 
-      expect(alumno.getNombre()).toEqual("Carlos");
+      expect(alumno.obtenerNombre()).toEqual("Carlos");
     });
   });
 
@@ -72,7 +72,7 @@ describe("Alumno", () => {
     test("deberia devolver el apellido del alumno", () => {
       const alumno = new Alumno("Sofia", "Rodriguez", "22222");
 
-      expect(alumno.getApellido()).toEqual("Rodriguez");
+      expect(alumno.obtenerApellido()).toEqual("Rodriguez");
     });
   });
 
@@ -80,7 +80,7 @@ describe("Alumno", () => {
     test("deberia devolver el padron del alumno", () => {
       const alumno = new Alumno("Luis", "Fernandez", "33333");
 
-      expect(alumno.getPadron()).toEqual("33333");
+      expect(alumno.obtenerPadron()).toEqual("33333");
     });
   });
 });

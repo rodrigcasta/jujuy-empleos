@@ -18,11 +18,8 @@ BeforeAll(() => {
 
 // Cada escenario empieza con la base de datos vacía
 Before(async () => {
-  const resultadoAlumnos = await new RepositorioAlumnoSql().eliminarTodos();
-  const resultadoUsuarios = await new RepositorioUsuarioSql().eliminarTodos();
-  if (!resultadoAlumnos || !resultadoUsuarios) {
-    throw new Error("No se pudo limpiar la base de datos");
-  }
+  await new RepositorioAlumnoSql().eliminarTodos();
+  await new RepositorioUsuarioSql().eliminarTodos();
 });
 
 AfterAll(async () => {

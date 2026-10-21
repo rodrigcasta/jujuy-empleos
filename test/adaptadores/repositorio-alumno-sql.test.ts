@@ -3,15 +3,13 @@ import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-erro
 import { describe, expect, test } from "@jest/globals";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
 import pool from "../../app/adaptadores/pool";
+import AlumnoConPadronDuplicadoError from "../../app/dominio/alumno-con-padron-duplicado-error";
 
 describe("RepositorioAlumno", () => {
   const repositorioAlumno = new RepositorioAlumnoSql();
 
   beforeEach(async () => {
-    const resultado = await repositorioAlumno.eliminarTodos();
-    if (!resultado) {
-      throw new Error("setup failed");
-    }
+    await repositorioAlumno.eliminarTodos();
   });
 
   afterAll((done) => {
@@ -21,9 +19,15 @@ describe("RepositorioAlumno", () => {
 
   describe("guardar", () => {
     test("deberia persistir un alumno en sql", async () => {
-      const alumna = new Alumno("Juana", "Rodriguez", "123456");
-      const resultado = await repositorioAlumno.guardar(alumna);
-      expect(resultado).toBeTruthy();
+      const alumna: Alumno = new Alumno("Juana", "Rodriguez", "123456");
+      await repositorioAlumno.guardar(alumna);
+      expect(alumna.obtenerId()).toBeGreaterThan(0);
+    });
+
+    test("debería lanzar AlumnoConPadronDuplicadoError si ya existe un alumno con el mismo padrón", async () => {
+      await repositorioAlumno.guardar(new Alumno("Ana", "Lopez", "123123"));
+      const otraAlumna: Alumno = new Alumno("Juana", "Rodriguez", "123123");
+      await expect(repositorioAlumno.guardar(otraAlumna)).rejects.toThrowError(AlumnoConPadronDuplicadoError);
     });
   });
 
@@ -39,6 +43,14 @@ describe("RepositorioAlumno", () => {
       const resultado = await repositorioAlumno.listarAlumnos();
       expect(resultado.length).toBe(0);
     });
+
+    test("deberia devolver los alumnos con su id", async () => {
+      const alumna: Alumno = new Alumno("Ana", "Lopez", "123123");
+      await repositorioAlumno.guardar(alumna);
+      const alumnos: Alumno[] = await repositorioAlumno.listarAlumnos();
+      expect(alumnos[0].obtenerId()).toBeGreaterThan(0);
+      expect(alumnos[0].obtenerId()).toEqual(alumna.obtenerId());
+    });
   });
 
   describe("recuperar", () => {
@@ -47,13 +59,29 @@ describe("RepositorioAlumno", () => {
       const alumna = new Alumno("Ana", "Lopez", padron);
       await repositorioAlumno.guardar(alumna);
       const resultado = await repositorioAlumno.recuperar(padron);
-      expect(resultado.getPadron()).toEqual(padron);
-      expect(resultado.getNombre()).toEqual(alumna.getNombre());
-      expect(resultado.getApellido()).toEqual(alumna.getApellido());
+      expect(resultado.obtenerPadron()).toEqual(padron);
+      expect(resultado.obtenerNombre()).toEqual(alumna.obtenerNombre());
+      expect(resultado.obtenerApellido()).toEqual(alumna.obtenerApellido());
     });
 
     test("deberia lanzar error si no existe objeto con el padron indicado", async () => {
       await expect(repositorioAlumno.recuperar("no-existe")).rejects.toThrowError(AlumnoNoEncontradoError);
+    });
+  });
+
+  describe("eliminar", (): void => {
+    test("debería eliminar el alumno con el padron indicado y conservar los demás", async (): Promise<void> => {
+      await repositorioAlumno.guardar(new Alumno("Ana", "Lopez", "123123"));
+      await repositorioAlumno.guardar(new Alumno("Juana", "Rodriguez", "456456"));
+
+      await repositorioAlumno.eliminar("123123");
+
+      const restantes = await repositorioAlumno.listarAlumnos();
+      expect(restantes.map((alumno) => alumno.obtenerPadron())).toEqual(["456456"]);
+    });
+
+    test("debería lanzar error si no existe el alumno con el padrón indicado", async (): Promise<void> => {
+      await expect(repositorioAlumno.eliminar("99999")).rejects.toThrowError(AlumnoNoEncontradoError);
     });
   });
 });

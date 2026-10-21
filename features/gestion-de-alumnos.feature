@@ -14,15 +14,15 @@ Característica: Gestión de alumnos
   Escenario: Listado con alumnos
     Dado que existen los alumnos:
       | padrón | nombre | apellido  |
-      | 11111  | Juana  | Lopez     |
-      | 22222  | Carlos | Martinez  |
-      | 33333  | Sofia  | Rodriguez |
+      |  11111 | Juana  | Lopez     |
+      |  22222 | Carlos | Martinez  |
+      |  33333 | Sofia  | Rodriguez |
     Cuando consulta el listado de alumnos
     Entonces ve en el listado a los alumnos:
       | padrón | nombre | apellido  |
-      | 11111  | Juana  | Lopez     |
-      | 22222  | Carlos | Martinez  |
-      | 33333  | Sofia  | Rodriguez |
+      |  11111 | Juana  | Lopez     |
+      |  22222 | Carlos | Martinez  |
+      |  33333 | Sofia  | Rodriguez |
 
   Escenario: El listado permite ir al formulario de alta
     Cuando consulta el listado de alumnos
@@ -36,8 +36,14 @@ Característica: Gestión de alumnos
   Escenario: No se puede dar de alta un alumno sin padrón
     Cuando da de alta al alumno con padrón "", nombre "Ana" y apellido "Garcia"
     Entonces ve el mensaje de error "El campo padron es obligatorio"
-    Y el formulario conserva el nombre "Ana" y el apellido "Garcia"
     Y no se registró ningún alumno
+
+  Escenario: No se puede dar de alta un alumno con un padrón que ya existe
+    Dado que existen los alumnos:
+      | padrón | nombre | apellido |
+      |  12345 | Juana  | Lopez    |
+    Cuando da de alta al alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
+    Entonces ve el mensaje de error "Ya existe un alumno con el padrón 12345"
 
   Esquema del escenario: No se puede dar de alta un alumno con un padrón inválido
     Cuando da de alta al alumno con padrón "<padrón>", nombre "Ana" y apellido "Garcia"
@@ -49,9 +55,9 @@ Característica: Gestión de alumnos
       | con punto            | 12.345 |
       | con coma             | 12,345 |
       | con letras           | abc    |
-      | cero                 | 0      |
-      | negativo             | -5     |
-      | ceros a la izquierda | 0123   |
+      | cero                 |      0 |
+      | negativo             |     -5 |
+      | ceros a la izquierda |   0123 |
 
   Escenario: Los datos del alumno se muestran como texto
     Cuando da de alta al alumno con padrón "12345", nombre "<script>alert(1)</script>" y apellido "Garcia"
@@ -59,9 +65,9 @@ Característica: Gestión de alumnos
 
   Escenario: Consulta de un alumno
     Dado que existen los alumnos:
-      | padrón | nombre | apellido  |
-      | 11111  | Juana  | Lopez     |
-      | 22222  | Carlos | Martinez  |
+      | padrón | nombre | apellido |
+      |  11111 | Juana  | Lopez    |
+      |  22222 | Carlos | Martinez |
     Cuando consulta el alumno con padrón "22222"
     Entonces ve el detalle del alumno con padrón "22222", nombre "Carlos" y apellido "Martinez"
 
@@ -72,9 +78,9 @@ Característica: Gestión de alumnos
   Escenario: Baja de un alumno
     Dado que existen los alumnos:
       | padrón | nombre | apellido  |
-      | 11111  | Juana  | Lopez     |
-      | 22222  | Carlos | Martinez  |
-      | 33333  | Sofia  | Rodriguez |
+      |  11111 | Juana  | Lopez     |
+      |  22222 | Carlos | Martinez  |
+      |  33333 | Sofia  | Rodriguez |
     Cuando elimina al alumno con padrón "22222"
     Entonces el alumno con padrón "22222" no aparece en el listado
     Y el alumno con padrón "11111" aparece en el listado

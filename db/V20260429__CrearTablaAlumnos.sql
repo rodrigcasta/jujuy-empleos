@@ -1,6 +1,6 @@
-CREATE TABLE Alumnos (
-    id serial,
-    nombre       varchar(40) NOT NULL,
-    apellido       varchar(40) NOT NULL,
-    padron       varchar(10) NOT NULL
+CREATE TABLE alumnos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(40) NOT NULL,
+    apellido VARCHAR(40) NOT NULL,
+    padron VARCHAR(10) NOT NULL UNIQUE
 );

@@ -17,15 +17,15 @@ describe("SistemaUsuarios", () => {
   describe("registrar", () => {
     test("deberia crear un Usuario con la contraseña hasheada y guardarlo en el repositorio", async () => {
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(null);
-      mockRepositorioUsuario.guardar.mockResolvedValue(true);
+      mockRepositorioUsuario.guardar.mockResolvedValue(undefined);
 
       const usuario = await sistemaUsuarios.registrar("Juana", "Lopez", "Juana@Example.com", "secreta123");
 
       expect(mockRepositorioUsuario.guardar).toHaveBeenCalledTimes(1);
       const usuarioGuardado = mockRepositorioUsuario.guardar.mock.calls[0][0];
       expect(usuarioGuardado).toBe(usuario);
-      expect(usuarioGuardado.getEmail()).toEqual("juana@example.com");
-      expect(usuarioGuardado.getHashContrasena()).not.toEqual("secreta123");
+      expect(usuarioGuardado.obtenerEmail()).toEqual("juana@example.com");
+      expect(usuarioGuardado.obtenerHashContrasena()).not.toEqual("secreta123");
       expect(await usuarioGuardado.verificarContrasena("secreta123")).toBe(true);
     });
 

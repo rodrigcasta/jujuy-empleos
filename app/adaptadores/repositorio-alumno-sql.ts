@@ -1,9 +1,10 @@
 import Alumno from "../dominio/alumno";
 import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
+import AlumnoConPadronDuplicadoError from "../dominio/alumno-con-padron-duplicado-error";
 import pool from "./pool";
 import { IRepositorioAlumno } from "../dominio/puerto-repositorio-alumno";
+import ErrorPostgres from "./error-postgres";
 
-// Fila de la tabla alumnos
 interface FilaAlumno {
   id: number;
   nombre: string;
@@ -11,57 +12,51 @@ interface FilaAlumno {
   padron: string;
 }
 
+const COLUMNAS = "id, nombre, apellido, padron";
+
 export default class RepositorioAlumnoSql implements IRepositorioAlumno {
-  guardar(alumno: Alumno): Promise<boolean> {
-    const insertAlumno = "INSERT INTO alumnos (nombre, apellido, padron) VALUES ($1, $2, $3) RETURNING id";
-    return pool
-      .query<Pick<FilaAlumno, "id">>(insertAlumno, [alumno.getNombre(), alumno.getApellido(), alumno.getPadron()])
-      .then((r) => {
-        alumno.setId(r.rows[0].id);
-        return true;
-      });
-  }
-
-  eliminarTodos(): Promise<boolean> {
-    return pool
-      .query("DELETE FROM public.alumnos;")
-      .then(() => true)
-      .catch((error: unknown) => {
-        console.log(error);
-        return false;
-      });
-  }
-
-  listarAlumnos(): Promise<Alumno[]> {
-    return pool.query<FilaAlumno>("SELECT * FROM public.alumnos;").then((result) => {
-      const alumnos: Alumno[] = [];
-      for (const row of result.rows) {
-        const nombre = row.nombre;
-        const apellido = row.apellido;
-        const padron = row.padron;
-        const alumno = new Alumno(nombre, apellido, padron);
-        alumnos.push(alumno);
+  public async guardar(alumno: Alumno): Promise<void> {
+    try {
+      const resultado = await pool.query<Pick<FilaAlumno, "id">>(
+        "INSERT INTO alumnos (nombre, apellido, padron) VALUES ($1, $2, $3) RETURNING id",
+        [alumno.obtenerNombre(), alumno.obtenerApellido(), alumno.obtenerPadron()],
+      );
+      alumno.cambiarId(resultado.rows[0].id);
+    } catch (error: unknown) {
+      if (ErrorPostgres.esViolacionDeUnicidad(error)) {
+        throw new AlumnoConPadronDuplicadoError(alumno.obtenerPadron());
       }
-      return alumnos;
-    });
+      throw error;
+    }
   }
 
-  recuperar(padron: string): Promise<Alumno> {
-    return pool.query<FilaAlumno>("SELECT * FROM public.alumnos WHERE padron = $1;", [padron]).then((result) => {
-      if (result.rows.length === 0) {
-        throw new AlumnoNoEncontradoError(padron);
-      }
-      const nombre = result.rows[0].nombre;
-      const apellido = result.rows[0].apellido;
-      const id = result.rows[0].id;
-      const alumno = new Alumno(nombre, apellido, padron, id);
-      return alumno;
-    });
+  public async eliminarTodos(): Promise<void> {
+    await pool.query("DELETE FROM public.alumnos;");
   }
 
-  eliminar(padron: string): Promise<void> {
-    return this.recuperar(padron)
-      .then(() => pool.query("DELETE FROM public.alumnos WHERE padron = $1;", [padron]))
-      .then(() => undefined);
+  public async listarAlumnos(): Promise<Alumno[]> {
+    const resultado = await pool.query<FilaAlumno>(`SELECT ${COLUMNAS} FROM public.alumnos;`);
+    return resultado.rows.map((fila) => this.crearAlumnoDesdeFila(fila));
+  }
+
+  public async recuperar(padron: string): Promise<Alumno> {
+    const resultado = await pool.query<FilaAlumno>(`SELECT ${COLUMNAS} FROM public.alumnos WHERE padron = $1;`, [
+      padron,
+    ]);
+    if (resultado.rows.length === 0) {
+      throw new AlumnoNoEncontradoError(padron);
+    }
+    return this.crearAlumnoDesdeFila(resultado.rows[0]);
+  }
+
+  public async eliminar(padron: string): Promise<void> {
+    const resultado = await pool.query("DELETE FROM public.alumnos WHERE padron = $1", [padron]);
+    if (resultado.rowCount === 0) {
+      throw new AlumnoNoEncontradoError(padron);
+    }
+  }
+
+  private crearAlumnoDesdeFila(fila: FilaAlumno): Alumno {
+    return new Alumno(fila.nombre, fila.apellido, fila.padron, fila.id);
   }
 }
