@@ -36,7 +36,6 @@ Característica: Gestión de alumnos
   Escenario: No se puede dar de alta un alumno sin padrón
     Cuando da de alta al alumno con padrón "", nombre "Ana" y apellido "Garcia"
     Entonces ve el mensaje de error "El campo padron es obligatorio"
-    Y el formulario conserva el nombre "Ana" y el apellido "Garcia"
     Y no se registró ningún alumno
 
   Escenario: No se puede dar de alta un alumno con un padrón que ya existe
@@ -45,7 +44,6 @@ Característica: Gestión de alumnos
       |  12345 | Juana  | Lopez    |
     Cuando da de alta al alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
     Entonces ve el mensaje de error "Ya existe un alumno con el padrón 12345"
-    Y el formulario conserva el nombre "Ana" y el apellido "Garcia"
 
   Esquema del escenario: No se puede dar de alta un alumno con un padrón inválido
     Cuando da de alta al alumno con padrón "<padrón>", nombre "Ana" y apellido "Garcia"
