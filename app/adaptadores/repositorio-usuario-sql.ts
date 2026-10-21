@@ -15,6 +15,8 @@ interface FilaUsuario {
   hash_contrasena: string;
 }
 
+const COLUMNAS = "id, nombre, apellido, email, hash_contrasena";
+
 export default class RepositorioUsuarioSql implements IRepositorioUsuario {
   public async guardar(usuario: Usuario): Promise<void> {
     try {
@@ -35,16 +37,16 @@ export default class RepositorioUsuarioSql implements IRepositorioUsuario {
     await pool.query("DELETE FROM public.usuarios;");
   }
 
-  recuperarPorEmail(email: string): Promise<Usuario | null> {
-    return pool
-      .query<FilaUsuario>("SELECT * FROM public.usuarios WHERE email = $1;", [email])
-      .then((result) => (result.rows.length === 0 ? null : this.deserializarUsuario(result.rows[0])));
+  public async recuperarPorEmail(email: string): Promise<Usuario | null> {
+    const resultado = await pool.query<FilaUsuario>(`SELECT ${COLUMNAS} FROM public.usuarios WHERE email = $1;`, [
+      email,
+    ]);
+    return resultado.rows.length === 0 ? null : this.deserializarUsuario(resultado.rows[0]);
   }
 
-  recuperarPorId(id: number): Promise<Usuario | null> {
-    return pool
-      .query<FilaUsuario>("SELECT * FROM public.usuarios WHERE id = $1;", [id])
-      .then((result) => (result.rows.length === 0 ? null : this.deserializarUsuario(result.rows[0])));
+  public async recuperarPorId(id: number): Promise<Usuario | null> {
+    const resultado = await pool.query<FilaUsuario>(`SELECT ${COLUMNAS} FROM public.usuarios WHERE id = $1;`, [id]);
+    return resultado.rows.length === 0 ? null : this.deserializarUsuario(resultado.rows[0]);
   }
 
   private deserializarUsuario(row: FilaUsuario): Usuario {
