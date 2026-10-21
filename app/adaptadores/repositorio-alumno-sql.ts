@@ -14,8 +14,6 @@ interface FilaAlumno {
 
 const COLUMNAS = "id, nombre, apellido, padron";
 
-const alumno = (fila: FilaAlumno): Alumno => new Alumno(fila.nombre, fila.apellido, fila.padron, fila.id);
-
 export default class RepositorioAlumnoSql implements IRepositorioAlumno {
   public async guardar(alumno: Alumno): Promise<void> {
     try {
@@ -38,7 +36,7 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
 
   public async listarAlumnos(): Promise<Alumno[]> {
     const resultado = await pool.query<FilaAlumno>(`SELECT ${COLUMNAS} FROM public.alumnos;`);
-    return resultado.rows.map(alumno);
+    return resultado.rows.map((fila) => this.crearAlumnoDesdeFila(fila));
   }
 
   public async recuperar(padron: string): Promise<Alumno> {
@@ -48,7 +46,7 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
     if (resultado.rows.length === 0) {
       throw new AlumnoNoEncontradoError(padron);
     }
-    return alumno(resultado.rows[0]);
+    return this.crearAlumnoDesdeFila(resultado.rows[0]);
   }
 
   public async eliminar(padron: string): Promise<void> {
@@ -56,5 +54,9 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
     if (resultado.rowCount === 0) {
       throw new AlumnoNoEncontradoError(padron);
     }
+  }
+
+  private crearAlumnoDesdeFila(fila: FilaAlumno): Alumno {
+    return new Alumno(fila.nombre, fila.apellido, fila.padron, fila.id);
   }
 }
