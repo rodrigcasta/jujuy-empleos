@@ -1,6 +1,5 @@
 import Alumno from "./alumno";
-import PadronDeAlumnoInvalido from "../dominio/padron-de-alumno-invalido";
-import { IRepositorioAlumno, NoSePuedeCalcularClaveError } from "./puerto-repositorio-alumno";
+import { IRepositorioAlumno } from "./puerto-repositorio-alumno";
 
 export default class SistemaAlumnos {
   private repositorioAlumno: IRepositorioAlumno;
@@ -8,20 +7,11 @@ export default class SistemaAlumnos {
   constructor(repoAlumno: IRepositorioAlumno) {
     this.repositorioAlumno = repoAlumno;
   }
+
   public async crearAlumno(padron: string, nombre: string, apellido: string): Promise<Alumno> {
-    try {
-      const alumnoCreado = new Alumno(nombre, apellido, padron);
-
-      await this.repositorioAlumno.guardar(alumnoCreado);
-
-      return alumnoCreado;
-    } catch (error: unknown) {
-      if (error instanceof NoSePuedeCalcularClaveError) {
-        throw new PadronDeAlumnoInvalido();
-      } else {
-        throw error;
-      }
-    }
+    const alumnoCreado: Alumno = new Alumno(nombre, apellido, padron);
+    await this.repositorioAlumno.guardar(alumnoCreado);
+    return alumnoCreado;
   }
 
   public async obtenerAlumnos(): Promise<Alumno[]> {
