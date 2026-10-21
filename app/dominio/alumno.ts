@@ -1,9 +1,8 @@
 import PadronDeAlumnoInvalido from "./padron-de-alumno-invalido";
 
-// Número entero mayor a 0: solo dígitos, sin ceros a la izquierda, puntos, comas, signos ni espacios
-const FORMATO_PADRON = /^[1-9][0-9]*$/;
-
 export default class Alumno {
+  // Número entero mayor a 0: solo dígitos, sin ceros a la izquierda, puntos, comas, signos ni espacios
+  private static readonly FORMATO_PADRON = /^[1-9][0-9]*$/;
   private nombre: string;
   private apellido: string;
   private padron: string;
@@ -20,7 +19,7 @@ export default class Alumno {
     if (!padron) {
       throw new PadronDeAlumnoInvalido("El campo padron es obligatorio");
     }
-    if (!FORMATO_PADRON.test(padron)) {
+    if (!Alumno.FORMATO_PADRON.test(padron)) {
       throw new PadronDeAlumnoInvalido("El padrón debe ser un número mayor a 0, sin puntos ni comas");
     }
     return padron;
