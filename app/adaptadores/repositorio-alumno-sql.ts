@@ -3,9 +3,7 @@ import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
 import AlumnoYaExisteError from "../dominio/alumno-ya-existe-error";
 import pool from "./pool";
 import { IRepositorioAlumno } from "../dominio/puerto-repositorio-alumno";
-import { DatabaseError } from "pg";
-
-const VIOLACION_DE_UNICIDAD = "23505";
+import ErrorPostgres from "./error-postgres";
 
 interface FilaAlumno {
   id: number;
@@ -27,7 +25,7 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
       );
       alumno.cambiarId(resultado.rows[0].id);
     } catch (error: unknown) {
-      if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
+      if (ErrorPostgres.esViolacionDeUnicidad(error)) {
         throw new AlumnoYaExisteError(alumno.obtenerPadron());
       }
       throw error;

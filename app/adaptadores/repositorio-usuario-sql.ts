@@ -1,10 +1,8 @@
 import Usuario from "../dominio/usuario";
 import UsuarioYaExisteError from "../dominio/usuario-ya-existe-error";
-import { DatabaseError } from "pg";
 import pool from "./pool";
+import ErrorPostgres from "./error-postgres";
 import { IRepositorioUsuario } from "../dominio/puerto-repositorio-usuario";
-
-const VIOLACION_DE_UNICIDAD = "23505";
 
 // Fila de la tabla usuarios
 interface FilaUsuario {
@@ -26,7 +24,7 @@ export default class RepositorioUsuarioSql implements IRepositorioUsuario {
       );
       usuario.cambiarId(resultado.rows[0].id);
     } catch (error: unknown) {
-      if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
+      if (ErrorPostgres.esViolacionDeUnicidad(error)) {
         throw new UsuarioYaExisteError(usuario.obtenerEmail());
       }
       throw error;
