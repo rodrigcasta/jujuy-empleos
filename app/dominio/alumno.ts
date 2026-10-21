@@ -26,23 +26,23 @@ export default class Alumno {
     return padron;
   }
 
-  public getNombre(): string {
+  public obtenerNombre(): string {
     return this.nombre;
   }
 
-  public getApellido(): string {
+  public obtenerApellido(): string {
     return this.apellido;
   }
 
-  public getPadron(): string {
+  public obtenerPadron(): string {
     return this.padron;
   }
 
-  public Id(): number {
+  public obtenerId(): number {
     return this.id;
   }
 
-  public setId(id: number): void {
+  public cambiarId(id: number): void {
     this.id = id;
   }
 }

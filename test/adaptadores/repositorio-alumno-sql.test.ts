@@ -21,7 +21,7 @@ describe("RepositorioAlumno", () => {
     test("deberia persistir un alumno en sql", async () => {
       const alumna: Alumno = new Alumno("Juana", "Rodriguez", "123456");
       await repositorioAlumno.guardar(alumna);
-      expect(alumna.Id()).toBeGreaterThan(0);
+      expect(alumna.obtenerId()).toBeGreaterThan(0);
     });
 
     test("debería lanzar AlumnoYaExisteError si ya existe un alumno con el mismo padrón", async () => {
@@ -48,8 +48,8 @@ describe("RepositorioAlumno", () => {
       const alumna: Alumno = new Alumno("Ana", "Lopez", "123123");
       await repositorioAlumno.guardar(alumna);
       const alumnos: Alumno[] = await repositorioAlumno.listarAlumnos();
-      expect(alumnos[0].Id()).toBeGreaterThan(0);
-      expect(alumnos[0].Id()).toEqual(alumna.Id());
+      expect(alumnos[0].obtenerId()).toBeGreaterThan(0);
+      expect(alumnos[0].obtenerId()).toEqual(alumna.obtenerId());
     });
   });
 
@@ -59,9 +59,9 @@ describe("RepositorioAlumno", () => {
       const alumna = new Alumno("Ana", "Lopez", padron);
       await repositorioAlumno.guardar(alumna);
       const resultado = await repositorioAlumno.recuperar(padron);
-      expect(resultado.getPadron()).toEqual(padron);
-      expect(resultado.getNombre()).toEqual(alumna.getNombre());
-      expect(resultado.getApellido()).toEqual(alumna.getApellido());
+      expect(resultado.obtenerPadron()).toEqual(padron);
+      expect(resultado.obtenerNombre()).toEqual(alumna.obtenerNombre());
+      expect(resultado.obtenerApellido()).toEqual(alumna.obtenerApellido());
     });
 
     test("deberia lanzar error si no existe objeto con el padron indicado", async () => {
@@ -77,7 +77,7 @@ describe("RepositorioAlumno", () => {
       await repositorioAlumno.eliminar("123123");
 
       const restantes = await repositorioAlumno.listarAlumnos();
-      expect(restantes.map((alumno) => alumno.getPadron())).toEqual(["456456"]);
+      expect(restantes.map((alumno) => alumno.obtenerPadron())).toEqual(["456456"]);
     });
 
     test("debería lanzar error si no existe el alumno con el padrón indicado", async (): Promise<void> => {

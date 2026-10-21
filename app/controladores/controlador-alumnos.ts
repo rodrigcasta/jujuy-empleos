@@ -21,9 +21,9 @@ interface AlumnoVista {
 }
 
 const aVista = (alumno: Alumno): AlumnoVista => ({
-  padron: alumno.getPadron(),
-  nombre: alumno.getNombre(),
-  apellido: alumno.getApellido(),
+  padron: alumno.obtenerPadron(),
+  nombre: alumno.obtenerNombre(),
+  apellido: alumno.obtenerApellido(),
 });
 
 // Rutas montadas en /alumnos
@@ -49,7 +49,7 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
     try {
       const alumno = await sistemaAlumnos.obtenerAlumnoPorPadron(req.params.padron);
       res.render("alumnos/detalle", {
-        titulo: `Alumno ${alumno.getPadron()}`,
+        titulo: `Alumno ${alumno.obtenerPadron()}`,
         alumno: aVista(alumno),
       });
     } catch (error: unknown) {
@@ -70,7 +70,7 @@ export const crearControladorAlumnos = (sistemaAlumnos: SistemaAlumnos) => {
         req.body.apellido ?? "",
       );
 
-      res.redirect(EstadoHttp.VER_OTRO, `/alumnos/${encodeURIComponent(alumnoCreado.getPadron())}`);
+      res.redirect(EstadoHttp.VER_OTRO, `/alumnos/${encodeURIComponent(alumnoCreado.obtenerPadron())}`);
     } catch (error: unknown) {
       registrarExcepcion(req, error);
       if (error instanceof PadronDeAlumnoInvalido || error instanceof AlumnoYaExisteError) {

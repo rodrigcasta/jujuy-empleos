@@ -23,12 +23,12 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
     try {
       const resultado = await pool.query<Pick<FilaAlumno, "id">>(
         "INSERT INTO alumnos (nombre, apellido, padron) VALUES ($1, $2, $3) RETURNING id",
-        [alumno.getNombre(), alumno.getApellido(), alumno.getPadron()],
+        [alumno.obtenerNombre(), alumno.obtenerApellido(), alumno.obtenerPadron()],
       );
-      alumno.setId(resultado.rows[0].id);
+      alumno.cambiarId(resultado.rows[0].id);
     } catch (error: unknown) {
       if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
-        throw new AlumnoYaExisteError(alumno.getPadron());
+        throw new AlumnoYaExisteError(alumno.obtenerPadron());
       }
       throw error;
     }

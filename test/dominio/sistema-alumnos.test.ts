@@ -23,13 +23,13 @@ describe("SistemaAlumnos", () => {
       expect(mockRepositorioAlumno.guardar).toHaveBeenCalledTimes(1);
 
       const alumnoGuardado = mockRepositorioAlumno.guardar.mock.calls[0][0];
-      expect(alumnoGuardado.getNombre()).toEqual("Juan");
-      expect(alumnoGuardado.getApellido()).toEqual("Perez");
-      expect(alumnoGuardado.getPadron()).toEqual("12345");
+      expect(alumnoGuardado.obtenerNombre()).toEqual("Juan");
+      expect(alumnoGuardado.obtenerApellido()).toEqual("Perez");
+      expect(alumnoGuardado.obtenerPadron()).toEqual("12345");
 
-      expect(alumnoCreado.getNombre()).toEqual("Juan");
-      expect(alumnoCreado.getApellido()).toEqual("Perez");
-      expect(alumnoCreado.getPadron()).toEqual("12345");
+      expect(alumnoCreado.obtenerNombre()).toEqual("Juan");
+      expect(alumnoCreado.obtenerApellido()).toEqual("Perez");
+      expect(alumnoCreado.obtenerPadron()).toEqual("12345");
     });
 
     test("debería arrojar PadronDeAlumnoInvalido y no guardar nada si el padrón es inválido", async () => {
