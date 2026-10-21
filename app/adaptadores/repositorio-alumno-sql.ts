@@ -14,6 +14,10 @@ interface FilaAlumno {
   padron: string;
 }
 
+const COLUMNAS = "id, nombre, apellido, padron";
+
+const alumno = (fila: FilaAlumno): Alumno => new Alumno(fila.nombre, fila.apellido, fila.padron, fila.id);
+
 export default class RepositorioAlumnoSql implements IRepositorioAlumno {
   public async guardar(alumno: Alumno): Promise<void> {
     try {
@@ -34,31 +38,19 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
     await pool.query("DELETE FROM public.alumnos;");
   }
 
-  listarAlumnos(): Promise<Alumno[]> {
-    return pool.query<FilaAlumno>("SELECT * FROM public.alumnos;").then((result) => {
-      const alumnos: Alumno[] = [];
-      for (const row of result.rows) {
-        const nombre = row.nombre;
-        const apellido = row.apellido;
-        const padron = row.padron;
-        const alumno = new Alumno(nombre, apellido, padron);
-        alumnos.push(alumno);
-      }
-      return alumnos;
-    });
+  public async listarAlumnos(): Promise<Alumno[]> {
+    const resultado = await pool.query<FilaAlumno>(`SELECT ${COLUMNAS} FROM public.alumnos;`);
+    return resultado.rows.map(alumno);
   }
 
-  recuperar(padron: string): Promise<Alumno> {
-    return pool.query<FilaAlumno>("SELECT * FROM public.alumnos WHERE padron = $1;", [padron]).then((result) => {
-      if (result.rows.length === 0) {
-        throw new AlumnoNoEncontradoError(padron);
-      }
-      const nombre = result.rows[0].nombre;
-      const apellido = result.rows[0].apellido;
-      const id = result.rows[0].id;
-      const alumno = new Alumno(nombre, apellido, padron, id);
-      return alumno;
-    });
+  public async recuperar(padron: string): Promise<Alumno> {
+    const resultado = await pool.query<FilaAlumno>(`SELECT ${COLUMNAS} FROM public.alumnos WHERE padron = $1;`, [
+      padron,
+    ]);
+    if (resultado.rows.length === 0) {
+      throw new AlumnoNoEncontradoError(padron);
+    }
+    return alumno(resultado.rows[0]);
   }
 
   eliminar(padron: string): Promise<void> {

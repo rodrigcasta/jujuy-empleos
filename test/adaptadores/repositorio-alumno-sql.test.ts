@@ -43,6 +43,14 @@ describe("RepositorioAlumno", () => {
       const resultado = await repositorioAlumno.listarAlumnos();
       expect(resultado.length).toBe(0);
     });
+
+    test("deberia devolver los alumnos con su id", async () => {
+      const alumna: Alumno = new Alumno("Ana", "Lopez", "123123");
+      await repositorioAlumno.guardar(alumna);
+      const alumnos: Alumno[] = await repositorioAlumno.listarAlumnos();
+      expect(alumnos[0].Id()).toBeGreaterThan(0);
+      expect(alumnos[0].Id()).toEqual(alumna.Id());
+    });
   });
 
   describe("recuperar", () => {
