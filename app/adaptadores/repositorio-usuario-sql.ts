@@ -22,12 +22,12 @@ export default class RepositorioUsuarioSql implements IRepositorioUsuario {
     try {
       const resultado = await pool.query<Pick<FilaUsuario, "id">>(
         "INSERT INTO usuarios (nombre, apellido, email, hash_contrasena) VALUES ($1, $2, $3, $4) RETURNING id",
-        [usuario.getNombre(), usuario.getApellido(), usuario.getEmail(), usuario.getHashContrasena()],
+        [usuario.obtenerNombre(), usuario.obtenerApellido(), usuario.obtenerEmail(), usuario.obtenerHashContrasena()],
       );
-      usuario.setId(resultado.rows[0].id);
+      usuario.cambiarId(resultado.rows[0].id);
     } catch (error: unknown) {
       if (error instanceof DatabaseError && error.code === VIOLACION_DE_UNICIDAD) {
-        throw new UsuarioYaExisteError(usuario.getEmail());
+        throw new UsuarioYaExisteError(usuario.obtenerEmail());
       }
       throw error;
     }

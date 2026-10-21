@@ -6,24 +6,24 @@ describe("Usuario", () => {
     test("deberia crear un usuario con todos los atributos", () => {
       const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash", 7);
 
-      expect(usuario.getNombre()).toEqual("Juana");
-      expect(usuario.getApellido()).toEqual("Lopez");
-      expect(usuario.getEmail()).toEqual("juana@example.com");
-      expect(usuario.getHashContrasena()).toEqual("hash");
-      expect(usuario.Id()).toEqual(7);
+      expect(usuario.obtenerNombre()).toEqual("Juana");
+      expect(usuario.obtenerApellido()).toEqual("Lopez");
+      expect(usuario.obtenerEmail()).toEqual("juana@example.com");
+      expect(usuario.obtenerHashContrasena()).toEqual("hash");
+      expect(usuario.obtenerId()).toEqual(7);
     });
 
     test("deberia normalizar el email a minusculas y sin espacios", () => {
       const usuario = new Usuario("Juana", "Lopez", "  Juana@Example.COM ", "hash");
 
-      expect(usuario.getEmail()).toEqual("juana@example.com");
+      expect(usuario.obtenerEmail()).toEqual("juana@example.com");
     });
 
     test("deberia quitar los espacios al principio y al final del nombre y apellido", () => {
       const usuario = new Usuario("  Juana ", " Lopez  ", "juana@example.com", "hash");
 
-      expect(usuario.getNombre()).toEqual("Juana");
-      expect(usuario.getApellido()).toEqual("Lopez");
+      expect(usuario.obtenerNombre()).toEqual("Juana");
+      expect(usuario.obtenerApellido()).toEqual("Lopez");
     });
 
     test.each([
@@ -50,16 +50,16 @@ describe("Usuario", () => {
     test("deberia guardar un hash de la contraseña y no la contraseña en texto plano", async () => {
       const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123");
 
-      expect(usuario.getHashContrasena()).not.toEqual("secreta123");
-      expect(usuario.getHashContrasena()).not.toContain("secreta123");
-      expect(usuario.getHashContrasena()).toMatch(/^\$2[aby]\$/);
+      expect(usuario.obtenerHashContrasena()).not.toEqual("secreta123");
+      expect(usuario.obtenerHashContrasena()).not.toContain("secreta123");
+      expect(usuario.obtenerHashContrasena()).toMatch(/^\$2[aby]\$/);
     });
 
     test("deberia generar hashes distintos para la misma contraseña", async () => {
       const usuario1 = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123");
       const usuario2 = await Usuario.registrar("Ana", "Garcia", "ana@example.com", "secreta123");
 
-      expect(usuario1.getHashContrasena()).not.toEqual(usuario2.getHashContrasena());
+      expect(usuario1.obtenerHashContrasena()).not.toEqual(usuario2.obtenerHashContrasena());
     });
 
     test("deberia arrojar DatosDeUsuarioInvalidos si la contraseña tiene menos de 8 caracteres", async () => {
@@ -98,7 +98,7 @@ describe("Usuario", () => {
     test("no deberia validar la confirmacion si no esta presente", async () => {
       const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123", undefined);
 
-      expect(usuario.getEmail()).toEqual("juana@example.com");
+      expect(usuario.obtenerEmail()).toEqual("juana@example.com");
     });
 
     test("deberia validar el largo de la contraseña antes que la confirmacion", async () => {

@@ -1,13 +1,12 @@
 import bcrypt from "bcryptjs";
 import DatosDeUsuarioInvalidos from "./datos-de-usuario-invalidos";
 
-const LARGO_MAXIMO_NOMBRE = 40;
-const LARGO_MAXIMO_EMAIL = 254;
-const LARGO_MINIMO_CONTRASENA = 8;
-const COSTO_HASH = 10;
-const FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export default class Usuario {
+  private static readonly LARGO_MAXIMO_NOMBRE = 40;
+  private static readonly LARGO_MAXIMO_EMAIL = 254;
+  private static readonly LARGO_MINIMO_CONTRASENA = 8;
+  private static readonly COSTO_HASH = 10;
+  private static readonly FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private nombre: string;
   private apellido: string;
   private email: string;
@@ -39,17 +38,55 @@ export default class Usuario {
     Usuario.validarNombre(nombre, "nombre");
     Usuario.validarNombre(apellido, "apellido");
     Usuario.validarEmail(email);
-    const hashContrasena = await bcrypt.hash(contrasena, COSTO_HASH);
+    const hashContrasena = await bcrypt.hash(contrasena, Usuario.COSTO_HASH);
     return new Usuario(nombre, apellido, email, hashContrasena);
+  }
+
+  public async verificarContrasena(contrasena: string): Promise<boolean> {
+    return bcrypt.compare(contrasena, this.hashContrasena);
   }
 
   public static normalizarEmail(email: string): string {
     return email.trim().toLowerCase();
   }
 
+  public obtenerNombre(): string {
+    return this.nombre;
+  }
+
+  public obtenerApellido(): string {
+    return this.apellido;
+  }
+
+  public obtenerEmail(): string {
+    return this.email;
+  }
+
+  public obtenerHashContrasena(): string {
+    return this.hashContrasena;
+  }
+
+  public obtenerId(): number {
+    return this.id;
+  }
+
+  public cambiarId(id: number): void {
+    this.id = id;
+  }
+
+  private static validarEmail(email: string): string {
+    const normalizado = Usuario.normalizarEmail(email);
+    if (normalizado.length > Usuario.LARGO_MAXIMO_EMAIL || !Usuario.FORMATO_EMAIL.test(normalizado)) {
+      throw new DatosDeUsuarioInvalidos("El email no es válido");
+    }
+    return normalizado;
+  }
+
   private static validarContrasena(contrasena: string, confirmacion?: string) {
-    if (contrasena.length < LARGO_MINIMO_CONTRASENA) {
-      throw new DatosDeUsuarioInvalidos(`La contraseña debe tener al menos ${LARGO_MINIMO_CONTRASENA} caracteres`);
+    if (contrasena.length < Usuario.LARGO_MINIMO_CONTRASENA) {
+      throw new DatosDeUsuarioInvalidos(
+        `La contraseña debe tener al menos ${Usuario.LARGO_MINIMO_CONTRASENA} caracteres`,
+      );
     }
     if (confirmacion !== undefined && confirmacion !== contrasena) {
       throw new DatosDeUsuarioInvalidos("Las contraseñas no coinciden");
@@ -61,45 +98,11 @@ export default class Usuario {
     if (normalizado === "") {
       throw new DatosDeUsuarioInvalidos(`El campo ${campo} es obligatorio`);
     }
-    if (normalizado.length > LARGO_MAXIMO_NOMBRE) {
-      throw new DatosDeUsuarioInvalidos(`El campo ${campo} no puede tener más de ${LARGO_MAXIMO_NOMBRE} caracteres`);
+    if (normalizado.length > Usuario.LARGO_MAXIMO_NOMBRE) {
+      throw new DatosDeUsuarioInvalidos(
+        `El campo ${campo} no puede tener más de ${Usuario.LARGO_MAXIMO_NOMBRE} caracteres`,
+      );
     }
     return normalizado;
-  }
-
-  private static validarEmail(email: string): string {
-    const normalizado = Usuario.normalizarEmail(email);
-    if (normalizado.length > LARGO_MAXIMO_EMAIL || !FORMATO_EMAIL.test(normalizado)) {
-      throw new DatosDeUsuarioInvalidos("El email no es válido");
-    }
-    return normalizado;
-  }
-
-  public async verificarContrasena(contrasena: string): Promise<boolean> {
-    return bcrypt.compare(contrasena, this.hashContrasena);
-  }
-
-  public getNombre(): string {
-    return this.nombre;
-  }
-
-  public getApellido(): string {
-    return this.apellido;
-  }
-
-  public getEmail(): string {
-    return this.email;
-  }
-
-  public getHashContrasena(): string {
-    return this.hashContrasena;
-  }
-
-  public Id(): number {
-    return this.id;
-  }
-
-  public setId(id: number): void {
-    this.id = id;
   }
 }

@@ -18,9 +18,9 @@ export default class SistemaUsuarios {
   ): Promise<Usuario> {
     const usuario = await Usuario.registrar(nombre, apellido, email, contrasena, confirmacion);
 
-    const existente = await this.repositorioUsuario.recuperarPorEmail(usuario.getEmail());
+    const existente = await this.repositorioUsuario.recuperarPorEmail(usuario.obtenerEmail());
     if (existente) {
-      throw new UsuarioYaExisteError(usuario.getEmail());
+      throw new UsuarioYaExisteError(usuario.obtenerEmail());
     }
 
     await this.repositorioUsuario.guardar(usuario);

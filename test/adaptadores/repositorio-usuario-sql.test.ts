@@ -20,7 +20,7 @@ describe("RepositorioUsuario", () => {
     test("deberia persistir un usuario en sql y asignarle un id", async () => {
       const usuario: Usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash");
       await repositorioUsuario.guardar(usuario);
-      expect(usuario.Id()).toBeGreaterThan(0);
+      expect(usuario.obtenerId()).toBeGreaterThan(0);
     });
 
     test("deberia arrojar UsuarioYaExisteError si ya existe un usuario con el mismo email", async () => {
@@ -40,10 +40,10 @@ describe("RepositorioUsuario", () => {
       const resultado = await repositorioUsuario.recuperarPorEmail("juana@example.com");
 
       expect(resultado).not.toBeNull();
-      expect(resultado!.Id()).toEqual(usuario.Id());
-      expect(resultado!.getNombre()).toEqual("Juana");
-      expect(resultado!.getApellido()).toEqual("Lopez");
-      expect(resultado!.getHashContrasena()).toEqual("hash");
+      expect(resultado!.obtenerId()).toEqual(usuario.obtenerId());
+      expect(resultado!.obtenerNombre()).toEqual("Juana");
+      expect(resultado!.obtenerApellido()).toEqual("Lopez");
+      expect(resultado!.obtenerHashContrasena()).toEqual("hash");
     });
 
     test("deberia devolver null si no existe un usuario con ese email", async () => {
@@ -56,9 +56,9 @@ describe("RepositorioUsuario", () => {
       const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash");
       await repositorioUsuario.guardar(usuario);
 
-      const resultado = await repositorioUsuario.recuperarPorId(usuario.Id());
+      const resultado = await repositorioUsuario.recuperarPorId(usuario.obtenerId());
 
-      expect(resultado?.getEmail()).toEqual("juana@example.com");
+      expect(resultado?.obtenerEmail()).toEqual("juana@example.com");
     });
 
     test("deberia devolver null si no existe un usuario con ese id", async () => {
