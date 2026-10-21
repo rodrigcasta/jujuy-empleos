@@ -68,4 +68,20 @@ describe("RepositorioAlumno", () => {
       await expect(repositorioAlumno.recuperar("no-existe")).rejects.toThrowError(AlumnoNoEncontradoError);
     });
   });
+
+  describe("eliminar", (): void => {
+    test("debería eliminar el alumno con el padron indicado y conservar los demás", async (): Promise<void> => {
+      await repositorioAlumno.guardar(new Alumno("Ana", "Lopez", "123123"));
+      await repositorioAlumno.guardar(new Alumno("Juana", "Rodriguez", "456456"));
+
+      await repositorioAlumno.eliminar("123123");
+
+      const restantes = await repositorioAlumno.listarAlumnos();
+      expect(restantes.map((alumno) => alumno.getPadron())).toEqual(["456456"]);
+    });
+
+    test("debería lanzar error si no existe el alumno con el padrón indicado", async (): Promise<void> => {
+      await expect(repositorioAlumno.eliminar("99999")).rejects.toThrowError(AlumnoNoEncontradoError);
+    });
+  });
 });

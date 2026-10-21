@@ -34,7 +34,7 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
     }
   }
 
-  async eliminarTodos(): Promise<void> {
+  public async eliminarTodos(): Promise<void> {
     await pool.query("DELETE FROM public.alumnos;");
   }
 
@@ -53,9 +53,10 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
     return alumno(resultado.rows[0]);
   }
 
-  eliminar(padron: string): Promise<void> {
-    return this.recuperar(padron)
-      .then(() => pool.query("DELETE FROM public.alumnos WHERE padron = $1;", [padron]))
-      .then(() => undefined);
+  public async eliminar(padron: string): Promise<void> {
+    const resultado = await pool.query("DELETE FROM public.alumnos WHERE padron = $1", [padron]);
+    if (resultado.rowCount === 0) {
+      throw new AlumnoNoEncontradoError(padron);
+    }
   }
 }
