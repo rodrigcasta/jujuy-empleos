@@ -1,6 +1,6 @@
 import Alumno from "../dominio/alumno";
 import AlumnoNoEncontradoError from "../dominio/alumno-no-encontrado-error";
-import AlumnoYaExisteError from "../dominio/alumno-ya-existe-error";
+import AlumnoConPadronDuplicadoError from "../dominio/alumno-con-padron-duplicado-error";
 import pool from "./pool";
 import { IRepositorioAlumno } from "../dominio/puerto-repositorio-alumno";
 import ErrorPostgres from "./error-postgres";
@@ -24,7 +24,7 @@ export default class RepositorioAlumnoSql implements IRepositorioAlumno {
       alumno.cambiarId(resultado.rows[0].id);
     } catch (error: unknown) {
       if (ErrorPostgres.esViolacionDeUnicidad(error)) {
-        throw new AlumnoYaExisteError(alumno.obtenerPadron());
+        throw new AlumnoConPadronDuplicadoError(alumno.obtenerPadron());
       }
       throw error;
     }
