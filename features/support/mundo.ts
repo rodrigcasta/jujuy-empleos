@@ -23,15 +23,6 @@ export class MundoDeLaAplicacion extends World {
     // Con baseURL, las rutas relativas (por ejemplo en goto o toHaveURL) se resuelven contra la aplicación
     this.contexto = await navegador.newContext({ baseURL: urlDeLaAplicacion() });
     this.contexto.setDefaultTimeout(TIEMPO_DE_ESPERA_MS);
-    // Desactiva la validación de los formularios en el navegador (required, pattern, minlength, etc.) para que los
-    // datos inválidos lleguen al servidor: los escenarios verifican las reglas del sistema, no las del navegador
-    await this.contexto.addInitScript(() => {
-      document.addEventListener("DOMContentLoaded", () => {
-        for (const formulario of document.forms) {
-          formulario.noValidate = true;
-        }
-      });
-    });
     this.paginaAbierta = await this.contexto.newPage();
   }
 

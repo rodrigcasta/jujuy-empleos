@@ -89,7 +89,7 @@ Las pruebas de aceptación están escritas en [Gherkin](https://cucumber.io/docs
 - `this.presionar("Crear")` presiona el botón con ese texto (o el `Locator` que se le pase, si hay varios botones con el mismo texto) y espera a que cargue la página de la respuesta. Hay que usarlo en lugar de `click()` en los botones que envían un formulario. Si no, el step siguiente podría ejecutarse antes de que el servidor procese el request.
 - `this.enviarFormulario("/alumnos", { padron, nombre, apellido })` envía desde el navegador un formulario que la página no ofrece. Se usa para las acciones que la interfaz no permite, como un usuario anónimo intentando dar de alta un alumno, o eliminar un alumno que ya no está en el listado.
 
-Los formularios tienen validaciones del navegador (`required`, `pattern`, `minlength`, `type="email"`) que impiden enviarlos con datos inválidos. El _world_ las desactiva (agrega `novalidate` a los formularios de cada página) para que esos datos lleguen al servidor: los escenarios verifican las reglas del sistema, que el servidor valida siempre, y no las del navegador.
+Los formularios tienen validaciones del navegador (`required`, `pattern`, `minlength`, `type="email"`) que impiden enviarlos con datos inválidos, igual que le pasaría a un usuario. Por eso los escenarios solo usan datos que el formulario deja enviar. Las reglas sobre esos datos, como el formato del padrón o el largo mínimo de la contraseña, las vuelve a validar el dominio, y se prueban con los tests de `test/dominio/`.
 
 Los steps tienen hasta 15 segundos para terminar (`setDefaultTimeout` en `hooks.ts`), más que los 5 segundos que espera Playwright, para que un step que falla lo informe Playwright (indicando qué esperaba encontrar en la página) en lugar de Cucumber.
 
