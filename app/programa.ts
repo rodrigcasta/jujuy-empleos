@@ -42,4 +42,4 @@ const server = app
     console.log("Error: ", error.message);
   });
 
-export { app, port, server };
+export { port, server };
