@@ -24,7 +24,9 @@ BeforeAll(async () => {
     console.log = () => undefined;
     console.error = () => undefined;
   }
-  navegador = await chromium.launch();
+  // Con MOSTRAR_NAVEGADOR=1 se abre la ventana del navegador y se demora cada acción, para poder seguir los escenarios
+  const mostrarNavegador = Boolean(process.env.MOSTRAR_NAVEGADOR);
+  navegador = await chromium.launch({ headless: !mostrarNavegador, slowMo: mostrarNavegador ? 300 : 0 });
   if (!server.listening) {
     await once(server, "listening");
   }
