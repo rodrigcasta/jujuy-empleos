@@ -12,6 +12,12 @@ Instalar las dependencias con `yarn`:
   yarn install
 ```
 
+`yarn install` también descarga el navegador (Chromium) que usan las pruebas de aceptación (ver [Pruebas de aceptación](#pruebas-de-aceptación)). Se guarda fuera del proyecto, en `~/.cache/ms-playwright`, y solo se descarga la primera vez o cuando cambia la versión de Playwright. En Linux, si al correr las pruebas Chromium no inicia porque faltan bibliotecas del sistema, en Debian o Ubuntu se pueden instalar con (pide la contraseña de `sudo` para usar `apt-get`):
+
+```
+  yarn playwright install-deps chromium
+```
+
 Crear un archivo `.env` en el directorio raíz del proyecto con las variables de ambiente para acceder a la BD de desarrollo:
 
 ```
@@ -59,7 +65,7 @@ Las pruebas usan la base `test_db`. Como el archivo `.env` apunta a la base de d
 
 ### Pruebas de aceptación
 
-Las pruebas de aceptación están escritas en [Gherkin](https://cucumber.io/docs/gherkin/) (en español, con `# language: es`) y se ejecutan con [Cucumber.js](https://github.com/cucumber/cucumber-js). Las step definitions están escritas en TypeScript y se cargan con `ts-node`. También usan la base `test_db`:
+Las pruebas de aceptación están escritas en [Gherkin](https://cucumber.io/docs/gherkin/) (en español, con `# language: es`) y se ejecutan con [Cucumber.js](https://github.com/cucumber/cucumber-js). Las step definitions están escritas en TypeScript y se cargan con `ts-node`. Usan la aplicación a través de un navegador real (Chromium sin ventana), que controlan con [Playwright](https://playwright.dev/). También usan la base `test_db`:
 
 ```
   POSTGRES_PORT=5434 yarn test:aceptacion
@@ -67,14 +73,41 @@ Las pruebas de aceptación están escritas en [Gherkin](https://cucumber.io/docs
 
 - `features/*.feature`: define los escenarios como ejemplos.
 - `features/step_definitions/`: la implementación de los steps. Los que comparten varias features están en `comunes.steps.ts`.
-- `features/support/`: el _world_ de Cucumber (`mundo.ts`, con un navegador simulado con `supertest` que conserva la cookie de sesión), los hooks (limpian la base antes de cada escenario), las verificaciones comunes y los tipos de parámetro propios (`parametros.ts`, por ejemplo `{destino}`).
+- `features/support/`: el _world_ de Cucumber (`mundo.ts`, con el navegador del escenario), los hooks (`hooks.ts`), las acciones en la interfaz que usan steps de distintas features (`acciones.ts`) y los tipos de parámetro propios (`parametros.ts`, por ejemplo `{destino}`).
 - La configuración está en `cucumber.json` y el reporte HTML se genera en `reports/aceptacion.html`.
 
-Durante la ejecución se oculta el log de requests de la aplicación. Para verlo, por ejemplo al investigar un escenario que falla: `MOSTRAR_LOG=1 POSTGRES_PORT=5434 yarn test:aceptacion`.
+#### Cómo funcionan
+
+- **La aplicación** corre en el mismo proceso que las pruebas: `hooks.ts` importa `app/programa.ts`, que inicia el servidor. El script `test:aceptacion` define `PORT=0` para que el sistema operativo le asigne un puerto libre; así las pruebas se pueden correr aunque esté corriendo `yarn start` (o cualquier otra aplicación en el puerto 3000).
+- **El navegador** se abre una sola vez (en `BeforeAll`) y cada escenario usa un _contexto_ propio (`Before`), equivalente a una ventana de incógnito: empieza sin cookies y, por lo tanto, sin sesión. Antes de cada escenario también se vacía la base de datos.
+- **Los steps** usan la pestaña del escenario, `this.pagina`, que es una [`Page`](https://playwright.dev/docs/api/class-page) de Playwright. Las rutas son relativas a la aplicación (`this.pagina.goto("/alumnos")`). Los elementos se buscan como los encontraría un usuario: los campos por su etiqueta (`getByLabel("Nombre")`) y los botones, links y títulos por su rol y su texto (`getByRole("link", { name: "Nuevo alumno" })`), en lugar de por selectores CSS o por el HTML de la respuesta.
+- **Las verificaciones** usan `expect` de `@playwright/test`, por ejemplo `await expect(this.pagina.getByRole("alert")).toContainText(mensaje)` o `await expect(this.pagina).toHaveURL("/login")`. Reintentan hasta que se cumplen o pasan 5 segundos, así que no hace falta esperar a que cargue la página. Para verificar los datos guardados se usan los repositorios con `assert` de Node.
+- **Los antecedentes** (`Dado que existen los alumnos:`, `Dado que existe el usuario:`) se guardan directamente con los repositorios o el dominio, sin pasar por la interfaz.
+
+`MundoDeLaAplicacion` agrega dos métodos para enviar formularios:
+
+- `this.presionar("Crear")` presiona el botón con ese texto (o el `Locator` que se le pase, si hay varios botones con el mismo texto) y espera a que cargue la página de la respuesta. Hay que usarlo en lugar de `click()` en los botones que envían un formulario. Si no, el step siguiente podría ejecutarse antes de que el servidor procese el request.
+- `this.enviarFormulario("/alumnos", { padron, nombre, apellido })` envía desde el navegador un formulario que la página no ofrece. Se usa para las acciones que la interfaz no permite, como un usuario anónimo intentando dar de alta un alumno, o eliminar un alumno que ya no está en el listado.
+
+Los formularios tienen validaciones del navegador (`required`, `pattern`, `minlength`, `type="email"`) que impiden enviarlos con datos inválidos. El _world_ las desactiva (agrega `novalidate` a los formularios de cada página) para que esos datos lleguen al servidor: los escenarios verifican las reglas del sistema, que el servidor valida siempre, y no las del navegador.
+
+Los steps tienen hasta 15 segundos para terminar (`setDefaultTimeout` en `hooks.ts`), más que los 5 segundos que espera Playwright, para que un step que falla lo informe Playwright (indicando qué esperaba encontrar en la página) en lugar de Cucumber.
+
+#### Investigar un escenario que falla
+
+- El reporte `reports/aceptacion.html` incluye una captura de la página en el momento en que falló cada escenario.
+- `MOSTRAR_NAVEGADOR=1` abre la ventana del navegador y demora cada acción 300 ms, para poder seguir lo que hace cada escenario: `MOSTRAR_NAVEGADOR=1 POSTGRES_PORT=5434 yarn test:aceptacion`.
+- Durante la ejecución se oculta el log de requests de la aplicación. Para verlo: `MOSTRAR_LOG=1 POSTGRES_PORT=5434 yarn test:aceptacion`.
+
+#### En el servidor de CI
+
+El job de GitLab (`.gitlab-ci.yml`) levanta `compose-ci.yml`, que corre `run_ci.sh` en la imagen `node:22.13.1-slim`. `yarn install` descarga Chromium, pero esa imagen no trae las bibliotecas del sistema que necesita, así que `run_ci.sh` las instala con `yarn playwright install-deps chromium` (usa `apt-get`, y en total agrega menos de un minuto al job). La imagen oficial de Playwright (`mcr.microsoft.com/playwright`) ya las trae, pero se descartó porque usa otra versión de Node (24) y pesa unos 2 GB, que se descargarían en cada ejecución porque `docker:dind` empieza sin imágenes.
+
+La versión de `@playwright/test` está fijada en `package.json` (sin `^`). Al actualizarla, `yarn install` descarga la versión de Chromium que le corresponde.
 
 ## Ejecutar la aplicación
 
-Para correr la aplicación utilizá el comando `yarn start` y abrí http://localhost:3000 en el navegador.
+Para correr la aplicación utilizá el comando `yarn start` y abrí http://localhost:3000 en el navegador. Para usar otro puerto, definí la variable `PORT` (por ejemplo `PORT=4000 yarn start`).
 
 El servidor corre en modo _watch_ (`node --watch`): cuando se modifica un archivo `.ts` de la aplicación, el proceso se reinicia automáticamente con los cambios. Los templates `.hbs` no necesitan reinicio, ya que Express los vuelve a leer en cada request. Las sesiones se mantienen entre reinicios siempre que `SESSION_SECRET` esté definido, porque se guardan en una cookie del lado del cliente.
 
