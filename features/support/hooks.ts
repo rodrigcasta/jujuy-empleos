@@ -30,7 +30,7 @@ const esperarServidor = async () => {
 };
 
 // Un único navegador para todos los escenarios: abrirlo es lo más lento
-let navegador: Browser;
+let navegador: Browser | undefined;
 
 BeforeAll(async () => {
   if (!process.env.MOSTRAR_LOG) {
@@ -47,7 +47,8 @@ BeforeAll(async () => {
 Before(async function (this: MundoDeLaAplicacion) {
   await new RepositorioAlumnoSql().eliminarTodos();
   await new RepositorioUsuarioSql().eliminarTodos();
-  await this.abrirNavegador(navegador);
+  // Si BeforeAll falló, Cucumber no ejecuta los escenarios: acá el navegador siempre está abierto
+  await this.abrirNavegador(navegador as Browser);
 });
 
 After(async function (this: MundoDeLaAplicacion, { result }) {
@@ -61,7 +62,9 @@ After(async function (this: MundoDeLaAplicacion, { result }) {
 AfterAll(async () => {
   console.log = logOriginal;
   console.error = errorOriginal;
-  await navegador.close();
+  // Si el servidor o el pool quedaran abiertos, el proceso no terminaría
   server.close();
   await pool.end();
+  // No está abierto si falló BeforeAll, por ejemplo porque no se pudo descargar Chromium
+  await navegador?.close();
 });
