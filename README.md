@@ -12,7 +12,7 @@ Instalar las dependencias con `yarn`:
   yarn install
 ```
 
-`yarn install` también descarga el navegador (Chromium) que usan las pruebas de aceptación (ver [Pruebas de aceptación](#pruebas-de-aceptación)). Se guarda fuera del proyecto, en `~/.cache/ms-playwright`, y solo se descarga la primera vez o cuando cambia la versión de Playwright. En Linux, si al correr las pruebas Chromium no inicia porque faltan bibliotecas del sistema, en Debian o Ubuntu se pueden instalar con (pide la contraseña de `sudo` para usar `apt-get`):
+`yarn install` también descarga el navegador (Chromium) que usan las pruebas de aceptación (ver [Pruebas de aceptación](#pruebas-de-aceptación)), salvo que ya esté instalado: lo hace `scripts/instalar-navegador.js`, que corre en el `postinstall`. Se guarda fuera del proyecto, en `~/.cache/ms-playwright`, así que solo se descarga la primera vez o cuando cambia la versión de Playwright. En Linux, si al correr las pruebas Chromium no inicia porque faltan bibliotecas del sistema, en Debian o Ubuntu se pueden instalar con (pide la contraseña de `sudo` para usar `apt-get`):
 
 ```
   yarn playwright install-deps chromium
@@ -101,9 +101,11 @@ Los steps tienen hasta 15 segundos para terminar (`setDefaultTimeout` en `hooks.
 
 #### En el servidor de CI
 
-El job de GitLab (`.gitlab-ci.yml`) levanta `compose-ci.yml`, que corre `run_ci.sh` en la imagen `node:22.13.1-slim`. `yarn install` descarga Chromium, pero esa imagen no trae las bibliotecas del sistema que necesita, así que `run_ci.sh` las instala con `yarn playwright install-deps chromium` (usa `apt-get`, y en total agrega menos de un minuto al job). La imagen oficial de Playwright (`mcr.microsoft.com/playwright`) ya las trae, pero se descartó porque usa otra versión de Node (24) y pesa unos 2 GB, que se descargarían en cada ejecución porque `docker:dind` empieza sin imágenes.
+El job de GitLab (`.gitlab-ci.yml`) levanta `compose-ci.yml`, que corre `run_ci.sh` en la imagen oficial de Playwright (`mcr.microsoft.com/playwright`). Esa imagen ya trae Chromium y las bibliotecas del sistema que necesita, así que `yarn install` no descarga nada: el `postinstall` encuentra el navegador en `/ms-playwright`. No se puede descargar Chromium dentro del job, porque desde Docker-in-Docker en los runners de GitLab.com la descarga agota el tiempo de espera.
 
-La versión de `@playwright/test` está fijada en `package.json` (sin `^`). Al actualizarla, `yarn install` descarga la versión de Chromium que le corresponde.
+La imagen trae Node 24, una versión distinta de la de `.nvmrc`.
+
+La versión de `@playwright/test` está fijada en `package.json` (sin `^`) y tiene que coincidir con la de la imagen en `compose-ci.yml`: cada versión de Playwright busca su propia versión de Chromium. Para actualizarla hay que cambiar las dos. Localmente, `yarn install` descarga el Chromium que corresponde a la nueva versión.
 
 ## Ejecutar la aplicación
 
