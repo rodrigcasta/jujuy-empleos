@@ -1,7 +1,8 @@
 import { once } from "node:events";
+import { setTimeout } from "node:timers/promises";
 import { After, AfterAll, Before, BeforeAll, setDefaultTimeout, Status } from "@cucumber/cucumber";
 import { Browser, chromium } from "@playwright/test";
-import { server } from "../../app/programa";
+import { port, server } from "../../app/programa";
 import pool from "../../app/adaptadores/pool";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
 import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
@@ -16,6 +17,18 @@ setDefaultTimeout(15_000);
 const logOriginal = console.log;
 const errorOriginal = console.error;
 
+// La aplicación empieza a escuchar al importarla. Si el puerto estuviera ocupado por otro proceso,
+// el navegador usaría esa otra aplicación (que podría no usar la base de pruebas)
+const esperarServidor = async () => {
+  if (server.listening) {
+    return;
+  }
+  const demora = setTimeout(2_000).then(() => {
+    throw new Error(`La aplicación no pudo escuchar en el puerto ${port}: lo está usando otro proceso`);
+  });
+  await Promise.race([once(server, "listening"), demora]);
+};
+
 // Un único navegador para todos los escenarios: abrirlo es lo más lento
 let navegador: Browser;
 
@@ -27,9 +40,7 @@ BeforeAll(async () => {
   // Con MOSTRAR_NAVEGADOR=1 se abre la ventana del navegador y se demora cada acción, para poder seguir los escenarios
   const mostrarNavegador = Boolean(process.env.MOSTRAR_NAVEGADOR);
   navegador = await chromium.launch({ headless: !mostrarNavegador, slowMo: mostrarNavegador ? 300 : 0 });
-  if (!server.listening) {
-    await once(server, "listening");
-  }
+  await esperarServidor();
 });
 
 // Cada escenario empieza con la base de datos vacía y un navegador sin sesión
