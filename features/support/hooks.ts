@@ -1,5 +1,5 @@
 import { once } from "node:events";
-import { After, AfterAll, Before, BeforeAll, setDefaultTimeout } from "@cucumber/cucumber";
+import { After, AfterAll, Before, BeforeAll, setDefaultTimeout, Status } from "@cucumber/cucumber";
 import { Browser, chromium } from "@playwright/test";
 import { server } from "../../app/programa";
 import pool from "../../app/adaptadores/pool";
@@ -37,7 +37,11 @@ Before(async function (this: MundoDeLaAplicacion) {
   await this.abrirNavegador(navegador);
 });
 
-After(async function (this: MundoDeLaAplicacion) {
+After(async function (this: MundoDeLaAplicacion, { result }) {
+  // El reporte HTML incluye cómo se veía la página cuando falló el escenario
+  if (result?.status === Status.FAILED) {
+    await this.attach(await this.pagina.screenshot({ fullPage: true }), "image/png");
+  }
   await this.cerrarNavegador();
 });
 
