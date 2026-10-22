@@ -103,7 +103,7 @@ Los steps tienen hasta 15 segundos para terminar (`setDefaultTimeout` en `hooks.
 
 El job de GitLab (`.gitlab-ci.yml`) levanta `compose-ci.yml`, que corre `run_ci.sh` en la imagen oficial de Playwright (`mcr.microsoft.com/playwright`). Esa imagen ya trae Chromium y las bibliotecas del sistema que necesita, así que `yarn install` no descarga nada: el `postinstall` encuentra el navegador en `/ms-playwright`. No se puede descargar Chromium dentro del job, porque desde Docker-in-Docker en los runners de GitLab.com la descarga agota el tiempo de espera.
 
-La imagen trae Node 24, una versión distinta de la de `.nvmrc`.
+La imagen trae Node 24.21.0, la misma versión que `.nvmrc`. Si se actualiza la imagen, hay que actualizar también `.nvmrc` para que coincidan.
 
 La versión de `@playwright/test` está fijada en `package.json` (sin `^`) y tiene que coincidir con la de la imagen en `compose-ci.yml`: cada versión de Playwright busca su propia versión de Chromium. Para actualizarla hay que cambiar las dos. Localmente, `yarn install` descarga el Chromium que corresponde a la nueva versión.
 
