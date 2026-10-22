@@ -1,4 +1,5 @@
 import express from "express";
+import { AddressInfo } from "net";
 import path from "path";
 import SistemaAlumnos from "./dominio/sistema-alumnos";
 import SistemaUsuarios from "./dominio/sistema-usuarios";
@@ -11,7 +12,7 @@ import { crearControladorAutenticacion } from "./controladores/controlador-auten
 import { crearControladorAlumnos } from "./controladores/controlador-alumnos";
 
 const app = express();
-const port = 3000;
+const port = parseInt(process.env.PORT || "3000");
 
 app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "hbs");
@@ -36,7 +37,7 @@ app.use("/alumnos", requiereAutenticacion, crearControladorAlumnos(sistemaAlumno
 
 const server = app
   .listen(port, () => {
-    console.log("El servidor está corriendo en el puerto: ", port);
+    console.log("El servidor está corriendo en el puerto: ", (server.address() as AddressInfo).port);
   })
   .on("error", (error) => {
     console.log("Error: ", error.message);

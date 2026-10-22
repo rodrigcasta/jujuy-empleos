@@ -1,8 +1,10 @@
+import { AddressInfo } from "node:net";
 import { IWorldOptions, setWorldConstructor, World } from "@cucumber/cucumber";
 import { Browser, BrowserContext, Locator, Page } from "@playwright/test";
-import { port } from "../../app/programa";
+import { server } from "../../app/programa";
 
-const URL_DE_LA_APLICACION = `http://localhost:${port}`;
+// Las pruebas corren con PORT=0: el sistema operativo le asigna a la aplicación un puerto libre
+const urlDeLaAplicacion = () => `http://localhost:${(server.address() as AddressInfo).port}`;
 
 // Tiempo máximo que Playwright espera a que se pueda realizar una acción o se cumpla una verificación
 const TIEMPO_DE_ESPERA_MS = 5_000;
@@ -19,7 +21,7 @@ export class MundoDeLaAplicacion extends World {
 
   public async abrirNavegador(navegador: Browser) {
     // Con baseURL, las rutas relativas (por ejemplo en goto o toHaveURL) se resuelven contra la aplicación
-    this.contexto = await navegador.newContext({ baseURL: URL_DE_LA_APLICACION });
+    this.contexto = await navegador.newContext({ baseURL: urlDeLaAplicacion() });
     this.contexto.setDefaultTimeout(TIEMPO_DE_ESPERA_MS);
     // Desactiva la validación de los formularios en el navegador (required, pattern, minlength, etc.) para que los
     // datos inválidos lleguen al servidor: los escenarios verifican las reglas del sistema, no las del navegador
@@ -56,7 +58,7 @@ export class MundoDeLaAplicacion extends World {
   // que la interfaz no le permite a un usuario anónimo
   public async enviarFormulario(accion: string, campos: Record<string, string> = {}) {
     // La cookie de sesión (sameSite: lax) solo se envía en un POST que sale de una página de la aplicación
-    if (!this.pagina.url().startsWith(URL_DE_LA_APLICACION)) {
+    if (!this.pagina.url().startsWith(urlDeLaAplicacion())) {
       await this.pagina.goto("/");
     }
     await this.esperarNavegacion(() =>

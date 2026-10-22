@@ -11,7 +11,7 @@
     "lint": "eslint \"{app,test,features}/**/*.ts\"",
     "test": "jest --runInBand",
     "test:cov": "jest --runInBand --coverage",
-    "test:aceptacion": "cucumber-js",
+    "test:aceptacion": "PORT=0 cucumber-js",
     "postinstall": "playwright install chromium"
   },
   "dependencies": {
