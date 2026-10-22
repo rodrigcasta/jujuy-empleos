@@ -12,7 +12,7 @@
     "test": "jest --runInBand",
     "test:cov": "jest --runInBand --coverage",
     "test:aceptacion": "PORT=0 cucumber-js",
-    "postinstall": "playwright install chromium"
+    "postinstall": "node scripts/instalar-navegador.js"
   },
   "dependencies": {
     "@types/pg": "^8.20.0",
