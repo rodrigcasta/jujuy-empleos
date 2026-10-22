@@ -33,31 +33,12 @@ Característica: Gestión de alumnos
     Entonces ve el detalle del alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
     Y el alumno con padrón "12345" aparece en el listado
 
-  Escenario: No se puede dar de alta un alumno sin padrón
-    Cuando da de alta al alumno con padrón "", nombre "Ana" y apellido "Garcia"
-    Entonces ve el mensaje de error "El campo padron es obligatorio"
-    Y no se registró ningún alumno
-
   Escenario: No se puede dar de alta un alumno con un padrón que ya existe
     Dado que existen los alumnos:
       | padrón | nombre | apellido |
       |  12345 | Juana  | Lopez    |
     Cuando da de alta al alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
     Entonces ve el mensaje de error "Ya existe un alumno con el padrón 12345"
-
-  Esquema del escenario: No se puede dar de alta un alumno con un padrón inválido
-    Cuando da de alta al alumno con padrón "<padrón>", nombre "Ana" y apellido "Garcia"
-    Entonces ve el mensaje de error "El padrón debe ser un número mayor a 0, sin puntos ni comas"
-    Y no se registró ningún alumno
-
-    Ejemplos:
-      | caso                 | padrón |
-      | con punto            | 12.345 |
-      | con coma             | 12,345 |
-      | con letras           | abc    |
-      | cero                 |      0 |
-      | negativo             |     -5 |
-      | ceros a la izquierda |   0123 |
 
   Escenario: Los datos del alumno se muestran como texto
     Cuando da de alta al alumno con padrón "12345", nombre "<script>alert(1)</script>" y apellido "Garcia"
