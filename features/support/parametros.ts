@@ -1,14 +1,32 @@
 import { defineParameterType } from "@cucumber/cucumber";
 
-// {destino}: una página de la aplicación, por el nombre con el que se la menciona en los escenarios.
+// {consulta}: una consulta sobre los alumnos, por el nombre con el que se la menciona en los escenarios.
 // El step recibe la ruta correspondiente.
-const RUTAS: Record<string, string> = {
-  "la página de inicio de sesión": "/login",
-  "el listado de alumnos": "/alumnos",
+const CONSULTAS: Record<string, string> = {
+  "consultar el listado de alumnos": "/alumnos",
+  "comenzar el alta de un alumno": "/alumnos/nuevo",
+  "consultar el alumno con padrón 11111": "/alumnos/11111",
 };
 
 defineParameterType({
-  name: "destino",
-  regexp: new RegExp(Object.keys(RUTAS).join("|")),
-  transformer: (destino: string) => RUTAS[destino],
+  name: "consulta",
+  regexp: new RegExp(Object.keys(CONSULTAS).join("|")),
+  transformer: (consulta: string) => CONSULTAS[consulta],
+});
+
+export interface Opcion {
+  texto: string;
+  ruta: string;
+}
+
+// {opcion}: algo que la página de inicio le ofrece hacer al usuario. El step recibe el texto y la ruta del link.
+const OPCIONES: Record<string, Opcion> = {
+  "iniciar sesión": { texto: "iniciar sesión", ruta: "/login" },
+  "consultar el listado de alumnos": { texto: "listado de alumnos", ruta: "/alumnos" },
+};
+
+defineParameterType({
+  name: "opcion",
+  regexp: new RegExp(Object.keys(OPCIONES).join("|")),
+  transformer: (opcion: string) => OPCIONES[opcion],
 });
