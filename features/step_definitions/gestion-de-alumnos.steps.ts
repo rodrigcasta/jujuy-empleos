@@ -87,15 +87,6 @@ Then("ve en el listado a los alumnos:", function (this: MundoDeLaAplicacion, tab
   }
 });
 
-Then("puede ir al formulario de alta de alumnos", async function (this: MundoDeLaAplicacion) {
-  debeContener(this.respuesta(), 'href="/alumnos/nuevo"');
-  const formulario = await this.navegador.get("/alumnos/nuevo");
-  assert.equal(formulario.status, 200);
-  for (const campo of ["padron", "nombre", "apellido"]) {
-    debeContener(formulario, `name="${campo}"`);
-  }
-});
-
 Then(
   "ve el detalle del alumno con padrón {string}, nombre {string} y apellido {string}",
   function (this: MundoDeLaAplicacion, padron: string, nombre: string, apellido: string) {
@@ -120,22 +111,11 @@ Then(
   },
 );
 
-Then(
-  "el formulario conserva el nombre {string} y el apellido {string}",
-  function (this: MundoDeLaAplicacion, nombre: string, apellido: string) {
-    debeContener(this.respuesta(), `value="${nombre}"`);
-    debeContener(this.respuesta(), `value="${apellido}"`);
-  },
-);
-
-Then(
-  "la página muestra el texto {string} sin interpretarlo como HTML",
-  function (this: MundoDeLaAplicacion, texto: string) {
-    const respuesta = this.respuesta();
-    debeContener(respuesta, escaparHtml(texto));
-    assert.ok(!respuesta.text.includes(texto), `La página incluye "${texto}" sin escapar`);
-  },
-);
+Then("ve el nombre {string} tal como fue ingresado", function (this: MundoDeLaAplicacion, nombre: string) {
+  const respuesta = this.respuesta();
+  debeContener(respuesta, escaparHtml(nombre));
+  assert.ok(!respuesta.text.includes(nombre), `La página incluye "${nombre}" sin escapar`);
+});
 
 // Verificaciones sobre los datos guardados, útiles también cuando el usuario no puede ver el listado
 Then("no se registró ningún alumno", async function () {

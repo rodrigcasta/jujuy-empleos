@@ -29,8 +29,9 @@ Then("no puede ver el listado de alumnos", async function (this: MundoDeLaAplica
   debeRedirigirA(await this.navegador.get("/alumnos"), "/login");
 });
 
-Then("la página muestra {string}", function (this: MundoDeLaAplicacion, texto: string) {
-  debeContener(this.respuesta(), texto);
+// La barra de navegación muestra al usuario con la sesión iniciada como "Nombre (email)"
+Then("se le muestra que inició sesión como {string}", function (this: MundoDeLaAplicacion, usuario: string) {
+  debeContener(this.respuesta(), usuario);
 });
 
 Then("ve el mensaje de error {string}", function (this: MundoDeLaAplicacion, mensaje: string) {

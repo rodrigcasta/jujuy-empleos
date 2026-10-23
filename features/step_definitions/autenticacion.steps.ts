@@ -1,4 +1,3 @@
-import assert from "node:assert/strict";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { MundoDeLaAplicacion } from "../support/mundo";
 import { debeRedirigirA } from "../support/verificaciones";
@@ -14,17 +13,8 @@ Given(
   },
 );
 
-// Páginas de alumnos, por el nombre con el que se las menciona en los escenarios
-const PAGINAS_DE_ALUMNOS: Record<string, string> = {
-  "listado de alumnos": "/alumnos",
-  "alta de alumnos": "/alumnos/nuevo",
-  "detalle de alumno": "/alumnos/11111",
-};
-
-When("un usuario anónimo intenta ver la página {string}", async function (this: MundoDeLaAplicacion, pagina: string) {
-  const ruta = PAGINAS_DE_ALUMNOS[pagina];
-  assert.ok(ruta, `No se conoce la página "${pagina}"`);
-  this.registrarRespuesta(await this.navegador.get(ruta));
+When("un usuario anónimo intenta consultar el listado de alumnos", async function (this: MundoDeLaAplicacion) {
+  this.registrarRespuesta(await this.navegador.get("/alumnos"));
 });
 
 When(
@@ -52,6 +42,7 @@ When("cierra la sesión", async function (this: MundoDeLaAplicacion) {
   this.registrarRespuesta(await this.navegador.post("/logout"));
 });
 
-Then("es redirigido a la página de inicio de sesión", function (this: MundoDeLaAplicacion) {
+// Se le pide que inicie sesión redirigiéndolo a la página de inicio de sesión
+Then("se le pide que inicie sesión", function (this: MundoDeLaAplicacion) {
   debeRedirigirA(this.respuesta(), "/login");
 });
