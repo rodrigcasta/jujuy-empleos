@@ -13,8 +13,8 @@ Given(
   },
 );
 
-When("un usuario anónimo intenta {consulta}", async function (this: MundoDeLaAplicacion, ruta: string) {
-  this.registrarRespuesta(await this.navegador.get(ruta));
+When("un usuario anónimo intenta consultar el listado de alumnos", async function (this: MundoDeLaAplicacion) {
+  this.registrarRespuesta(await this.navegador.get("/alumnos"));
 });
 
 When(

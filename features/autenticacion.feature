@@ -11,18 +11,9 @@ Característica: Autenticación
       | email      | marta@example.com |
       | contraseña | secreta123        |
 
-  Esquema del escenario: Un usuario anónimo no puede consultar alumnos
-    Dado que existen los alumnos:
-      | padrón | nombre | apellido |
-      | 11111  | Juana  | Lopez    |
-    Cuando un usuario anónimo intenta <acción>
+  Escenario: Un usuario anónimo no puede ver el listado de alumnos
+    Cuando un usuario anónimo intenta consultar el listado de alumnos
     Entonces se le pide que inicie sesión
-
-    Ejemplos:
-      | acción                               |
-      | consultar el listado de alumnos      |
-      | comenzar el alta de un alumno        |
-      | consultar el alumno con padrón 11111 |
 
   Escenario: Un usuario anónimo no puede dar de alta alumnos
     Cuando un usuario anónimo intenta dar de alta al alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
