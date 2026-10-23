@@ -111,7 +111,6 @@ Then(
   },
 );
 
-// El nombre se muestra escapado, como texto, sin que el navegador lo interprete como HTML
 Then("ve el nombre {string} tal como fue ingresado", function (this: MundoDeLaAplicacion, nombre: string) {
   const respuesta = this.respuesta();
   debeContener(respuesta, escaparHtml(nombre));
