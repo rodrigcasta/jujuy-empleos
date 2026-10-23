@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { Then, When } from "@cucumber/cucumber";
 import { MundoDeLaAplicacion } from "../support/mundo";
-import { Opcion } from "../support/parametros";
 import { contenidoPrincipal } from "../support/verificaciones";
 
 When("visita la página de inicio", async function (this: MundoDeLaAplicacion) {
@@ -11,14 +10,30 @@ When("visita la página de inicio", async function (this: MundoDeLaAplicacion) {
 });
 
 // Se revisa solo el contenido principal: la barra de navegación siempre tiene links a estas páginas
-Then("se le ofrece {opcion}", function (this: MundoDeLaAplicacion, { texto, ruta }: Opcion) {
-  const link = `<a href="${ruta}">${texto}</a>`;
-  assert.ok(contenidoPrincipal(this.respuesta()).includes(link), `Se esperaba el link ${link} en la página`);
+Then("se le ofrece iniciar sesión", function (this: MundoDeLaAplicacion) {
+  assert.ok(
+    contenidoPrincipal(this.respuesta()).includes('<a href="/login">iniciar sesión</a>'),
+    "Se esperaba un link a /login en la página",
+  );
 });
 
-Then("no se le ofrece {opcion}", function (this: MundoDeLaAplicacion, { ruta }: Opcion) {
+Then("se le ofrece consultar el listado de alumnos", function (this: MundoDeLaAplicacion) {
   assert.ok(
-    !contenidoPrincipal(this.respuesta()).includes(`href="${ruta}"`),
-    `La página no debería tener un link a ${ruta}`,
+    contenidoPrincipal(this.respuesta()).includes('<a href="/alumnos">listado de alumnos</a>'),
+    "Se esperaba un link a /alumnos en la página",
+  );
+});
+
+Then("no se le ofrece iniciar sesión", function (this: MundoDeLaAplicacion) {
+  assert.ok(
+    !contenidoPrincipal(this.respuesta()).includes('href="/login"'),
+    "La página no debería tener un link a /login",
+  );
+});
+
+Then("no se le ofrece consultar el listado de alumnos", function (this: MundoDeLaAplicacion) {
+  assert.ok(
+    !contenidoPrincipal(this.respuesta()).includes('href="/alumnos"'),
+    "La página no debería tener un link a /alumnos",
   );
 });
