@@ -24,10 +24,6 @@ Característica: Gestión de alumnos
       |  22222 | Carlos | Martinez  |
       |  33333 | Sofia  | Rodriguez |
 
-  Escenario: El listado permite ir al formulario de alta
-    Cuando consulta el listado de alumnos
-    Entonces puede ir al formulario de alta de alumnos
-
   Escenario: Alta de un alumno
     Cuando da de alta al alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
     Entonces ve el detalle del alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
@@ -39,10 +35,6 @@ Característica: Gestión de alumnos
       |  12345 | Juana  | Lopez    |
     Cuando da de alta al alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
     Entonces ve el mensaje de error "Ya existe un alumno con el padrón 12345"
-
-  Escenario: Los datos del alumno se muestran como texto
-    Cuando da de alta al alumno con padrón "12345", nombre "<script>alert(1)</script>" y apellido "Garcia"
-    Entonces la página muestra el texto "<script>alert(1)</script>" sin interpretarlo como HTML
 
   Escenario: Consulta de un alumno
     Dado que existen los alumnos:

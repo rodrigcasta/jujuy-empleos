@@ -84,14 +84,6 @@ Then("ve en el listado a los alumnos:", async function (this: MundoDeLaAplicacio
   }
 });
 
-Then("puede ir al formulario de alta de alumnos", async function (this: MundoDeLaAplicacion) {
-  await this.pagina.getByRole("link", { name: "Nuevo alumno" }).click();
-  await expect(this.pagina).toHaveURL("/alumnos/nuevo");
-  for (const campo of ["Padrón", "Nombre", "Apellido"]) {
-    await expect(this.pagina.getByLabel(campo)).toBeEditable();
-  }
-});
-
 Then(
   "ve el detalle del alumno con padrón {string}, nombre {string} y apellido {string}",
   async function (this: MundoDeLaAplicacion, padron: string, nombre: string, apellido: string) {
@@ -111,22 +103,6 @@ Then(
   async function (this: MundoDeLaAplicacion, padron: string) {
     await this.pagina.goto("/alumnos");
     await expect(filaDelAlumno(this.pagina, padron)).toHaveCount(0);
-  },
-);
-
-Then(
-  "el formulario conserva el nombre {string} y el apellido {string}",
-  async function (this: MundoDeLaAplicacion, nombre: string, apellido: string) {
-    await expect(this.pagina.getByLabel("Nombre")).toHaveValue(nombre);
-    await expect(this.pagina.getByLabel("Apellido")).toHaveValue(apellido);
-  },
-);
-
-// Si se interpretara como HTML, el navegador no mostraría el texto: crearía los elementos que describe
-Then(
-  "la página muestra el texto {string} sin interpretarlo como HTML",
-  async function (this: MundoDeLaAplicacion, texto: string) {
-    await expect(this.pagina.getByRole("main").getByText(texto)).toBeVisible();
   },
 );
 

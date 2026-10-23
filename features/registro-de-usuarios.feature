@@ -12,7 +12,7 @@ Característica: Registro de usuarios
       | contraseña   | secreta123        |
       | confirmación | secreta123        |
     Entonces puede ver el listado de alumnos
-    Y la página muestra "Juana (juana@example.com)"
+    Y se le muestra que inició sesión como "Juana (juana@example.com)"
     Y la contraseña de "juana@example.com" no se guarda en texto plano
 
   Escenario: No se puede registrar dos veces el mismo email

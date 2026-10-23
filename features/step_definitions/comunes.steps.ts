@@ -29,8 +29,9 @@ Then("no puede ver el listado de alumnos", async function (this: MundoDeLaAplica
   await expect(this.pagina).toHaveURL("/login");
 });
 
-Then("la página muestra {string}", async function (this: MundoDeLaAplicacion, texto: string) {
-  await expect(this.pagina.getByText(texto)).toBeVisible();
+// La barra de navegación muestra al usuario con la sesión iniciada como "Nombre (email)"
+Then("se le muestra que inició sesión como {string}", async function (this: MundoDeLaAplicacion, usuario: string) {
+  await expect(this.pagina.getByText(usuario)).toBeVisible();
 });
 
 Then("ve el mensaje de error {string}", async function (this: MundoDeLaAplicacion, mensaje: string) {

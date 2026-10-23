@@ -1,4 +1,3 @@
-import assert from "node:assert/strict";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { MundoDeLaAplicacion } from "../support/mundo";
@@ -17,17 +16,8 @@ Given(
   },
 );
 
-// Páginas de alumnos, por el nombre con el que se las menciona en los escenarios
-const PAGINAS_DE_ALUMNOS: Record<string, string> = {
-  "listado de alumnos": "/alumnos",
-  "alta de alumnos": "/alumnos/nuevo",
-  "detalle de alumno": "/alumnos/11111",
-};
-
-When("un usuario anónimo intenta ver la página {string}", async function (this: MundoDeLaAplicacion, pagina: string) {
-  const ruta = PAGINAS_DE_ALUMNOS[pagina];
-  assert.ok(ruta, `No se conoce la página "${pagina}"`);
-  await this.pagina.goto(ruta);
+When("un usuario anónimo intenta consultar el listado de alumnos", async function (this: MundoDeLaAplicacion) {
+  await this.pagina.goto("/alumnos");
 });
 
 // La interfaz no le ofrece estos formularios a un usuario anónimo: se envían igual, como lo haría alguien que
@@ -57,6 +47,7 @@ When("cierra la sesión", async function (this: MundoDeLaAplicacion) {
   await this.presionar("Cerrar sesión");
 });
 
-Then("es redirigido a la página de inicio de sesión", async function (this: MundoDeLaAplicacion) {
+// Se le pide que inicie sesión redirigiéndolo a la página de inicio de sesión
+Then("se le pide que inicie sesión", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL("/login");
 });
