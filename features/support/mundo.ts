@@ -45,34 +45,6 @@ export class MundoDeLaAplicacion extends World {
     await this.esperarNavegacion(() => locator.click());
   }
 
-  // Envía desde el navegador un formulario que la página no ofrece, por ejemplo para intentar una acción
-  // que la interfaz no le permite a un usuario anónimo
-  public async enviarFormulario(accion: string, campos: Record<string, string> = {}) {
-    // La cookie de sesión (sameSite: lax) solo se envía en un POST que sale de una página de la aplicación
-    if (!this.pagina.url().startsWith(urlDeLaAplicacion())) {
-      await this.pagina.goto("/");
-    }
-    await this.esperarNavegacion(() =>
-      this.pagina.evaluate(
-        ({ accion, campos }) => {
-          const formulario = document.createElement("form");
-          formulario.method = "post";
-          formulario.action = accion;
-          for (const [nombre, valor] of Object.entries(campos)) {
-            const campo = document.createElement("input");
-            campo.type = "hidden";
-            campo.name = nombre;
-            campo.value = valor;
-            formulario.append(campo);
-          }
-          document.body.append(formulario);
-          formulario.submit();
-        },
-        { accion, campos },
-      ),
-    );
-  }
-
   private async esperarNavegacion(accion: () => Promise<unknown>) {
     const navegacion = this.pagina.waitForEvent("framenavigated", (frame) => frame === this.pagina.mainFrame());
     await Promise.all([navegacion, accion()]);

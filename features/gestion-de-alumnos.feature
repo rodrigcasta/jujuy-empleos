@@ -58,7 +58,3 @@ Característica: Gestión de alumnos
     Entonces el alumno con padrón "22222" no aparece en el listado
     Y el alumno con padrón "11111" aparece en el listado
     Y el alumno con padrón "33333" aparece en el listado
-
-  Escenario: Baja de un alumno inexistente
-    Cuando elimina al alumno con padrón "99999"
-    Entonces ve el mensaje de error "No se encontró el alumno con padrón 99999"

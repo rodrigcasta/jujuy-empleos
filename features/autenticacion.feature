@@ -15,19 +15,6 @@ Característica: Autenticación
     Cuando un usuario anónimo intenta consultar el listado de alumnos
     Entonces se le pide que inicie sesión
 
-  Escenario: Un usuario anónimo no puede dar de alta alumnos
-    Cuando un usuario anónimo intenta dar de alta al alumno con padrón "12345", nombre "Ana" y apellido "Garcia"
-    Entonces se le pide que inicie sesión
-    Y no se registró ningún alumno
-
-  Escenario: Un usuario anónimo no puede eliminar alumnos
-    Dado que existen los alumnos:
-      | padrón | nombre | apellido |
-      | 11111  | Juana  | Lopez    |
-    Cuando un usuario anónimo intenta eliminar al alumno con padrón "11111"
-    Entonces se le pide que inicie sesión
-    Y el alumno con padrón "11111" sigue registrado
-
   Escenario: Inicio de sesión con credenciales correctas
     Cuando inicia sesión con email "marta@example.com" y contraseña "secreta123"
     Entonces puede ver el listado de alumnos

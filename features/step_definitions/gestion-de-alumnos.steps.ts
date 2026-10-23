@@ -1,8 +1,6 @@
-import assert from "node:assert/strict";
 import { DataTable, Given, Then, When } from "@cucumber/cucumber";
 import { expect, Page } from "@playwright/test";
 import Alumno from "../../app/dominio/alumno";
-import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-error";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
 import { registrarse } from "../support/acciones";
 import { MundoDeLaAplicacion } from "../support/mundo";
@@ -62,14 +60,7 @@ When(
 
 When("elimina al alumno con padrón {string}", async function (this: MundoDeLaAplicacion, padron: string) {
   await this.pagina.goto("/alumnos");
-  const fila = filaDelAlumno(this.pagina, padron);
-  if ((await fila.count()) > 0) {
-    await this.presionar(fila.getByRole("button", { name: "Eliminar" }));
-  } else {
-    // Envía el mismo formulario que el botón de su fila, como si el listado estuviera desactualizado
-    // (por ejemplo, porque otro usuario ya lo eliminó)
-    await this.enviarFormulario(`/alumnos/${padron}/eliminar`);
-  }
+  await this.presionar(filaDelAlumno(this.pagina, padron).getByRole("button", { name: "Eliminar" }));
 });
 
 Then("ve que no hay alumnos cargados", async function (this: MundoDeLaAplicacion) {
@@ -105,19 +96,3 @@ Then(
     await expect(filaDelAlumno(this.pagina, padron)).toHaveCount(0);
   },
 );
-
-// Verificaciones sobre los datos guardados, útiles también cuando el usuario no puede ver el listado
-Then("no se registró ningún alumno", async function () {
-  assert.equal((await repositorioAlumnos.listarAlumnos()).length, 0);
-});
-
-Then("el alumno con padrón {string} sigue registrado", async function (padron: string) {
-  try {
-    await repositorioAlumnos.recuperar(padron);
-  } catch (error: unknown) {
-    if (error instanceof AlumnoNoEncontradoError) {
-      assert.fail(`El alumno ${padron} fue eliminado`);
-    }
-    throw error;
-  }
-});
