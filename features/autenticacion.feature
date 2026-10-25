@@ -25,7 +25,7 @@ Característica: Autenticación
     Entonces puede ver el listado de alumnos
 
   Esquema del escenario: Inicio de sesión con credenciales incorrectas
-    Cuando inicia sesión con email "<email>" y contraseña "<contraseña>"
+    Cuando intenta iniciar sesión con email "<email>" y contraseña "<contraseña>"
     Entonces ve el mensaje de error "Email o contraseña incorrectos"
     Y no puede ver el listado de alumnos
 

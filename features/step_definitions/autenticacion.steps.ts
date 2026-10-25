@@ -2,11 +2,19 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import { MundoDeLaAplicacion } from "../support/mundo";
 
-const iniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrasena: string) => {
+const intentarIniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrasena: string) => {
   await mundo.pagina.goto("/login");
   await mundo.pagina.getByLabel("Email").fill(email);
   await mundo.pagina.getByLabel("Contraseña").fill(contrasena);
   await mundo.presionar("Ingresar");
+};
+
+// El header muestra al usuario con la sesión iniciada como "Nombre (email)", con el email en minúsculas
+const iniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrasena: string) => {
+  await intentarIniciarSesion(mundo, email, contrasena);
+  await expect(mundo.pagina.getByRole("banner"), "No se pudo iniciar sesión").toContainText(`(${email})`, {
+    ignoreCase: true,
+  });
 };
 
 Given(
@@ -24,6 +32,13 @@ When(
   "inicia sesión con email {string} y contraseña {string}",
   async function (this: MundoDeLaAplicacion, email: string, contrasena: string) {
     await iniciarSesion(this, email, contrasena);
+  },
+);
+
+When(
+  "intenta iniciar sesión con email {string} y contraseña {string}",
+  async function (this: MundoDeLaAplicacion, email: string, contrasena: string) {
+    await intentarIniciarSesion(this, email, contrasena);
   },
 );
 
