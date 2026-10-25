@@ -2,7 +2,7 @@ import { DataTable, Given, Then, When } from "@cucumber/cucumber";
 import { expect, Page } from "@playwright/test";
 import Alumno from "../../app/dominio/alumno";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
-import { registrarse } from "../support/acciones";
+import { registrarse, USUARIO_REGISTRADO } from "../support/acciones";
 import { MundoDeLaAplicacion } from "../support/mundo";
 
 interface DatosDeAlumno {
@@ -22,13 +22,7 @@ const filaDelAlumno = (pagina: Page, padron: string) =>
 
 Given("que inició sesión un usuario registrado", async function (this: MundoDeLaAplicacion) {
   // Registrarse inicia la sesión en el navegador del escenario
-  await registrarse(this, {
-    nombre: "Marta",
-    apellido: "Suarez",
-    email: "marta@example.com",
-    contraseña: "secreta123",
-    confirmación: "secreta123",
-  });
+  await registrarse(this, { ...USUARIO_REGISTRADO, confirmación: USUARIO_REGISTRADO.contraseña });
   await expect(this.pagina, "No se pudo registrar el usuario").toHaveURL("/alumnos");
 });
 

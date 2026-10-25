@@ -10,6 +10,14 @@ export interface DatosDeRegistro {
   confirmación: string;
 }
 
+// El usuario que se registra en el step "que inició sesión un usuario registrado"
+export const USUARIO_REGISTRADO = {
+  nombre: "Marta",
+  apellido: "Suarez",
+  email: "marta@example.com",
+  contraseña: "secreta123",
+};
+
 export const registrarse = async (mundo: MundoDeLaAplicacion, datos: DatosDeRegistro) => {
   const pagina = mundo.pagina;
   await pagina.goto("/registro");
