@@ -1,26 +1,8 @@
 import assert from "node:assert/strict";
 import { DataTable, Then, When } from "@cucumber/cucumber";
 import pool from "../../app/adaptadores/pool";
+import { registrarse } from "../support/acciones";
 import { MundoDeLaAplicacion } from "../support/mundo";
-
-interface DatosDeRegistro {
-  nombre: string;
-  apellido: string;
-  email: string;
-  contraseña: string;
-  confirmación: string;
-}
-
-const registrarse = async (mundo: MundoDeLaAplicacion, datos: DatosDeRegistro) => {
-  const respuesta = await mundo.navegador.post("/registro").type("form").send({
-    nombre: datos.nombre,
-    apellido: datos.apellido,
-    email: datos.email,
-    contrasena: datos.contraseña,
-    confirmacion: datos.confirmación,
-  });
-  mundo.registrarRespuesta(respuesta);
-};
 
 When("se registra con los datos:", async function (this: MundoDeLaAplicacion, tabla: DataTable) {
   const datos = tabla.rowsHash();

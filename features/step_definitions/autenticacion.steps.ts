@@ -1,9 +1,20 @@
 import { Given, Then, When } from "@cucumber/cucumber";
+import { expect } from "@playwright/test";
 import { MundoDeLaAplicacion } from "../support/mundo";
-import { debeRedirigirA } from "../support/verificaciones";
 
+const intentarIniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrasena: string) => {
+  await mundo.pagina.goto("/login");
+  await mundo.pagina.getByLabel("Email").fill(email);
+  await mundo.pagina.getByLabel("Contraseña").fill(contrasena);
+  await mundo.presionar("Ingresar");
+};
+
+// El header muestra al usuario con la sesión iniciada como "Nombre (email)", con el email en minúsculas
 const iniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrasena: string) => {
-  mundo.registrarRespuesta(await mundo.navegador.post("/login").type("form").send({ email, contrasena }));
+  await intentarIniciarSesion(mundo, email, contrasena);
+  await expect(mundo.pagina.getByRole("banner"), "No se pudo iniciar sesión").toContainText(`(${email})`, {
+    ignoreCase: true,
+  });
 };
 
 Given(
@@ -14,22 +25,8 @@ Given(
 );
 
 When("un usuario anónimo intenta consultar el listado de alumnos", async function (this: MundoDeLaAplicacion) {
-  this.registrarRespuesta(await this.navegador.get("/alumnos"));
+  await this.pagina.goto("/alumnos");
 });
-
-When(
-  "un usuario anónimo intenta dar de alta al alumno con padrón {string}, nombre {string} y apellido {string}",
-  async function (this: MundoDeLaAplicacion, padron: string, nombre: string, apellido: string) {
-    this.registrarRespuesta(await this.navegador.post("/alumnos").type("form").send({ padron, nombre, apellido }));
-  },
-);
-
-When(
-  "un usuario anónimo intenta eliminar al alumno con padrón {string}",
-  async function (this: MundoDeLaAplicacion, padron: string) {
-    this.registrarRespuesta(await this.navegador.post(`/alumnos/${padron}/eliminar`));
-  },
-);
 
 When(
   "inicia sesión con email {string} y contraseña {string}",
@@ -38,11 +35,18 @@ When(
   },
 );
 
+When(
+  "intenta iniciar sesión con email {string} y contraseña {string}",
+  async function (this: MundoDeLaAplicacion, email: string, contrasena: string) {
+    await intentarIniciarSesion(this, email, contrasena);
+  },
+);
+
 When("cierra la sesión", async function (this: MundoDeLaAplicacion) {
-  this.registrarRespuesta(await this.navegador.post("/logout"));
+  await this.presionar("Cerrar sesión");
 });
 
 // Se le pide que inicie sesión redirigiéndolo a la página de inicio de sesión
-Then("se le pide que inicie sesión", function (this: MundoDeLaAplicacion) {
-  debeRedirigirA(this.respuesta(), "/login");
+Then("se le pide que inicie sesión", async function (this: MundoDeLaAplicacion) {
+  await expect(this.pagina).toHaveURL("/login");
 });

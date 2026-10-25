@@ -17,10 +17,10 @@
         </thead>
         <tbody>
           {{#each alumnos}}
-            <tr>
-              <td><a href="/alumnos/{{padron}}">{{padron}}</a></td>
-              <td>{{nombre}}</td>
-              <td>{{apellido}}</td>
+            <tr id="alumno-{{padron}}">
+              <td class="alumno-padron"><a href="/alumnos/{{padron}}">{{padron}}</a></td>
+              <td class="alumno-nombre">{{nombre}}</td>
+              <td class="alumno-apellido">{{apellido}}</td>
               <td class="text-end">
                 <form method="post" action="/alumnos/{{padron}}/eliminar">
                   <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>

@@ -29,7 +29,9 @@ services:
       POSTGRES_PASSWORD: example
       POSTGRES_DB: postgres
       POSTGRES_PORT: 5432
-    image: node:22.13.1-slim
+    # Imagen de Playwright con Chromium y las bibliotecas del sistema que necesita. La versión tiene que coincidir con
+    # la de @playwright/test en package.json, que es la que busca ese Chromium
+    image: mcr.microsoft.com/playwright:v1.64.0-noble
     # command: "/bin/bash"
     #stdin_open: true # docker run -i
     #tty: true        # 

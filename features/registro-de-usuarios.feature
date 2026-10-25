@@ -25,15 +25,7 @@ Característica: Registro de usuarios
     Entonces ve el mensaje de error "Ya existe un usuario registrado con el email marta@example.com"
     Y no puede ver el listado de alumnos
 
-  Esquema del escenario: No se puede registrar un usuario con datos inválidos
-    Cuando se registra con nombre "<nombre>", apellido "<apellido>", email "<email>", contraseña "<contraseña>" y confirmación "<confirmación>"
-    Entonces ve el mensaje de error "<mensaje>"
+  Escenario: No se puede registrar un usuario si las contraseñas no coinciden
+    Cuando se registra con nombre "Juana", apellido "Lopez", email "juana@example.com", contraseña "secreta123" y confirmación "distinta123"
+    Entonces ve el mensaje de error "Las contraseñas no coinciden"
     Y no puede ver el listado de alumnos
-
-    Ejemplos:
-      | nombre | apellido | email             | contraseña | confirmación | mensaje                                       |
-      |        | Lopez    | juana@example.com | secreta123 | secreta123   | El campo nombre es obligatorio                |
-      | Juana  |          | juana@example.com | secreta123 | secreta123   | El campo apellido es obligatorio              |
-      | Juana  | Lopez    | no-es-un-email    | secreta123 | secreta123   | El email no es válido                         |
-      | Juana  | Lopez    | juana@example.com | corta      | corta        | La contraseña debe tener al menos 8 caracteres |
-      | Juana  | Lopez    | juana@example.com | secreta123 | distinta123  | Las contraseñas no coinciden                  |

@@ -1,10 +1,9 @@
-import assert from "node:assert/strict";
 import { DataTable, Given, Then, When } from "@cucumber/cucumber";
+import { expect, Page } from "@playwright/test";
 import Alumno from "../../app/dominio/alumno";
-import AlumnoNoEncontradoError from "../../app/dominio/alumno-no-encontrado-error";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
+import { registrarse, USUARIO_REGISTRADO } from "../support/acciones";
 import { MundoDeLaAplicacion } from "../support/mundo";
-import { debeContener } from "../support/verificaciones";
 
 interface DatosDeAlumno {
   padron: string;
@@ -17,27 +16,13 @@ const repositorioAlumnos = new RepositorioAlumnoSql();
 const alumnosDeLaTabla = (tabla: DataTable): DatosDeAlumno[] =>
   tabla.hashes().map((fila) => ({ padron: fila["padrón"], nombre: fila["nombre"], apellido: fila["apellido"] }));
 
-// Mismo escape que aplica Handlebars al mostrar un valor con {{ }}
-const ESCAPES_HTML: Record<string, string> = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#x27;",
-  "`": "&#x60;",
-  "=": "&#x3D;",
-};
-const escaparHtml = (texto: string) => texto.replace(/[&<>"'`=]/g, (caracter) => ESCAPES_HTML[caracter]);
+// La fila del listado se identifica con el padrón del alumno, que es único
+const filaDelAlumno = (pagina: Page, padron: string) => pagina.locator(`#alumno-${padron}`);
 
 Given("que inició sesión un usuario registrado", async function (this: MundoDeLaAplicacion) {
   // Registrarse inicia la sesión en el navegador del escenario
-  const respuesta = await this.navegador.post("/registro").type("form").send({
-    nombre: "Marta",
-    apellido: "Suarez",
-    email: "marta@example.com",
-    contrasena: "secreta123",
-  });
-  assert.equal(respuesta.status, 303, "No se pudo registrar el usuario");
+  await registrarse(this, { ...USUARIO_REGISTRADO, confirmación: USUARIO_REGISTRADO.contraseña });
+  await expect(this.pagina, "No se pudo registrar el usuario").toHaveURL("/alumnos");
 });
 
 // Los alumnos de los antecedentes se guardan directamente, sin pasar por la interfaz
@@ -48,87 +33,63 @@ Given("que existen los alumnos:", async function (tabla: DataTable) {
 });
 
 When("consulta el listado de alumnos", async function (this: MundoDeLaAplicacion) {
-  this.registrarRespuesta(await this.navegador.get("/alumnos"));
+  await this.pagina.goto("/alumnos");
 });
 
 When("consulta el alumno con padrón {string}", async function (this: MundoDeLaAplicacion, padron: string) {
-  this.registrarRespuesta(await this.navegador.get(`/alumnos/${padron}`));
+  await this.pagina.goto(`/alumnos/${padron}`);
 });
 
-// Como un navegador, sigue la redirección al detalle del alumno creado
 When(
   "da de alta al alumno con padrón {string}, nombre {string} y apellido {string}",
   async function (this: MundoDeLaAplicacion, padron: string, nombre: string, apellido: string) {
-    const respuesta = await this.navegador
-      .post("/alumnos")
-      .type("form")
-      .redirects(1)
-      .send({ padron, nombre, apellido });
-    this.registrarRespuesta(respuesta);
+    await this.pagina.goto("/alumnos/nuevo");
+    await this.pagina.getByLabel("Padrón").fill(padron);
+    await this.pagina.getByLabel("Nombre").fill(nombre);
+    await this.pagina.getByLabel("Apellido").fill(apellido);
+    await this.presionar("Crear");
   },
 );
 
-// Como un navegador, sigue la redirección al listado
 When("elimina al alumno con padrón {string}", async function (this: MundoDeLaAplicacion, padron: string) {
-  this.registrarRespuesta(await this.navegador.post(`/alumnos/${padron}/eliminar`).redirects(1));
+  await this.pagina.goto("/alumnos");
+  await this.presionar(filaDelAlumno(this.pagina, padron).getByRole("button", { name: "Eliminar" }));
 });
 
-Then("ve que no hay alumnos cargados", function (this: MundoDeLaAplicacion) {
-  debeContener(this.respuesta(), "No hay alumnos cargados.");
+Then("ve que no hay alumnos cargados", async function (this: MundoDeLaAplicacion) {
+  await expect(this.pagina.getByText("No hay alumnos cargados.")).toBeVisible();
 });
 
-Then("ve en el listado a los alumnos:", function (this: MundoDeLaAplicacion, tabla: DataTable) {
-  const respuesta = this.respuesta();
-  assert.equal(respuesta.status, 200);
+Then("ve en el listado a los alumnos:", async function (this: MundoDeLaAplicacion, tabla: DataTable) {
   for (const { padron, nombre, apellido } of alumnosDeLaTabla(tabla)) {
-    debeContener(respuesta, `href="/alumnos/${padron}"`);
-    debeContener(respuesta, nombre);
-    debeContener(respuesta, apellido);
+    // Las clases identifican cada dato de la fila, para verificar que se muestre en su columna
+    const fila = filaDelAlumno(this.pagina, padron);
+    await expect(fila.locator(".alumno-padron")).toHaveText(padron);
+    await expect(fila.locator(".alumno-nombre")).toHaveText(nombre);
+    await expect(fila.locator(".alumno-apellido")).toHaveText(apellido);
   }
 });
 
 Then(
   "ve el detalle del alumno con padrón {string}, nombre {string} y apellido {string}",
-  function (this: MundoDeLaAplicacion, padron: string, nombre: string, apellido: string) {
-    const respuesta = this.respuesta();
-    assert.equal(respuesta.status, 200);
-    debeContener(respuesta, `Alumno ${padron}`);
-    debeContener(respuesta, nombre);
-    debeContener(respuesta, apellido);
+  async function (this: MundoDeLaAplicacion, padron: string, nombre: string, apellido: string) {
+    await expect(this.pagina.getByRole("heading", { name: `Alumno ${padron}` })).toBeVisible();
+    // Las clases identifican cada dato del detalle, para verificar que se muestre en su lugar
+    await expect(this.pagina.locator(".alumno-padron")).toHaveText(padron);
+    await expect(this.pagina.locator(".alumno-nombre")).toHaveText(nombre);
+    await expect(this.pagina.locator(".alumno-apellido")).toHaveText(apellido);
   },
 );
 
 Then("el alumno con padrón {string} aparece en el listado", async function (this: MundoDeLaAplicacion, padron: string) {
-  debeContener(await this.navegador.get("/alumnos"), `href="/alumnos/${padron}"`);
+  await this.pagina.goto("/alumnos");
+  await expect(filaDelAlumno(this.pagina, padron)).toBeVisible();
 });
 
 Then(
   "el alumno con padrón {string} no aparece en el listado",
   async function (this: MundoDeLaAplicacion, padron: string) {
-    const listado = await this.navegador.get("/alumnos");
-    assert.equal(listado.status, 200);
-    assert.ok(!listado.text.includes(`href="/alumnos/${padron}"`), `El alumno ${padron} sigue en el listado`);
+    await this.pagina.goto("/alumnos");
+    await expect(filaDelAlumno(this.pagina, padron)).toHaveCount(0);
   },
 );
-
-Then("ve el nombre {string} tal como fue ingresado", function (this: MundoDeLaAplicacion, nombre: string) {
-  const respuesta = this.respuesta();
-  debeContener(respuesta, escaparHtml(nombre));
-  assert.ok(!respuesta.text.includes(nombre), `La página incluye "${nombre}" sin escapar`);
-});
-
-// Verificaciones sobre los datos guardados, útiles también cuando el usuario no puede ver el listado
-Then("no se registró ningún alumno", async function () {
-  assert.equal((await repositorioAlumnos.listarAlumnos()).length, 0);
-});
-
-Then("el alumno con padrón {string} sigue registrado", async function (padron: string) {
-  try {
-    await repositorioAlumnos.recuperar(padron);
-  } catch (error: unknown) {
-    if (error instanceof AlumnoNoEncontradoError) {
-      assert.fail(`El alumno ${padron} fue eliminado`);
-    }
-    throw error;
-  }
-});

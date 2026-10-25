@@ -1,4 +1,4 @@
-image: node:22.13.1-slim
+image: node:24.21.0-slim
 
 services:
   - docker:dind
