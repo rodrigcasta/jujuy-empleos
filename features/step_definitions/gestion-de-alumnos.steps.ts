@@ -73,8 +73,10 @@ Then(
   "ve el detalle del alumno con padrón {string}, nombre {string} y apellido {string}",
   async function (this: MundoDeLaAplicacion, padron: string, nombre: string, apellido: string) {
     await expect(this.pagina.getByRole("heading", { name: `Alumno ${padron}` })).toBeVisible();
-    await expect(this.pagina.getByRole("main")).toContainText(nombre);
-    await expect(this.pagina.getByRole("main")).toContainText(apellido);
+    // Las clases identifican cada dato del detalle, para verificar que se muestre en su lugar
+    await expect(this.pagina.locator(".alumno-padron")).toHaveText(padron);
+    await expect(this.pagina.locator(".alumno-nombre")).toHaveText(nombre);
+    await expect(this.pagina.locator(".alumno-apellido")).toHaveText(apellido);
   },
 );
 
