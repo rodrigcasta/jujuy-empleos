@@ -16,9 +16,8 @@ const repositorioAlumnos = new RepositorioAlumnoSql();
 const alumnosDeLaTabla = (tabla: DataTable): DatosDeAlumno[] =>
   tabla.hashes().map((fila) => ({ padron: fila["padrón"], nombre: fila["nombre"], apellido: fila["apellido"] }));
 
-// La fila del listado cuyo link lleva al detalle del alumno
-const filaDelAlumno = (pagina: Page, padron: string) =>
-  pagina.getByRole("row").filter({ has: pagina.getByRole("link", { name: padron, exact: true }) });
+// La fila del listado se identifica con el padrón del alumno, que es único
+const filaDelAlumno = (pagina: Page, padron: string) => pagina.locator(`#alumno-${padron}`);
 
 Given("que inició sesión un usuario registrado", async function (this: MundoDeLaAplicacion) {
   // Registrarse inicia la sesión en el navegador del escenario
@@ -63,9 +62,11 @@ Then("ve que no hay alumnos cargados", async function (this: MundoDeLaAplicacion
 
 Then("ve en el listado a los alumnos:", async function (this: MundoDeLaAplicacion, tabla: DataTable) {
   for (const { padron, nombre, apellido } of alumnosDeLaTabla(tabla)) {
+    // Las clases identifican cada dato de la fila, para verificar que se muestre en su columna
     const fila = filaDelAlumno(this.pagina, padron);
-    await expect(fila).toContainText(nombre);
-    await expect(fila).toContainText(apellido);
+    await expect(fila.locator(".alumno-padron")).toHaveText(padron);
+    await expect(fila.locator(".alumno-nombre")).toHaveText(nombre);
+    await expect(fila.locator(".alumno-apellido")).toHaveText(apellido);
   }
 });
 
