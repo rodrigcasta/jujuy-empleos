@@ -5,8 +5,12 @@ services:
 
 stages:
   - build
+  - prepare_test
   - deploy_test
+  - check_test
+  - prepare_prod
   - deploy_prod
+  - check_prod
 
 build_job:
   stage: build
@@ -22,14 +26,16 @@ build_job:
   only:
     - test 
 migrate_test_job:
-  stage: deploy_test
+  stage: prepare_test
   image: docker:27.4.0
   script:
     - docker run -v ${PWD}/db:/flyway/sql --rm flyway/flyway -mixed=true -url=$DB_URL -user=$DB_USER -password=$DB_PASS migrate
 
 deploy_test_job:
   stage: deploy_test
+  image: alpine:3.24.1
   script:
+    - apk add curl
     - curl --fail --show-error --silent "$TEST_DEPLOY_TEST_URL?$TEST_DEPLOY_TEST_PARAMS"
   dependencies:
     - migrate_test_job
