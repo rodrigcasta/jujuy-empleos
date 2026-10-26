@@ -23,13 +23,14 @@ build_job:
       when: always
       paths:
         - reports/
-  only:
-    - test 
+
 migrate_test_job:
   stage: prepare_test
   image: docker:27.4.0
   script:
     - docker run -v ${PWD}/db:/flyway/sql --rm flyway/flyway -mixed=true -url=$DB_URL -user=$DB_USER -password=$DB_PASS migrate
+  only:
+    - test 
 
 deploy_test_job:
   stage: deploy_test
@@ -39,10 +40,5 @@ deploy_test_job:
     - curl --fail --show-error --silent "$TEST_DEPLOY_TEST_URL?$TEST_DEPLOY_TEST_PARAMS"
   dependencies:
     - migrate_test_job
-
-deploy_prod_job:
-  stage: deploy_prod
-  script:
-    - curl --fail --show-error --silent "$PROD_DEPLOY_PROD_URL?$PROD_DEPLOY_PROD_PARAMS"
   only:
-    - prod
+    - test
