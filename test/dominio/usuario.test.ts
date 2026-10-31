@@ -49,16 +49,16 @@ describe("Usuario", () => {
 
   describe("registrar", () => {
     test("deberia guardar un hash de la contraseña y no la contraseña en texto plano", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123");
+      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123");
 
-      expect(usuario.obtenerHashContrasena()).not.toEqual("secreta123");
-      expect(usuario.obtenerHashContrasena()).not.toContain("secreta123");
+      expect(usuario.obtenerHashContrasena()).not.toEqual("Secreta123");
+      expect(usuario.obtenerHashContrasena()).not.toContain("Secreta123");
       expect(usuario.obtenerHashContrasena()).toMatch(/^\$2[aby]\$/);
     });
 
     test("deberia generar hashes distintos para la misma contraseña", async () => {
-      const usuario1 = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123");
-      const usuario2 = await Usuario.registrar("Ana", "Garcia", "ana@example.com", "secreta123");
+      const usuario1 = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123");
+      const usuario2 = await Usuario.registrar("Ana", "Garcia", "ana@example.com", "Secreta123");
 
       expect(usuario1.obtenerHashContrasena()).not.toEqual(usuario2.obtenerHashContrasena());
     });
@@ -70,7 +70,7 @@ describe("Usuario", () => {
     });
 
     test("deberia arrojar DatosDeUsuarioInvalidos si los demas datos son invalidos", async () => {
-      await expect(Usuario.registrar("Juana", "Lopez", "no-es-un-email", "secreta123")).rejects.toThrow(
+      await expect(Usuario.registrar("Juana", "Lopez", "no-es-un-email", "Secreta123")).rejects.toThrow(
         DatosDeUsuarioInvalidos,
       );
     });
@@ -153,7 +153,22 @@ describe("Usuario", () => {
       await expect(usuario).rejects.toThrow("La contraseña debe tener al menos una letra minúscula");
     });
 
-    test.each(["Gratuita", "Corporativa"])("deberia registrar un usuario con suscripcion $s", async (suscripcion) => {
+    test("deberia rechazar una contraseña sin al menos una letra mayúscula", async () => {
+      const contrasena = "empresa2026!#";
+
+      const usuario = Usuario.registrar(
+        "Laura",
+        "Fernandez",
+        "laura.fernandez@empresa-ejemplo.com.ar",
+        contrasena,
+        contrasena,
+        "Profesional",
+      );
+
+      await expect(usuario).rejects.toThrow("La contraseña debe tener al menos una letra mayúscula");
+    });
+
+    test.each(["Gratuita", "Corporativa"])("deberia registrar un usuario con suscripcion %s", async (suscripcion) => {
       const usuario = await Usuario.registrar(
         "Laura",
         "Fernandez",
@@ -181,32 +196,32 @@ describe("Usuario", () => {
 
   describe("registrar con confirmacion de contraseña", () => {
     test("deberia registrar al usuario si la confirmacion coincide con la contraseña", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123", "secreta123");
+      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123", "Secreta123");
 
-      expect(await usuario.verificarContrasena("secreta123")).toBe(true);
+      expect(await usuario.verificarContrasena("Secreta123")).toBe(true);
     });
 
     test("deberia arrojar DatosDeUsuarioInvalidos si la confirmacion no coincide con la contraseña", async () => {
-      const registrar = Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123", "distinta123");
+      const registrar = Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123", "Distinta123");
 
       await expect(registrar).rejects.toThrow(DatosDeUsuarioInvalidos);
       await expect(registrar).rejects.toThrow("Las contraseñas no coinciden");
     });
 
     test("deberia validar la confirmacion aunque este vacia", async () => {
-      await expect(Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123", "")).rejects.toThrow(
+      await expect(Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123", "")).rejects.toThrow(
         "Las contraseñas no coinciden",
       );
     });
 
     test("no deberia validar la confirmacion si no esta presente", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123", undefined);
+      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123", undefined);
 
       expect(usuario.obtenerEmail()).toEqual("juana@example.com");
     });
 
     test("deberia validar el largo de la contraseña antes que la confirmacion", async () => {
-      await expect(Usuario.registrar("Juana", "Lopez", "juana@example.com", "corta", "otra")).rejects.toThrow(
+      await expect(Usuario.registrar("Juana", "Lopez", "juana@example.com", "Corta", "Otra")).rejects.toThrow(
         "La contraseña debe tener al menos 8 caracteres",
       );
     });
@@ -214,13 +229,13 @@ describe("Usuario", () => {
 
   describe("verificarContrasena", () => {
     test("deberia devolver true si la contraseña es correcta", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123");
+      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123");
 
-      expect(await usuario.verificarContrasena("secreta123")).toBe(true);
+      expect(await usuario.verificarContrasena("Secreta123")).toBe(true);
     });
 
     test("deberia devolver false si la contraseña es incorrecta", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123");
+      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123");
 
       expect(await usuario.verificarContrasena("otra-clave")).toBe(false);
     });

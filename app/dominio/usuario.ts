@@ -10,6 +10,7 @@ export default class Usuario {
   private static readonly FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
   private static readonly PATRON_MINUSCULA = /[a-z]/;
+  private static readonly PATRON_MAYUSCULA = /[A-Z]/;
   private nombre: string;
   private apellido: string;
   private email: string;
@@ -125,6 +126,11 @@ export default class Usuario {
     if (!Usuario.PATRON_MINUSCULA.test(contrasena)) {
       throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos una letra minúscula");
     }
+
+    if (!Usuario.PATRON_MAYUSCULA.test(contrasena)) {
+      throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos una letra mayúscula");
+    }
+
     if (confirmacion !== undefined && confirmacion !== contrasena) {
       throw new DatosDeUsuarioInvalidos("Las contraseñas no coinciden");
     }
