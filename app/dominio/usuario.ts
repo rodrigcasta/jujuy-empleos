@@ -12,6 +12,7 @@ export default class Usuario {
   private static readonly PATRON_MINUSCULA = /[a-z]/;
   private static readonly PATRON_MAYUSCULA = /[A-Z]/;
   private static readonly PATRON_NUMERO = /[0-9]/;
+  private static readonly PATRON_SIMBOLO = /^(?=(?:.*[$%#@!&]){2,}).*$/;
   private nombre: string;
   private apellido: string;
   private email: string;
@@ -134,6 +135,10 @@ export default class Usuario {
 
     if (!Usuario.PATRON_NUMERO.test(contrasena)) {
       throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos un número");
+    }
+
+    if (!Usuario.PATRON_SIMBOLO.test(contrasena)) {
+      throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos dos símbolos");
     }
 
     if (confirmacion !== undefined && confirmacion !== contrasena) {

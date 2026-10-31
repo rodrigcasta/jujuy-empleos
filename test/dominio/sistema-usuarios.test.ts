@@ -19,21 +19,21 @@ describe("SistemaUsuarios", () => {
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(null);
       mockRepositorioUsuario.guardar.mockResolvedValue(undefined);
 
-      const usuario = await sistemaUsuarios.registrar("Juana", "Lopez", "Juana@Example.com", "Secreta123");
+      const usuario = await sistemaUsuarios.registrar("Juana", "Lopez", "Juana@Example.com", "Secreta123!#");
 
       expect(mockRepositorioUsuario.guardar).toHaveBeenCalledTimes(1);
       const usuarioGuardado = mockRepositorioUsuario.guardar.mock.calls[0][0];
       expect(usuarioGuardado).toBe(usuario);
       expect(usuarioGuardado.obtenerEmail()).toEqual("juana@example.com");
-      expect(usuarioGuardado.obtenerHashContrasena()).not.toEqual("Secreta123");
-      expect(await usuarioGuardado.verificarContrasena("Secreta123")).toBe(true);
+      expect(usuarioGuardado.obtenerHashContrasena()).not.toEqual("Secreta123!#");
+      expect(await usuarioGuardado.verificarContrasena("Secreta123!#")).toBe(true);
     });
 
     test("deberia arrojar UsuarioYaExisteError si ya hay un usuario con el mismo email", async () => {
-      const existente = await Usuario.registrar("Juana", "Lopez", "juana@ejemplo.com", "Secreta123");
+      const existente = await Usuario.registrar("Juana", "Lopez", "juana@ejemplo.com", "Secreta123!#");
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(existente);
 
-      const registrar = sistemaUsuarios.registrar("Otra", "Persona", "JUANA@EJEMPLO.COM", "Otra-clave1");
+      const registrar = sistemaUsuarios.registrar("Otra", "Persona", "JUANA@EJEMPLO.COM", "Otra-clave1!#");
 
       await expect(registrar).rejects.toThrow(UsuarioYaExisteError);
 
@@ -46,7 +46,7 @@ describe("SistemaUsuarios", () => {
 
     test("deberia arrojar DatosDeUsuarioInvalidos y no guardar si la confirmacion no coincide", async () => {
       await expect(
-        sistemaUsuarios.registrar("Juana", "Lopez", "juana@example.com", "Secreta123", "Distinta123"),
+        sistemaUsuarios.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#", "Distinta123!#"),
       ).rejects.toThrow("Las contraseñas no coinciden");
 
       expect(mockRepositorioUsuario.guardar).not.toHaveBeenCalled();
@@ -65,13 +65,13 @@ describe("SistemaUsuarios", () => {
     let usuario: Usuario;
 
     beforeEach(async () => {
-      usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123");
+      usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#");
     });
 
     test("deberia devolver el usuario si el email y la contraseña son correctos", async () => {
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(usuario);
 
-      const resultado = await sistemaUsuarios.autenticar(" JUANA@example.com ", "Secreta123");
+      const resultado = await sistemaUsuarios.autenticar(" JUANA@example.com ", "Secreta123!#");
 
       expect(resultado).toBe(usuario);
       expect(mockRepositorioUsuario.recuperarPorEmail).toHaveBeenCalledWith("juana@example.com");
@@ -86,7 +86,7 @@ describe("SistemaUsuarios", () => {
     test("deberia devolver null si el usuario no existe", async () => {
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(null);
 
-      expect(await sistemaUsuarios.autenticar("nadie@example.com", "Secreta123")).toBeNull();
+      expect(await sistemaUsuarios.autenticar("nadie@example.com", "Secreta123!#")).toBeNull();
     });
   });
 
