@@ -53,12 +53,13 @@ describe("RepositorioUsuario", () => {
 
   describe("recuperarPorId", () => {
     test("deberia devolver el usuario almacenado con ese id", async () => {
-      const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash");
+      const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash", undefined, "Corporativa");
       await repositorioUsuario.guardar(usuario);
 
       const resultado = await repositorioUsuario.recuperarPorId(usuario.obtenerId());
 
       expect(resultado?.obtenerEmail()).toEqual("juana@example.com");
+      expect(resultado?.obtenerSuscripcion()).toEqual("Corporativa");
     });
 
     test("deberia devolver null si no existe un usuario con ese id", async () => {
