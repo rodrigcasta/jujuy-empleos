@@ -124,6 +124,31 @@ describe("Usuario", () => {
 
       await expect(usuario).rejects.toThrow("La contraseña no puede tener mas de 20 caracteres");
     });
+
+    test.each(["Gratuita", "Corporativa"])("deberia registrar un usuario con suscripcion $s", async (suscripcion) => {
+      const usuario = await Usuario.registrar(
+        "Laura",
+        "Fernandez",
+        "laura.fernandez@empresa-ejemplo.com.ar",
+        "Empresa2026!#",
+        "Empresa2026!#",
+        suscripcion,
+      );
+
+      expect(usuario.obtenerSuscripcion()).toBe(suscripcion);
+    });
+
+    test("deberia registrar un usuario con suscripcion profesional de forma predeterminada", async () => {
+      const usuario = await Usuario.registrar(
+        "Laura",
+        "Fernandez",
+        "laura.fernandez@empresa-ejemplo.com.ar",
+        "Empresa2026!#",
+        "Empresa2026!#",
+      );
+
+      expect(usuario.obtenerSuscripcion()).toBe("Profesional");
+    });
   });
 
   describe("registrar con confirmacion de contraseña", () => {
