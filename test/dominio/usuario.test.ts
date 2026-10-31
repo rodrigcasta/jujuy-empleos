@@ -87,6 +87,13 @@ describe("Usuario", () => {
 
       expect(usuario.obtenerSuscripcion()).toBe("Profesional");
     });
+
+    test("deberia rechazar un email de mas de 254 caracteres", async () => {
+      const email = `${"a".repeat(243)}@ejemplo.com`;
+      const usuario = Usuario.registrar("Laura", "Fernandez", email, "Empresa2026!#", "Empresa2026!#", "Profesional");
+
+      await expect(usuario).rejects.toThrow("El email no puede tener mas de 254 caracteres");
+    });
   });
 
   describe("registrar con confirmacion de contraseña", () => {

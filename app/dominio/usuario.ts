@@ -91,7 +91,10 @@ export default class Usuario {
 
   private static validarEmail(email: string): string {
     const normalizado = Usuario.normalizarEmail(email);
-    if (normalizado.length > Usuario.LARGO_MAXIMO_EMAIL || !Usuario.FORMATO_EMAIL.test(normalizado)) {
+    if (normalizado.length > Usuario.LARGO_MAXIMO_EMAIL) {
+      throw new DatosDeUsuarioInvalidos(`El email no puede tener mas de ${Usuario.LARGO_MAXIMO_EMAIL} caracteres`);
+    }
+    if (!Usuario.FORMATO_EMAIL.test(normalizado)) {
       throw new DatosDeUsuarioInvalidos("El email no es válido");
     }
     return normalizado;
