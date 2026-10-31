@@ -5,6 +5,7 @@ export default class Usuario {
   private static readonly LARGO_MAXIMO_NOMBRE = 20;
   private static readonly LARGO_MAXIMO_EMAIL = 254;
   private static readonly LARGO_MINIMO_CONTRASENA = 8;
+  private static readonly LARGO_MAXIMO_CONTRASENA = 20;
   private static readonly COSTO_HASH = 10;
   private static readonly FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
@@ -104,6 +105,11 @@ export default class Usuario {
     if (contrasena.length < Usuario.LARGO_MINIMO_CONTRASENA) {
       throw new DatosDeUsuarioInvalidos(
         `La contraseña debe tener al menos ${Usuario.LARGO_MINIMO_CONTRASENA} caracteres`,
+      );
+    }
+    if (contrasena.length > Usuario.LARGO_MAXIMO_CONTRASENA) {
+      throw new DatosDeUsuarioInvalidos(
+        `La contraseña no puede tener mas de ${Usuario.LARGO_MAXIMO_CONTRASENA} caracteres`,
       );
     }
     if (confirmacion !== undefined && confirmacion !== contrasena) {

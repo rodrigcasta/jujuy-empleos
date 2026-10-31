@@ -94,6 +94,36 @@ describe("Usuario", () => {
 
       await expect(usuario).rejects.toThrow("El email no puede tener mas de 254 caracteres");
     });
+
+    test("deberia registrar un usuario con una contraseña de 20 caracteres", async () => {
+      const contrasena = "EmpresaSegura2026!#$";
+
+      const usuario = await Usuario.registrar(
+        "Laura",
+        "Fernandez",
+        "laura.fernandez@empresa-ejemplo.com.ar",
+        contrasena,
+        contrasena,
+        "Profesional",
+      );
+
+      expect(await usuario.verificarContrasena(contrasena)).toBe(true);
+    });
+
+    test("deberia rechazar una contraseña de mas de 20 caracteres", async () => {
+      const contrasena = "EmpresaSegura2026!#$A";
+
+      const usuario = Usuario.registrar(
+        "Laura",
+        "Fernandez",
+        "laura.fernandez@empresa-ejemplo.com.ar",
+        contrasena,
+        contrasena,
+        "Profesional",
+      );
+
+      await expect(usuario).rejects.toThrow("La contraseña no puede tener mas de 20 caracteres");
+    });
   });
 
   describe("registrar con confirmacion de contraseña", () => {
