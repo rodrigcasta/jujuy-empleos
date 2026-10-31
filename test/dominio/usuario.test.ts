@@ -125,6 +125,19 @@ describe("Usuario", () => {
       await expect(usuario).rejects.toThrow("La contraseña no puede tener mas de 20 caracteres");
     });
 
+    test("deberia rechazar la contraseña vacia", async () => {
+      const usuario = Usuario.registrar(
+        "Laura",
+        "Fernandez",
+        "laura.fernandez@empresa-ejemplo.com.ar",
+        "",
+        "",
+        "Profesional",
+      );
+
+      await expect(usuario).rejects.toThrow("La contraseña es obligatoria");
+    });
+
     test.each(["Gratuita", "Corporativa"])("deberia registrar un usuario con suscripcion $s", async (suscripcion) => {
       const usuario = await Usuario.registrar(
         "Laura",

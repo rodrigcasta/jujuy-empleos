@@ -105,11 +105,16 @@ export default class Usuario {
   }
 
   private static validarContrasena(contrasena: string, confirmacion?: string) {
+    if (contrasena.length === 0) {
+      throw new DatosDeUsuarioInvalidos("La contraseña es obligatoria");
+    }
+
     if (contrasena.length < Usuario.LARGO_MINIMO_CONTRASENA) {
       throw new DatosDeUsuarioInvalidos(
         `La contraseña debe tener al menos ${Usuario.LARGO_MINIMO_CONTRASENA} caracteres`,
       );
     }
+
     if (contrasena.length > Usuario.LARGO_MAXIMO_CONTRASENA) {
       throw new DatosDeUsuarioInvalidos(
         `La contraseña no puede tener mas de ${Usuario.LARGO_MAXIMO_CONTRASENA} caracteres`,
