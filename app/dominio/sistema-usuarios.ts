@@ -15,8 +15,9 @@ export default class SistemaUsuarios {
     email: string,
     contrasena: string,
     confirmacion?: string,
+    suscripcion?: string,
   ): Promise<Usuario> {
-    const usuario = await Usuario.registrar(nombre, apellido, email, contrasena, confirmacion);
+    const usuario = await Usuario.registrar(nombre, apellido, email, contrasena, confirmacion, suscripcion);
 
     const existente = await this.repositorioUsuario.recuperarPorEmail(usuario.obtenerEmail());
     if (existente) {
