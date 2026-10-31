@@ -15,7 +15,7 @@ export const USUARIO_REGISTRADO = {
   nombre: "Marta",
   apellido: "Suarez",
   email: "marta@example.com",
-  contraseña: "Secreta123",
+  contraseña: "Secreta123!#",
 };
 
 export const registrarse = async (mundo: MundoDeLaAplicacion, datos: DatosDeRegistro) => {
