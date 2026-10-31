@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import DatosDeUsuarioInvalidos from "./datos-de-usuario-invalidos";
 
 export default class Usuario {
-  private static readonly LARGO_MAXIMO_NOMBRE = 40;
+  private static readonly LARGO_MAXIMO_NOMBRE = 20;
   private static readonly LARGO_MAXIMO_EMAIL = 254;
   private static readonly LARGO_MINIMO_CONTRASENA = 8;
   private static readonly COSTO_HASH = 10;
