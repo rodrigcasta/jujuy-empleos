@@ -21,7 +21,7 @@ Característica: Registro de usuarios
       | apellido   | Suarez            |
       | email      | marta@example.com |
       | contraseña | Secreta123        |
-    Cuando se registra con nombre "Otra", apellido "Persona", email "MARTA@example.com", contraseña "Otra-clave" y confirmación "Otra-clave"
+    Cuando se registra con nombre "Otra", apellido "Persona", email "MARTA@example.com", contraseña "Otra-clave1" y confirmación "Otra-clave1"
     Entonces ve el mensaje de error "El email es inválido"
     Y no puede ver el listado de alumnos
 

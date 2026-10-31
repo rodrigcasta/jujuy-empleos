@@ -11,6 +11,7 @@ export default class Usuario {
   private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
   private static readonly PATRON_MINUSCULA = /[a-z]/;
   private static readonly PATRON_MAYUSCULA = /[A-Z]/;
+  private static readonly PATRON_NUMERO = /[0-9]/;
   private nombre: string;
   private apellido: string;
   private email: string;
@@ -129,6 +130,10 @@ export default class Usuario {
 
     if (!Usuario.PATRON_MAYUSCULA.test(contrasena)) {
       throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos una letra mayúscula");
+    }
+
+    if (!Usuario.PATRON_NUMERO.test(contrasena)) {
+      throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos un número");
     }
 
     if (confirmacion !== undefined && confirmacion !== contrasena) {

@@ -33,7 +33,7 @@ describe("SistemaUsuarios", () => {
       const existente = await Usuario.registrar("Juana", "Lopez", "juana@ejemplo.com", "Secreta123");
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(existente);
 
-      const registrar = sistemaUsuarios.registrar("Otra", "Persona", "JUANA@EJEMPLO.COM", "Otra-clave");
+      const registrar = sistemaUsuarios.registrar("Otra", "Persona", "JUANA@EJEMPLO.COM", "Otra-clave1");
 
       await expect(registrar).rejects.toThrow(UsuarioYaExisteError);
 
