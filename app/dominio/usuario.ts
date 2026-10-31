@@ -7,13 +7,22 @@ export default class Usuario {
   private static readonly LARGO_MINIMO_CONTRASENA = 8;
   private static readonly COSTO_HASH = 10;
   private static readonly FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
   private nombre: string;
   private apellido: string;
   private email: string;
   private hashContrasena: string;
   private id: number;
+  private suscripcion: string;
 
-  constructor(nombre: string, apellido: string, email: string, hashContrasena: string, id: number = 0) {
+  constructor(
+    nombre: string,
+    apellido: string,
+    email: string,
+    hashContrasena: string,
+    id: number = 0,
+    suscripcion: string = Usuario.SUSCRIPCION_PREDETERMINADA,
+  ) {
     this.nombre = Usuario.validarNombre(nombre, "nombre");
     this.apellido = Usuario.validarNombre(apellido, "apellido");
     this.email = Usuario.validarEmail(email);
@@ -22,6 +31,11 @@ export default class Usuario {
     }
     this.hashContrasena = hashContrasena;
     this.id = id;
+    this.suscripcion = suscripcion;
+  }
+
+  public obtenerSuscripcion(): string {
+    return this.suscripcion;
   }
 
   // Crea un usuario nuevo a partir de la contraseña en texto plano, que solo se usa para calcular el hash.
@@ -32,6 +46,7 @@ export default class Usuario {
     email: string,
     contrasena: string,
     confirmacion?: string,
+    suscripcion: string = Usuario.SUSCRIPCION_PREDETERMINADA,
   ): Promise<Usuario> {
     // Se validan todos los datos antes de calcular el hash, que es costoso
     Usuario.validarContrasena(contrasena, confirmacion);
@@ -39,7 +54,7 @@ export default class Usuario {
     Usuario.validarNombre(apellido, "apellido");
     Usuario.validarEmail(email);
     const hashContrasena = await bcrypt.hash(contrasena, Usuario.COSTO_HASH);
-    return new Usuario(nombre, apellido, email, hashContrasena);
+    return new Usuario(nombre, apellido, email, hashContrasena, 0, suscripcion);
   }
 
   public async verificarContrasena(contrasena: string): Promise<boolean> {

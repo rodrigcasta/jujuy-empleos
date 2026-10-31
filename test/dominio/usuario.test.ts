@@ -73,6 +73,19 @@ describe("Usuario", () => {
         DatosDeUsuarioInvalidos,
       );
     });
+
+    test("deberia registrar un usuario con suscripcion Profesional", async () => {
+      const usuario = await Usuario.registrar(
+        "Laura",
+        "Fernandez",
+        "laura.fernandez@empresa-ejemplo.com.ar",
+        "Empresa2026!#",
+        "Empresa2026!#",
+        "Profesional",
+      );
+
+      expect(usuario.obtenerSuscripcion()).toBe("Profesional");
+    });
   });
 
   describe("registrar con confirmacion de contraseña", () => {
