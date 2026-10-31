@@ -34,7 +34,7 @@ describe("Usuario", () => {
       ["apellido demasiado largo", "Juana", "a".repeat(21), "juana@example.com", "no puede tener más de 20"],
       ["email sin arroba", "Juana", "Lopez", "juana.example.com", "El email no es válido"],
       ["email sin dominio", "Juana", "Lopez", "juana@", "El email no es válido"],
-      ["email vacio", "Juana", "Lopez", "", "El email no es válido"],
+      ["email vacio", "Juana", "Lopez", "", "El email es obligatorio"],
     ])("deberia arrojar DatosDeUsuarioInvalidos con %s", (_caso, nombre, apellido, email, mensaje) => {
       const crear = () => new Usuario(nombre, apellido, email, "hash");
 

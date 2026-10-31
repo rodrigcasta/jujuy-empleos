@@ -95,6 +95,9 @@ export default class Usuario {
     if (normalizado.length > Usuario.LARGO_MAXIMO_EMAIL) {
       throw new DatosDeUsuarioInvalidos(`El email no puede tener mas de ${Usuario.LARGO_MAXIMO_EMAIL} caracteres`);
     }
+    if (normalizado.length === 0) {
+      throw new DatosDeUsuarioInvalidos("El email es obligatorio");
+    }
     if (!Usuario.FORMATO_EMAIL.test(normalizado)) {
       throw new DatosDeUsuarioInvalidos("El email no es válido");
     }
