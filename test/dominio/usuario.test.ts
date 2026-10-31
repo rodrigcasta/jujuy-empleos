@@ -138,6 +138,21 @@ describe("Usuario", () => {
       await expect(usuario).rejects.toThrow("La contraseña es obligatoria");
     });
 
+    test("deberia rechazar una contraseña sin letra minuscula", async () => {
+      const contrasena = "EMPRESA2026!#";
+
+      const usuario = Usuario.registrar(
+        "Laura",
+        "Fernandez",
+        "laura.fernandez@empresa-ejemplo.com.ar",
+        contrasena,
+        contrasena,
+        "Profesional",
+      );
+
+      await expect(usuario).rejects.toThrow("La contraseña debe tener al menos una letra minúscula");
+    });
+
     test.each(["Gratuita", "Corporativa"])("deberia registrar un usuario con suscripcion $s", async (suscripcion) => {
       const usuario = await Usuario.registrar(
         "Laura",

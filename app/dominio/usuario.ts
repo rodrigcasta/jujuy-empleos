@@ -9,6 +9,7 @@ export default class Usuario {
   private static readonly COSTO_HASH = 10;
   private static readonly FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
+  private static readonly PATRON_MINUSCULA = /[a-z]/;
   private nombre: string;
   private apellido: string;
   private email: string;
@@ -119,6 +120,10 @@ export default class Usuario {
       throw new DatosDeUsuarioInvalidos(
         `La contraseña no puede tener mas de ${Usuario.LARGO_MAXIMO_CONTRASENA} caracteres`,
       );
+    }
+
+    if (!Usuario.PATRON_MINUSCULA.test(contrasena)) {
+      throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos una letra minúscula");
     }
     if (confirmacion !== undefined && confirmacion !== contrasena) {
       throw new DatosDeUsuarioInvalidos("Las contraseñas no coinciden");
