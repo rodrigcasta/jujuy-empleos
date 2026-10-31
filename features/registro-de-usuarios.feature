@@ -22,7 +22,7 @@ Característica: Registro de usuarios
       | email      | marta@example.com |
       | contraseña | secreta123        |
     Cuando se registra con nombre "Otra", apellido "Persona", email "MARTA@example.com", contraseña "otra-clave" y confirmación "otra-clave"
-    Entonces ve el mensaje de error "Ya existe un usuario registrado con el email marta@example.com"
+    Entonces ve el mensaje de error "El email es inválido"
     Y no puede ver el listado de alumnos
 
   Escenario: No se puede registrar un usuario si las contraseñas no coinciden

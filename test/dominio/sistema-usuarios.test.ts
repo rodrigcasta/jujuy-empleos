@@ -30,14 +30,17 @@ describe("SistemaUsuarios", () => {
     });
 
     test("deberia arrojar UsuarioYaExisteError si ya hay un usuario con el mismo email", async () => {
-      const existente = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "secreta123");
+      const existente = await Usuario.registrar("Juana", "Lopez", "juana@ejemplo.com", "secreta123");
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(existente);
 
-      await expect(sistemaUsuarios.registrar("Otra", "Persona", "juana@example.com", "otra-clave")).rejects.toThrow(
-        UsuarioYaExisteError,
-      );
+      const registrar = sistemaUsuarios.registrar("Otra", "Persona", "JUANA@EJEMPLO.COM", "otra-clave");
 
-      expect(mockRepositorioUsuario.recuperarPorEmail).toHaveBeenCalledWith("juana@example.com");
+      await expect(registrar).rejects.toThrow(UsuarioYaExisteError);
+
+      await expect(registrar).rejects.toThrow("El email es inválido");
+
+      expect(mockRepositorioUsuario.recuperarPorEmail).toHaveBeenCalledWith("juana@ejemplo.com");
+
       expect(mockRepositorioUsuario.guardar).not.toHaveBeenCalled();
     });
 

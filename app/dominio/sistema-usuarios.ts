@@ -20,7 +20,7 @@ export default class SistemaUsuarios {
 
     const existente = await this.repositorioUsuario.recuperarPorEmail(usuario.obtenerEmail());
     if (existente) {
-      throw new UsuarioYaExisteError(usuario.obtenerEmail());
+      throw new UsuarioYaExisteError();
     }
 
     await this.repositorioUsuario.guardar(usuario);

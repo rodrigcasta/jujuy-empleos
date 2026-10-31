@@ -25,7 +25,7 @@ export default class RepositorioUsuarioSql implements IRepositorioUsuario {
       usuario.cambiarId(resultado.rows[0].id);
     } catch (error: unknown) {
       if (ErrorPostgres.esViolacionDeUnicidad(error)) {
-        throw new UsuarioYaExisteError(usuario.obtenerEmail());
+        throw new UsuarioYaExisteError();
       }
       throw error;
     }
