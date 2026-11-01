@@ -44,5 +44,19 @@ describe("Oferta", () => {
       expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
       expect(crearOferta).toThrow("El titulo tiene más de 50 caracteres");
     });
+
+    test("deberia aceptar un titulo con exactamente 50 caracteres", () => {
+      const titulo = "a".repeat(50);
+
+      const oferta = new Oferta(
+        titulo,
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        1,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      expect(oferta.obtenerTitulo()).toBe(titulo);
+    });
   });
 });
