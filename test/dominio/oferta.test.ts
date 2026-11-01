@@ -35,5 +35,15 @@ describe("Oferta", () => {
       expect(crearOferta).rejects.toThrow(DatosDeOfertaInvalidos);
       expect(crearOferta).rejects.toThrow(`${campo} es obligatorio`);
     });
+
+    test("deberia rechazar un titulo con 51 caracteres o mas", async () => {
+      const fechaPublicacion = new Date("2026-11-01T15:00:00.000Z");
+
+      const crearOferta = () =>
+        new Oferta("a".repeat(51), "Se busca desarrollador backend junior", "Tres de Febrero", 1, fechaPublicacion);
+
+      expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
+      expect(crearOferta).toThrow("El titulo tiene más de 50 caracteres");
+    });
   });
 });
