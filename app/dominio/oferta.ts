@@ -8,7 +8,7 @@ export default class Oferta {
   private idEmpresario: number;
   private fechaPublicacion: Date;
 
-  constructor(titulo: string, descripcion: string, ubicacion: string, idempresario: number, fechaPublicacion: Date) {
+  constructor(titulo: string, descripcion: string, ubicacion: string, idEmpresario: number, fechaPublicacion: Date) {
     if (titulo.trim().length === 0) {
       throw new DatosDeOfertaInvalidos("titulo es obligatorio");
     }
@@ -24,7 +24,7 @@ export default class Oferta {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.ubicacion = ubicacion;
-    this.idEmpresario = idempresario;
+    this.idEmpresario = idEmpresario;
     this.fechaPublicacion = fechaPublicacion;
   }
 

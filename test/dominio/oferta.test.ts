@@ -3,7 +3,7 @@ import DatosDeOfertaInvalidos from "../../app/dominio/datos-de-oferta-invalidos"
 
 describe("Oferta", () => {
   describe("constructor", () => {
-    test("deberia realizar una oferta con sus atributos correspondientes", async () => {
+    test("deberia realizar una oferta con sus atributos correspondientes", () => {
       const fechaPublicacion = new Date("2026-11-01T15:00:00.000Z");
 
       const oferta = new Oferta(
@@ -29,14 +29,13 @@ describe("Oferta", () => {
       ["ubicacion", "Titulo valido", "Descripcion valida", ""],
       ["ubicacion", "Titulo valido", "Descripcion valida", "   "],
     ])("deberia rechazar %s vacio", (campo, titulo, descripcion, ubicacion) => {
-      const crearOferta = async () =>
-        new Oferta(titulo, descripcion, ubicacion, 1, new Date("2026-11-01T15:00:00.000Z"));
+      const crearOferta = () => new Oferta(titulo, descripcion, ubicacion, 1, new Date("2026-11-01T15:00:00.000Z"));
 
-      expect(crearOferta).rejects.toThrow(DatosDeOfertaInvalidos);
-      expect(crearOferta).rejects.toThrow(`${campo} es obligatorio`);
+      expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
+      expect(crearOferta).toThrow(`${campo} es obligatorio`);
     });
 
-    test("deberia rechazar un titulo con 51 caracteres o mas", async () => {
+    test("deberia rechazar un titulo con 51 caracteres o mas", () => {
       const fechaPublicacion = new Date("2026-11-01T15:00:00.000Z");
 
       const crearOferta = () =>
