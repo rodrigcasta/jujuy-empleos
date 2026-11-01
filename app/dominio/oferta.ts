@@ -2,14 +2,14 @@ export default class Oferta {
   private titulo: string;
   private descripcion: string;
   private ubicacion: string;
-  private idempresario: number;
+  private idEmpresario: number;
   private fechaPublicacion: Date;
 
   constructor(titulo: string, descripcion: string, ubicacion: string, idempresario: number, fechaPublicacion: Date) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.ubicacion = ubicacion;
-    this.idempresario = idempresario;
+    this.idEmpresario = idempresario;
     this.fechaPublicacion = fechaPublicacion;
   }
 
@@ -26,7 +26,7 @@ export default class Oferta {
   }
 
   public obtenerIdEmpresario(): number {
-    return this.idempresario;
+    return this.idEmpresario;
   }
 
   public obtenerFechaPublicacion(): Date {
