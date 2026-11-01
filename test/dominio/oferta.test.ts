@@ -58,5 +58,27 @@ describe("Oferta", () => {
 
       expect(oferta.obtenerTitulo()).toBe(titulo);
     });
+
+    test("deberia rechazar una descripcion de 251 caracteres", () => {
+      const crearOferta = () =>
+        new Oferta("Programador Jr.", "a".repeat(251), "Tres de Febrero", 1, new Date("2026-11-01T15:00:00.000Z"));
+
+      expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
+      expect(crearOferta).toThrow("La descripción tiene mas de 250 caracteres");
+    });
+
+    test("deberia aceptar una descripcion con exactamente 250 caracteres", () => {
+      const descripcion = "a".repeat(250);
+
+      const oferta = new Oferta(
+        "Desarrollador backend",
+        descripcion,
+        "Tres de Febrero",
+        1,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      expect(oferta.obtenerDescripcion()).toBe(descripcion);
+    });
   });
 });

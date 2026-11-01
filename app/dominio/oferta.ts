@@ -2,6 +2,7 @@ import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
 
 export default class Oferta {
   private static readonly LARGO_MAXIMO_TITULO = 50;
+  private static readonly LARGO_MAXIMO_DESCRIPCION = 250;
   private titulo: string;
   private descripcion: string;
   private ubicacion: string;
@@ -11,6 +12,9 @@ export default class Oferta {
   constructor(titulo: string, descripcion: string, ubicacion: string, idEmpresario: number, fechaPublicacion: Date) {
     if (titulo.trim().length === 0) {
       throw new DatosDeOfertaInvalidos("titulo es obligatorio");
+    }
+    if (descripcion.trim().length > Oferta.LARGO_MAXIMO_DESCRIPCION) {
+      throw new DatosDeOfertaInvalidos(`La descripción tiene mas de ${Oferta.LARGO_MAXIMO_DESCRIPCION} caracteres`);
     }
     if (descripcion.trim().length === 0) {
       throw new DatosDeOfertaInvalidos("descripcion es obligatorio");
