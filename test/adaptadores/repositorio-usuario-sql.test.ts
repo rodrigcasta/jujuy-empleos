@@ -53,7 +53,7 @@ describe("RepositorioUsuario", () => {
 
   describe("recuperarPorId", () => {
     test("deberia devolver el usuario almacenado con ese id", async () => {
-      const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash", undefined, "Corporativa");
+      const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash", 0, "Corporativa");
       await repositorioUsuario.guardar(usuario);
 
       const resultado = await repositorioUsuario.recuperarPorId(usuario.obtenerId());
