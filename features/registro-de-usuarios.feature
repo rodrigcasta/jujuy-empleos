@@ -29,3 +29,11 @@ Característica: Registro de usuarios
     Cuando se registra con nombre "Juana", apellido "Lopez", email "juana@example.com", contraseña "Secreta123!#" y confirmación "Distinta123!#"
     Entonces ve el mensaje de error "Las contraseñas no coinciden"
     Y no puede ver el listado de alumnos
+
+  Escenario: Suscripcion Profesional seleccionada inicialmente
+    Cuando inicia una registracion
+    Entonces puede elegir las suscripciones:
+      | Gratuita    |
+      | Profesional |
+      | Corporativa |
+    Y la suscripcion inicial es "Profesional"

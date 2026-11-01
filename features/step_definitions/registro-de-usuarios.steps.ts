@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { DataTable, Then, When } from "@cucumber/cucumber";
+import { expect } from "@playwright/test";
 import pool from "../../app/adaptadores/pool";
 import { registrarse } from "../support/acciones";
 import { MundoDeLaAplicacion } from "../support/mundo";
@@ -36,4 +37,18 @@ Then("la contraseña de {string} no se guarda en texto plano", async function (e
   );
   assert.equal(resultado.rows.length, 1, `No existe el usuario ${email}`);
   assert.match(resultado.rows[0].hash_contrasena, /^\$2[aby]\$/, "La contraseña no está guardada como hash bcrypt");
+});
+
+When("inicia una registracion", async function (this: MundoDeLaAplicacion) {
+  await this.pagina.goto("/registro");
+});
+
+Then("puede elegir las suscripciones:", async function (this: MundoDeLaAplicacion, tabla: DataTable) {
+  for (const [suscripcion] of tabla.raw()) {
+    await expect(this.pagina.getByLabel(suscripcion)).toBeVisible();
+  }
+});
+
+Then("la suscripcion inicial es {string}", async function (this: MundoDeLaAplicacion, suscripcion: string) {
+  await expect(this.pagina.getByLabel(suscripcion)).toBeChecked();
 });
