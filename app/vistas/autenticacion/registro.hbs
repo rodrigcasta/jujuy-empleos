@@ -23,60 +23,79 @@
             <label for="email" class="form-label">Email</label>
             <input id="email" name="email" type="email" value="{{nuevo.email}}" class="form-control" autocomplete="email" maxlength="254" required />
           </div>
-          <fieldset class="mb-3">
-            <legend class="form-label">Suscripcion</legend>
-
-            <div class="form-check">
-              <input
-                id="suscripcion-gratuita"
-                name="suscripcion"
-                value="Gratuita"
-                type="radio"
-                class="form-check-input"
-              />
-              <label for="suscripcion-gratuita" class="form-check-label">
-                Gratuita
-              </label>
-            </div>
-
-            <div class="form-check">
-              <input
-                id="suscripcion-profesional"
-                name="suscripcion"
-                value="Profesional"
-                type="radio"
-                class="form-check-input"
-                checked
-              />
-              <label for="suscripcion-profesional" class="form-check-label">
-                Profesional
-              </label>
-            </div>
-
-            <div class="form-check">
-              <input
-                id="suscripcion-corporativa"
-                name="suscripcion"
-                value="Corporativa"
-                type="radio"
-                class="form-check-input"
-              />
-              <label for="suscripcion-corporativa" class="form-check-label">
-                Corporativa
-              </label>
-            </div>
-          </fieldset>
           <div class="row g-3 mb-4">
             <div class="col-sm-6">
               <label for="contrasena" class="form-label">Contraseña</label>
               <input id="contrasena" name="contrasena" type="password" class="form-control" autocomplete="new-password" minlength="8" aria-describedby="ayuda-contrasena" required />
-              <div id="ayuda-contrasena" class="form-text">Mínimo 8 caracteres.</div>
+              <div id="ayuda-contrasena" class="form-text">
+                Entre 8 y 20 caracteres, con al menos una letra minúscula, una letra mayúscula, un número y dos símbolos.
+              </div>
             </div>
             <div class="col-sm-6">
               <label for="confirmacion" class="form-label">Repetir contraseña</label>
               <input id="confirmacion" name="confirmacion" type="password" class="form-control" autocomplete="new-password" minlength="8" required />
             </div>
           </div>
+          <fieldset class="mb-3">
+            <legend class="form-label">Suscripcion</legend>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <input
+                  id="suscripcion-gratuita"
+                  name="suscripcion"
+                  value="Gratuita"
+                  type="radio"
+                  class="btn-check"
+                  autocomplete="off"
+                />
+                <label
+                  for="suscripcion-gratuita"
+                  class="btn btn-outline-primary w-100 h-100 text-start p-3"
+                >
+                  <span class="d-block fw-semibold">Gratuita</span>
+                  <small class="d-block">Una publicacion sin cargo</small>
+                </label>
+              </div>
+
+              <div class="col-md-4">
+                <input
+                  id="suscripcion-profesional"
+                  name="suscripcion"
+                  value="Profesional"
+                  type="radio"
+                  class="btn-check"
+                  autocomplete="off"
+                  checked
+                />
+                <label
+                  for="suscripcion-profesional"
+                  class="btn btn-outline-primary w-100 h-100 text-start p-3"
+                >
+                  <span class="d-block fw-semibold">Profesional</span>
+                  <small class="d-block">Hasta cinco publicaciones sin cargo</small>
+                </label>
+              </div>
+
+              <div class="col-md-4">
+                <input
+                  id="suscripcion-corporativa"
+                  name="suscripcion"
+                  value="Corporativa"
+                  type="radio"
+                  class="btn-check"
+                  autocomplete="off"
+                />
+                <label
+                  for="suscripcion-corporativa"
+                  class="btn btn-outline-primary w-100 h-100 text-start p-3"
+                >
+                  <span class="d-block fw-semibold">Corporativa</span>
+                  <small class="d-block">Publicaciones sin limite</small>
+                </label>
+              </div>
+            </div>
+          </fieldset>
           <button type="submit" class="btn btn-primary w-100">Registrarse</button>
         </form>
       </div>

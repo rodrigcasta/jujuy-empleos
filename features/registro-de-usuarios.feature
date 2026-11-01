@@ -47,3 +47,7 @@ Característica: Registro de usuarios
       | confirmación | Empresa2026!#                               |
       | suscripcion  | Gratuita                                    |
     Entonces el usuario "laura.fernandez@empresa-ejemplo.com.ar" queda registrado con suscripcion "Gratuita"
+
+  Escenario: Informa los requisitos de contraseña
+    Cuando inicia una registracion
+    Entonces se informan los requisitos de contraseña "Entre 8 y 20 caracteres, con al menos una letra minúscula, una letra mayúscula, un número y dos símbolos."

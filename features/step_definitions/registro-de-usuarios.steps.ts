@@ -65,3 +65,10 @@ Then(
     assert.equal(resultado.rows[0].suscripcion, suscripcion);
   },
 );
+
+Then(
+  "se informan los requisitos de contraseña {string}",
+  async function (this: MundoDeLaAplicacion, requisitos: string) {
+    await expect(this.pagina.locator("#ayuda-contrasena")).toHaveText(requisitos);
+  },
+);

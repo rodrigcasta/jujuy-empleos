@@ -29,7 +29,7 @@ export const registrarse = async (mundo: MundoDeLaAplicacion, datos: DatosDeRegi
   await pagina.getByLabel("Contraseña", { exact: true }).fill(datos.contraseña);
   await pagina.getByLabel("Repetir contraseña").fill(datos.confirmación);
   if (datos.suscripcion !== undefined) {
-    await pagina.getByLabel(datos.suscripcion).check();
+    await pagina.getByText(datos.suscripcion, { exact: true }).click();
   }
   await mundo.presionar("Registrarse");
 };
