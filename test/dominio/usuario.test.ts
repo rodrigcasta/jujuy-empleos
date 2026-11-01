@@ -195,8 +195,26 @@ describe("Usuario", () => {
         "Profesional",
       );
 
-      await expect(usuario).rejects.toThrow("La contraseña debe tener al menos dos símbolos");
+      await expect(usuario).rejects.toThrow("La contraseña debe tener al menos 2 símbolos");
     });
+
+    test.each([".,", "()", "[]", "¿?", "+*", "_-"])(
+      "deberia aceptar %s como simbolos de la contraseña",
+      async (simbolos) => {
+        const contrasena = `Empresa2026${simbolos}`;
+
+        const usuario = await Usuario.registrar(
+          "Laura",
+          "Fernandez",
+          "laura.fernandez@empresa-ejemplo.com.ar",
+          contrasena,
+          contrasena,
+          "Profesional",
+        );
+
+        expect(await usuario.verificarContrasena(contrasena)).toBe(true);
+      },
+    );
 
     test.each(["Gratuita", "Corporativa"])("deberia registrar un usuario con suscripcion %s", async (suscripcion) => {
       const usuario = await Usuario.registrar(

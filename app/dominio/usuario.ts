@@ -12,7 +12,8 @@ export default class Usuario {
   private static readonly PATRON_MINUSCULA = /[a-z]/;
   private static readonly PATRON_MAYUSCULA = /[A-Z]/;
   private static readonly PATRON_NUMERO = /[0-9]/;
-  private static readonly PATRON_SIMBOLO = /^(?=(?:.*[$%#@!&]){2,}).*$/;
+  private static readonly PATRON_SIMBOLO = /[^\p{L}\p{N}\s]/u;
+  private static readonly CANTIDAD_MINIMA_DE_SIMBOLOS = 2;
   private nombre: string;
   private apellido: string;
   private email: string;
@@ -137,8 +138,10 @@ export default class Usuario {
       throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos un número");
     }
 
-    if (!Usuario.PATRON_SIMBOLO.test(contrasena)) {
-      throw new DatosDeUsuarioInvalidos("La contraseña debe tener al menos dos símbolos");
+    if (Usuario.contarSimbolos(contrasena) < Usuario.CANTIDAD_MINIMA_DE_SIMBOLOS) {
+      throw new DatosDeUsuarioInvalidos(
+        `La contraseña debe tener al menos ${Usuario.CANTIDAD_MINIMA_DE_SIMBOLOS} símbolos`,
+      );
     }
 
     if (confirmacion !== undefined && confirmacion !== contrasena) {
@@ -157,5 +160,9 @@ export default class Usuario {
       );
     }
     return normalizado;
+  }
+
+  private static contarSimbolos(contrasena: string): number {
+    return [...contrasena].filter((caracter) => Usuario.PATRON_SIMBOLO.test(caracter)).length;
   }
 }
