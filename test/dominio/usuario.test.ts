@@ -184,7 +184,7 @@ describe("Usuario", () => {
     });
 
     test("deberia rechazar una contraseña sin al menos dos símbolos", async () => {
-      const contrasena = "Empresa2026";
+      const contrasena = "Empresa2026!";
 
       const usuario = Usuario.registrar(
         "Laura",
