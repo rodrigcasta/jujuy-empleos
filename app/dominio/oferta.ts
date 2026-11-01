@@ -1,3 +1,5 @@
+import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
+
 export default class Oferta {
   private titulo: string;
   private descripcion: string;
@@ -6,6 +8,15 @@ export default class Oferta {
   private fechaPublicacion: Date;
 
   constructor(titulo: string, descripcion: string, ubicacion: string, idempresario: number, fechaPublicacion: Date) {
+    if (titulo.trim().length === 0) {
+      throw new DatosDeOfertaInvalidos("titulo es obligatorio");
+    }
+    if (descripcion.trim().length === 0) {
+      throw new DatosDeOfertaInvalidos("descripcion es obligatorio");
+    }
+    if (ubicacion.trim().length === 0) {
+      throw new DatosDeOfertaInvalidos("ubicacion es obligatorio");
+    }
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.ubicacion = ubicacion;

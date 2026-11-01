@@ -1,4 +1,5 @@
 import Oferta from "../../app/dominio/oferta";
+import DatosDeOfertaInvalidos from "../../app/dominio/datos-de-oferta-invalidos";
 
 describe("Oferta", () => {
   describe("constructor", () => {
@@ -18,6 +19,21 @@ describe("Oferta", () => {
       expect(oferta.obtenerUbicacion()).toBe("Tres de Febrero");
       expect(oferta.obtenerIdEmpresario()).toBe(1);
       expect(oferta.obtenerFechaPublicacion()).toBe(fechaPublicacion);
+    });
+
+    test.each([
+      ["titulo", "", "Descripcion valida", "Ubicacion valida"],
+      ["titulo", "   ", "Descripcion valida", "Ubicacion valida"],
+      ["descripcion", "Titulo valido", "", "Ubicacion valida"],
+      ["descripcion", "Titulo valido", "   ", "Ubicacion valida"],
+      ["ubicacion", "Titulo valido", "Descripcion valida", ""],
+      ["ubicacion", "Titulo valido", "Descripcion valida", "   "],
+    ])("deberia rechazar %s vacio", (campo, titulo, descripcion, ubicacion) => {
+      const crearOferta = async () =>
+        new Oferta(titulo, descripcion, ubicacion, 1, new Date("2026-11-01T15:00:00.000Z"));
+
+      expect(crearOferta).rejects.toThrow(DatosDeOfertaInvalidos);
+      expect(crearOferta).rejects.toThrow(`${campo} es obligatorio`);
     });
   });
 });
