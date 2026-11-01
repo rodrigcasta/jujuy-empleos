@@ -21,15 +21,19 @@ export const USUARIO_REGISTRADO = {
 
 export const registrarse = async (mundo: MundoDeLaAplicacion, datos: DatosDeRegistro) => {
   const pagina = mundo.pagina;
+
   await pagina.goto("/registro");
   await pagina.getByLabel("Nombre").fill(datos.nombre);
   await pagina.getByLabel("Apellido").fill(datos.apellido);
   await pagina.getByLabel("Email").fill(datos.email);
-  // Sin exact también encontraría "Repetir contraseña"
-  await pagina.getByLabel("Contraseña", { exact: true }).fill(datos.contraseña);
-  await pagina.getByLabel("Repetir contraseña").fill(datos.confirmación);
+
+  await pagina.getByLabel("Contraseña *", { exact: true }).fill(datos.contraseña);
+
+  await pagina.getByLabel("Repetir contraseña *", { exact: true }).fill(datos.confirmación);
+
   if (datos.suscripcion !== undefined) {
     await pagina.getByText(datos.suscripcion, { exact: true }).click();
   }
-  await mundo.presionar("Registrarse");
+
+  await mundo.presionar("Crear cuenta");
 };

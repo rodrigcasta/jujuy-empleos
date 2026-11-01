@@ -69,7 +69,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
     if (req.isAuthenticated()) {
       res.redirect(EstadoHttp.ENCONTRADO, "/alumnos");
     } else {
-      res.render("autenticacion/registro", { titulo: "Registro" });
+      res.render("autenticacion/registro", { titulo: "Registro de empresario" });
     }
   });
 
@@ -77,9 +77,11 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
     const { nombre, apellido, email, contrasena, confirmacion, suscripcion } = req.body;
     // Las contraseñas no se devuelven al formulario
     const renderizarFormulario = (estado: EstadoHttp, error: string) => {
-      res
-        .status(estado)
-        .render("autenticacion/registro", { titulo: "Registro", error, nuevo: { nombre, apellido, email } });
+      res.status(estado).render("autenticacion/registro", {
+        titulo: "Registro de empresario",
+        error,
+        nuevo: { nombre, apellido, email },
+      });
     };
 
     try {

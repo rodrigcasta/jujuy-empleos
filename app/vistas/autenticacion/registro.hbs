@@ -1,102 +1,114 @@
+<style>
+  .opcion-suscripcion {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+  }
+
+  .opcion-suscripcion:hover {
+    color: var(--bs-body-color);
+    background-color: var(--bs-primary-bg-subtle);
+    border-color: var(--bs-primary);
+  }
+
+  .btn-check:checked+.opcion-suscripcion {
+    color: var(--bs-body-color);
+    background-color: var(--bs-primary-bg-subtle);
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.125rem rgb(13 110 253 / 15%);
+  }
+</style>
+
 <div class="row justify-content-center">
   <div class="col-md-10 col-lg-7">
     <div class="card shadow-sm">
       <div class="card-body p-4">
-        <h1 class="h3 mb-4">Registro</h1>
+        <h1 class="h3 mb-4">Registro de empresario</h1>
+        <p class="text-secondary mb-4">Creá tu cuenta para publicar ofertas laborales.</p>
 
         {{#if error}}
-          <div class="alert alert-danger" role="alert">{{error}}</div>
+        <div class="alert alert-danger" role="alert">{{error}}</div>
         {{/if}}
 
         <form method="post" action="/registro">
           <div class="row g-3 mb-3">
             <div class="col-sm-6">
-              <label for="nombre" class="form-label">Nombre</label>
-              <input id="nombre" name="nombre" value="{{nuevo.nombre}}" class="form-control" autocomplete="given-name" maxlength="40" required />
+              <label for="nombre" class="form-label">Nombre
+                <span class="text-primary" aria-hidden="true">*</span>
+              </label>
+              <input id="nombre" name="nombre" value="{{nuevo.nombre}}" class="form-control" autocomplete="given-name"
+                maxlength="40" required />
             </div>
             <div class="col-sm-6">
-              <label for="apellido" class="form-label">Apellido</label>
-              <input id="apellido" name="apellido" value="{{nuevo.apellido}}" class="form-control" autocomplete="family-name" maxlength="40" required />
+              <label for="apellido" class="form-label">Apellido
+                <span class="text-primary" aria-hidden="true">*</span>
+              </label>
+              <input id="apellido" name="apellido" value="{{nuevo.apellido}}" class="form-control"
+                autocomplete="family-name" maxlength="40" required />
             </div>
           </div>
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input id="email" name="email" type="email" value="{{nuevo.email}}" class="form-control" autocomplete="email" maxlength="254" required />
+            <label for="email" class="form-label">Email
+              <span class="text-primary" aria-hidden="true">*</span>
+            </label>
+            <input id="email" name="email" type="email" value="{{nuevo.email}}" class="form-control"
+              autocomplete="email" maxlength="254" required />
           </div>
           <div class="row g-3 mb-4">
             <div class="col-sm-6">
-              <label for="contrasena" class="form-label">Contraseña</label>
-              <input id="contrasena" name="contrasena" type="password" class="form-control" autocomplete="new-password" minlength="8" aria-describedby="ayuda-contrasena" required />
+              <label for="contrasena" class="form-label">
+                Contraseña
+                <span class="text-primary" aria-hidden="true">*</span>
+              </label>
+              <input id="contrasena" name="contrasena" type="password" class="form-control" autocomplete="new-password"
+                minlength="8" aria-describedby="ayuda-contrasena" required />
               <div id="ayuda-contrasena" class="form-text">
-                Entre 8 y 20 caracteres, con al menos una letra minúscula, una letra mayúscula, un número y dos símbolos.
+                Entre 8 y 20 caracteres, con al menos una letra minúscula, una letra mayúscula, un número y dos
+                símbolos.
               </div>
             </div>
             <div class="col-sm-6">
-              <label for="confirmacion" class="form-label">Repetir contraseña</label>
-              <input id="confirmacion" name="confirmacion" type="password" class="form-control" autocomplete="new-password" minlength="8" required />
+              <label for="confirmacion" class="form-label">
+                Repetir contraseña
+                <span class="text-primary" aria-hidden="true">*</span>
+              </label>
+              <input id="confirmacion" name="confirmacion" type="password" class="form-control"
+                autocomplete="new-password" minlength="8" required />
             </div>
           </div>
           <fieldset class="mb-3">
-            <legend class="form-label">Suscripcion</legend>
+            <legend class="form-label">Tipo de suscripción</legend>
 
             <div class="row g-3">
               <div class="col-md-4">
-                <input
-                  id="suscripcion-gratuita"
-                  name="suscripcion"
-                  value="Gratuita"
-                  type="radio"
-                  class="btn-check"
-                  autocomplete="off"
-                />
-                <label
-                  for="suscripcion-gratuita"
-                  class="btn btn-outline-primary w-100 h-100 text-start p-3"
-                >
+                <input id="suscripcion-gratuita" name="suscripcion" value="Gratuita" type="radio" class="btn-check"
+                  autocomplete="off" />
+                <label for="suscripcion-gratuita" class="btn opcion-suscripcion w-100 h-100 text-start p-3">
                   <span class="d-block fw-semibold">Gratuita</span>
-                  <small class="d-block">Una publicacion sin cargo</small>
+                  <small class="d-block">Una publicación sin cargo</small>
                 </label>
               </div>
 
               <div class="col-md-4">
-                <input
-                  id="suscripcion-profesional"
-                  name="suscripcion"
-                  value="Profesional"
-                  type="radio"
-                  class="btn-check"
-                  autocomplete="off"
-                  checked
-                />
-                <label
-                  for="suscripcion-profesional"
-                  class="btn btn-outline-primary w-100 h-100 text-start p-3"
-                >
+                <input id="suscripcion-profesional" name="suscripcion" value="Profesional" type="radio"
+                  class="btn-check" autocomplete="off" checked />
+                <label for="suscripcion-profesional" class="btn opcion-suscripcion w-100 h-100 text-start p-3">
                   <span class="d-block fw-semibold">Profesional</span>
                   <small class="d-block">Hasta cinco publicaciones sin cargo</small>
                 </label>
               </div>
 
               <div class="col-md-4">
-                <input
-                  id="suscripcion-corporativa"
-                  name="suscripcion"
-                  value="Corporativa"
-                  type="radio"
-                  class="btn-check"
-                  autocomplete="off"
-                />
-                <label
-                  for="suscripcion-corporativa"
-                  class="btn btn-outline-primary w-100 h-100 text-start p-3"
-                >
+                <input id="suscripcion-corporativa" name="suscripcion" value="Corporativa" type="radio"
+                  class="btn-check" autocomplete="off" />
+                <label for="suscripcion-corporativa" class="btn opcion-suscripcion w-100 h-100 text-start p-3">
                   <span class="d-block fw-semibold">Corporativa</span>
-                  <small class="d-block">Publicaciones sin limite</small>
+                  <small class="d-block">Publicaciones sin límite</small>
                 </label>
               </div>
             </div>
           </fieldset>
-          <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+          <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
         </form>
       </div>
     </div>
