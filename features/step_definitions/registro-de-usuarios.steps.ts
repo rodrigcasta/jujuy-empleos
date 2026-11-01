@@ -13,6 +13,7 @@ When("se registra con los datos:", async function (this: MundoDeLaAplicacion, ta
     email: datos["email"],
     contraseña: datos["contraseña"],
     confirmación: datos["confirmación"],
+    suscripcion: datos["suscripcion"],
   });
 });
 
@@ -52,3 +53,15 @@ Then("puede elegir las suscripciones:", async function (this: MundoDeLaAplicacio
 Then("la suscripcion inicial es {string}", async function (this: MundoDeLaAplicacion, suscripcion: string) {
   await expect(this.pagina.getByLabel(suscripcion)).toBeChecked();
 });
+
+Then(
+  "el usuario {string} queda registrado con suscripcion {string}",
+  async function (email: string, suscripcion: string) {
+    const resultado = await pool.query<{ suscripcion: string }>("SELECT suscripcion FROM usuarios WHERE email = $1", [
+      email,
+    ]);
+
+    assert.equal(resultado.rows.length, 1, `No existe el usuario ${email}`);
+    assert.equal(resultado.rows[0].suscripcion, suscripcion);
+  },
+);

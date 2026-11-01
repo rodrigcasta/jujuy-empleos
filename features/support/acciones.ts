@@ -8,6 +8,7 @@ export interface DatosDeRegistro {
   email: string;
   contraseña: string;
   confirmación: string;
+  suscripcion?: string;
 }
 
 // El usuario que se registra en el step "que inició sesión un usuario registrado"
@@ -27,5 +28,8 @@ export const registrarse = async (mundo: MundoDeLaAplicacion, datos: DatosDeRegi
   // Sin exact también encontraría "Repetir contraseña"
   await pagina.getByLabel("Contraseña", { exact: true }).fill(datos.contraseña);
   await pagina.getByLabel("Repetir contraseña").fill(datos.confirmación);
+  if (datos.suscripcion !== undefined) {
+    await pagina.getByLabel(datos.suscripcion).check();
+  }
   await mundo.presionar("Registrarse");
 };

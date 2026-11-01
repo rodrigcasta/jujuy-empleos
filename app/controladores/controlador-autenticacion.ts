@@ -19,6 +19,7 @@ interface FormularioRegistro {
   email?: string;
   contrasena?: string;
   confirmacion?: string;
+  suscripcion?: string;
 }
 
 export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) => {
@@ -73,7 +74,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
   });
 
   router.post("/registro", async (req: Request<Record<string, string>, unknown, FormularioRegistro>, res: Response) => {
-    const { nombre, apellido, email, contrasena, confirmacion } = req.body;
+    const { nombre, apellido, email, contrasena, confirmacion, suscripcion } = req.body;
     // Las contraseñas no se devuelven al formulario
     const renderizarFormulario = (estado: EstadoHttp, error: string) => {
       res
@@ -88,6 +89,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
         email ?? "",
         contrasena ?? "",
         confirmacion,
+        suscripcion,
       );
       iniciarSesion(req, res, usuario);
     } catch (error: unknown) {

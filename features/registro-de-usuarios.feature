@@ -37,3 +37,13 @@ Característica: Registro de usuarios
       | Profesional |
       | Corporativa |
     Y la suscripcion inicial es "Profesional"
+
+  Escenario: Registro exitoso con suscripcion Gratuita
+    Cuando se registra con los datos:
+      | nombre       | Laura                                      |
+      | apellido     | Fernandez                                  |
+      | email        | laura.fernandez@empresa-ejemplo.com.ar     |
+      | contraseña   | Empresa2026!#                               |
+      | confirmación | Empresa2026!#                               |
+      | suscripcion  | Gratuita                                    |
+    Entonces el usuario "laura.fernandez@empresa-ejemplo.com.ar" queda registrado con suscripcion "Gratuita"
