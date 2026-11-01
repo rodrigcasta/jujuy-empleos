@@ -51,3 +51,24 @@ Característica: Registro de usuarios
   Escenario: Informa los requisitos de contraseña
     Cuando inicia una registracion
     Entonces se informan los requisitos de contraseña "Entre 8 y 20 caracteres, con al menos una letra minúscula, una letra mayúscula, un número y dos símbolos."
+
+
+   Escenario: Registro exitoso con suscripcion Corporativa
+     Cuando se registra con los datos:
+       | nombre       | Laura                                      |
+       | apellido     | Fernandez                                  |
+       | email        | laura.corporativa@empresa-ejemplo.com.ar   |
+       | contraseña   | Empresa2026!#                               |
+       | confirmación | Empresa2026!#                               |
+       | suscripcion  | Corporativa                                 |
+     Entonces el usuario "laura.corporativa@empresa-ejemplo.com.ar" queda registrado con suscripcion "Corporativa"
+
+
+      Escenario: Registro exitoso con suscripcion predeterminada
+     Cuando se registra con los datos:
+       | nombre       | Laura                                      |
+       | apellido     | Fernandez                                  |
+       | email        | laura.profesional@empresa-ejemplo.com.ar   |
+       | contraseña   | Empresa2026!#                               |
+       | confirmación | Empresa2026!#                               |
+     Entonces el usuario "laura.profesional@empresa-ejemplo.com.ar" queda registrado con suscripcion "Profesional"
