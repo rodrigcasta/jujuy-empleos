@@ -11,27 +11,31 @@ export default class Oferta {
   private fechaPublicacion: Date;
 
   constructor(titulo: string, descripcion: string, ubicacion: string, idEmpresario: number, fechaPublicacion: Date) {
-    if (titulo.trim().length === 0) {
+    const tituloNormalizado = titulo.trim();
+    const descripcionNormaliza = descripcion.trim();
+    const ubicacionNormalizada = ubicacion.trim();
+
+    if (tituloNormalizado.length === 0) {
       throw new DatosDeOfertaInvalidos("titulo es obligatorio");
     }
-    if (descripcion.trim().length > Oferta.LARGO_MAXIMO_DESCRIPCION) {
+    if (descripcionNormaliza.length > Oferta.LARGO_MAXIMO_DESCRIPCION) {
       throw new DatosDeOfertaInvalidos(`La descripción tiene mas de ${Oferta.LARGO_MAXIMO_DESCRIPCION} caracteres`);
     }
-    if (descripcion.trim().length === 0) {
+    if (descripcionNormaliza.length === 0) {
       throw new DatosDeOfertaInvalidos("descripcion es obligatorio");
     }
-    if (ubicacion.trim().length === 0) {
+    if (ubicacionNormalizada.length === 0) {
       throw new DatosDeOfertaInvalidos("ubicacion es obligatorio");
     }
-    if (ubicacion.trim().length > Oferta.LARGO_MAXIMO_UBICACION) {
+    if (ubicacionNormalizada.length > Oferta.LARGO_MAXIMO_UBICACION) {
       throw new DatosDeOfertaInvalidos(`La ubicación tiene más de ${Oferta.LARGO_MAXIMO_UBICACION} caracteres`);
     }
-    if (titulo.trim().length > Oferta.LARGO_MAXIMO_TITULO) {
+    if (tituloNormalizado.length > Oferta.LARGO_MAXIMO_TITULO) {
       throw new DatosDeOfertaInvalidos("El titulo tiene más de 50 caracteres");
     }
-    this.titulo = titulo;
-    this.descripcion = descripcion;
-    this.ubicacion = ubicacion;
+    this.titulo = tituloNormalizado;
+    this.descripcion = descripcionNormaliza;
+    this.ubicacion = ubicacionNormalizada;
     this.idEmpresario = idEmpresario;
     this.fechaPublicacion = fechaPublicacion;
   }

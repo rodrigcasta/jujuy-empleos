@@ -108,5 +108,20 @@ describe("Oferta", () => {
 
       expect(oferta.obtenerUbicacion()).toBe(ubicacion);
     });
+
+    test("deberia normalizar los espacios exteriores de titulo, descripcion y ubicacion", () => {
+      const fechaPublicacion = new Date("2026-11-01T15:00:00.000Z");
+
+      const oferta = new Oferta(
+        "  Desarrollador backend  ",
+        "  Se busca desarrollador backend junior  ",
+        "  Tres de Febrero  ",
+        1,
+        fechaPublicacion,
+      );
+      expect(oferta.obtenerTitulo()).toBe("Desarrollador backend");
+      expect(oferta.obtenerDescripcion()).toBe("Se busca desarrollador backend junior");
+      expect(oferta.obtenerUbicacion()).toBe("Tres de Febrero");
+    });
   });
 });
