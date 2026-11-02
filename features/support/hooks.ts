@@ -6,6 +6,7 @@ import { port, server } from "../../app/programa";
 import pool from "../../app/adaptadores/pool";
 import RepositorioAlumnoSql from "../../app/adaptadores/repositorio-alumno-sql";
 import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
+import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
 import { MundoDeLaAplicacion } from "./mundo";
 
 // Mayor que el tiempo de espera de Playwright, para que un step que falla lo informe Playwright (indicando qué
@@ -45,6 +46,7 @@ BeforeAll(async () => {
 
 // Cada escenario empieza con la base de datos vacía y un navegador sin sesión
 Before(async function (this: MundoDeLaAplicacion) {
+  await new RepositorioOfertaSql().eliminarTodos();
   await new RepositorioAlumnoSql().eliminarTodos();
   await new RepositorioUsuarioSql().eliminarTodos();
   // Si BeforeAll falló, Cucumber no ejecuta los escenarios: acá el navegador siempre está abierto

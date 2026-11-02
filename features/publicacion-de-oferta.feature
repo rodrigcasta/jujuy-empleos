@@ -4,7 +4,6 @@ Característica: Publicacion de ofertas laborales
   Como empresario registrado
   Quiero publicar una oferta laboral 
 
-@wip
 Escenario: PUB-01 - Publicacion exitosa con suscripcion Gratuita
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y tiene una suscripcion "Gratuita"
@@ -41,7 +40,6 @@ Escenario: PUB-05 - Publicacion rechazada por ubicacion vacia
   Cuando intenta publicar una oferta con titulo "Analista funcional", descripcion "Se busca analista con experiencia" y ubicacion ""
   Entonces la publicacion es rechazada porque la ubicacion es obligatoria
 
-@wip
 Escenario: PUB-06 - Un usuario no autenticado no puede publicar
   Dado que el usuario no esta autenticado
   Cuando intenta acceder a la publicacion de ofertas

@@ -14,6 +14,7 @@ export class MundoDeLaAplicacion extends World {
   // Cada escenario usa su propio contexto del navegador (como una ventana de incógnito): empieza sin cookies
   private contexto?: BrowserContext;
   private paginaAbierta?: Page;
+  public emailEmpresario?: string;
 
   constructor(opciones: IWorldOptions) {
     super(opciones);
