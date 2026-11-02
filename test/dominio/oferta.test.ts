@@ -80,5 +80,33 @@ describe("Oferta", () => {
 
       expect(oferta.obtenerDescripcion()).toBe(descripcion);
     });
+
+    test("deberia rechazar una ubicacion de 71 caracteres", () => {
+      const crearOferta = () =>
+        new Oferta(
+          "Programador Jr.",
+          "Se busca desarrollador backend junior",
+          "a".repeat(71),
+          1,
+          new Date("2026-11-01T15:00:00.000Z"),
+        );
+
+      expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
+      expect(crearOferta).toThrow("La ubicación tiene más de 70 caracteres");
+    });
+
+    test("deberia aceptar una ubicacion con exactamente 70 caracteres", () => {
+      const ubicacion = "a".repeat(70);
+
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        ubicacion,
+        1,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      expect(oferta.obtenerUbicacion()).toBe(ubicacion);
+    });
   });
 });

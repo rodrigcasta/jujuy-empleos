@@ -3,6 +3,7 @@ import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
 export default class Oferta {
   private static readonly LARGO_MAXIMO_TITULO = 50;
   private static readonly LARGO_MAXIMO_DESCRIPCION = 250;
+  private static readonly LARGO_MAXIMO_UBICACION = 70;
   private titulo: string;
   private descripcion: string;
   private ubicacion: string;
@@ -21,6 +22,9 @@ export default class Oferta {
     }
     if (ubicacion.trim().length === 0) {
       throw new DatosDeOfertaInvalidos("ubicacion es obligatorio");
+    }
+    if (ubicacion.trim().length > Oferta.LARGO_MAXIMO_UBICACION) {
+      throw new DatosDeOfertaInvalidos(`La ubicación tiene más de ${Oferta.LARGO_MAXIMO_UBICACION} caracteres`);
     }
     if (titulo.trim().length > Oferta.LARGO_MAXIMO_TITULO) {
       throw new DatosDeOfertaInvalidos("El titulo tiene más de 50 caracteres");
