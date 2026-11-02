@@ -9,8 +9,16 @@ export default class Oferta {
   private ubicacion: string;
   private idEmpresario: number;
   private fechaPublicacion: Date;
+  private id: number;
 
-  constructor(titulo: string, descripcion: string, ubicacion: string, idEmpresario: number, fechaPublicacion: Date) {
+  constructor(
+    titulo: string,
+    descripcion: string,
+    ubicacion: string,
+    idEmpresario: number,
+    fechaPublicacion: Date,
+    id: number = 0,
+  ) {
     const tituloNormalizado = titulo.trim();
     const descripcionNormaliza = descripcion.trim();
     const ubicacionNormalizada = ubicacion.trim();
@@ -38,6 +46,7 @@ export default class Oferta {
     this.ubicacion = ubicacionNormalizada;
     this.idEmpresario = idEmpresario;
     this.fechaPublicacion = fechaPublicacion;
+    this.id = id;
   }
 
   public obtenerTitulo(): string {
@@ -58,5 +67,13 @@ export default class Oferta {
 
   public obtenerFechaPublicacion(): Date {
     return this.fechaPublicacion;
+  }
+
+  public obtenerId(): number {
+    return this.id;
+  }
+
+  public asignarId(id: number): void {
+    this.id = id;
   }
 }
