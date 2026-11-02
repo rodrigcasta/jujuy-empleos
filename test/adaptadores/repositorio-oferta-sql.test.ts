@@ -49,4 +49,36 @@ describe("RepositorioOfertaSql", () => {
       });
     });
   });
+
+  describe("contarPorEmpresario", () => {
+    test("deberia devolver cero si el empresario no publico ofertas", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const cantidad = await repositorioOferta.contarPorEmpresario(empresario.obtenerId());
+
+      expect(cantidad).toBe(0);
+    });
+
+    test("deberia contar solamente las ofertas del empresario indicado", async () => {
+      const primerEmpresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      const segundoEmpresario = new Usuario("Mario", "Perez", "mario@example.com", "hash");
+      await repositorioUsuario.guardar(primerEmpresario);
+      await repositorioUsuario.guardar(segundoEmpresario);
+      const fechaPublicacion = new Date("2026-11-02T15:00:00.000Z");
+      await repositorioOferta.guardar(
+        new Oferta("Oferta 1", "Primera oferta", "Buenos Aires", primerEmpresario.obtenerId(), fechaPublicacion),
+      );
+      await repositorioOferta.guardar(
+        new Oferta("Oferta 2", "Segunda oferta", "Cordoba", primerEmpresario.obtenerId(), fechaPublicacion),
+      );
+      await repositorioOferta.guardar(
+        new Oferta("Oferta 3", "Tercera oferta", "Mendoza", segundoEmpresario.obtenerId(), fechaPublicacion),
+      );
+
+      const cantidad = await repositorioOferta.contarPorEmpresario(primerEmpresario.obtenerId());
+
+      expect(cantidad).toBe(2);
+    });
+  });
 });
