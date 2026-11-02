@@ -287,5 +287,20 @@ describe("Usuario", () => {
 
       expect(await usuario.verificarContrasena("otra-clave")).toBe(false);
     });
+
+    describe("puedePublicar", () => {
+      test("deberia permitir publicar a una suscripcion Gratuita sin oferta", async () => {
+        const usuario = await Usuario.registrar(
+          "Juana",
+          "Lopez",
+          "juana@example.com",
+          "Secreta123!#",
+          "Secreta123!#",
+          "Gratuita",
+        );
+
+        expect(await usuario.puedePublicar(0)).toBe(true);
+      });
+    });
   });
 });

@@ -9,6 +9,8 @@ export default class Usuario {
   private static readonly COSTO_HASH = 10;
   private static readonly FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
+  private static readonly SUSCRIPCION_GRATUITA = "Gratuita";
+  private static readonly LIMITE_PUBLICACION_GRATUITA = 1;
   private static readonly PATRON_MINUSCULA = /[a-z]/;
   private static readonly PATRON_MAYUSCULA = /[A-Z]/;
   private static readonly PATRON_NUMERO = /[0-9]/;
@@ -147,6 +149,13 @@ export default class Usuario {
     if (confirmacion !== undefined && confirmacion !== contrasena) {
       throw new DatosDeUsuarioInvalidos("Las contraseñas no coinciden");
     }
+  }
+
+  public puedePublicar(cantidadOfertasPublicadas: number): boolean {
+    if (this.suscripcion === "Gratuita") {
+      return cantidadOfertasPublicadas < Usuario.LIMITE_PUBLICACION_GRATUITA;
+    }
+    return false;
   }
 
   private static validarNombre(valor: string, campo: string): string {
