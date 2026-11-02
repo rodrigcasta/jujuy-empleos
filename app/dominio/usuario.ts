@@ -10,7 +10,9 @@ export default class Usuario {
   private static readonly FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
   private static readonly SUSCRIPCION_GRATUITA = "Gratuita";
+  private static readonly SUSCRIPCION_CORPORATIVA = "Corporativa";
   private static readonly LIMITE_PUBLICACION_GRATUITA = 1;
+  private static readonly LIMITE_PUBLICACION_PROFESIONAL = 5;
   private static readonly PATRON_MINUSCULA = /[a-z]/;
   private static readonly PATRON_MAYUSCULA = /[A-Z]/;
   private static readonly PATRON_NUMERO = /[0-9]/;
@@ -152,10 +154,13 @@ export default class Usuario {
   }
 
   public puedePublicar(cantidadOfertasPublicadas: number): boolean {
-    if (this.suscripcion === "Gratuita") {
+    if (this.suscripcion === Usuario.SUSCRIPCION_GRATUITA) {
       return cantidadOfertasPublicadas < Usuario.LIMITE_PUBLICACION_GRATUITA;
     }
-    return false;
+    if (this.suscripcion === Usuario.SUSCRIPCION_PREDETERMINADA) {
+      return cantidadOfertasPublicadas < Usuario.LIMITE_PUBLICACION_PROFESIONAL;
+    }
+    return this.suscripcion === Usuario.SUSCRIPCION_CORPORATIVA;
   }
 
   private static validarNombre(valor: string, campo: string): string {

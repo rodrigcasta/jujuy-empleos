@@ -289,18 +289,28 @@ describe("Usuario", () => {
     });
 
     describe("puedePublicar", () => {
-      test("deberia permitir publicar a una suscripcion Gratuita sin oferta", async () => {
-        const usuario = await Usuario.registrar(
-          "Juana",
-          "Lopez",
-          "juana@example.com",
-          "Secreta123!#",
-          "Secreta123!#",
-          "Gratuita",
-        );
+      test.each([
+        ["Gratuita", 0, true],
+        ["Gratuita", 1, false],
+        ["Profesional", 4, true],
+        ["Profesional", 5, false],
+        ["Corporativa", 5, true],
+        ["Corporativa", 50, true],
+      ])(
+        "con suscripcion %s y %i ofertas publicadas deberia devolver %s",
+        (suscripcion, cantidadOfertasPublicadas, esperado) => {
+          const usuario = new Usuario(
+            "Laura",
+            "Fernandez",
+            "laura.fernandez@empresa-ejemplo.com.ar",
+            "Empresa2026!#",
+            1,
+            suscripcion,
+          );
 
-        expect(await usuario.puedePublicar(0)).toBe(true);
-      });
+          expect(usuario.puedePublicar(cantidadOfertasPublicadas)).toBe(esperado);
+        },
+      );
     });
   });
 });
