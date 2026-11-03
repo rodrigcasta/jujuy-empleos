@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import SistemaOfertas from "../dominio/sistema-ofertas";
+import DatosDeOfertaInvalidos from "../dominio/datos-de-oferta-invalidos";
 import { EstadoHttp } from "../web/estado-http";
 import { registrarExcepcion, renderizarError } from "../web/registrar-excepcion";
 import { usuarioActual } from "../web/autenticacion";
@@ -27,17 +28,22 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
       return;
     }
 
+    const { titulo, descripcion, ubicacion } = req.body;
+
     try {
-      await sistemaOfertas.publicar(
-        empresario,
-        req.body.titulo ?? "",
-        req.body.descripcion ?? "",
-        req.body.ubicacion ?? "",
-      );
+      await sistemaOfertas.publicar(empresario, titulo ?? "", descripcion ?? "", ubicacion ?? "");
       res.redirect(EstadoHttp.VER_OTRO, "/ofertas/nueva?publicada=1");
     } catch (error: unknown) {
       registrarExcepcion(req, error);
-      renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo publicar la oferta");
+      if (error instanceof DatosDeOfertaInvalidos) {
+        res.status(EstadoHttp.SOLICITUD_INCORRECTA).render("ofertas/nueva", {
+          titulo: "Publicar oferta",
+          error: error.message,
+          nueva: { titulo, descripcion, ubicacion },
+        });
+      } else {
+        renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo publicar la oferta");
+      }
     }
   });
 

@@ -12,28 +12,24 @@ Escenario: PUB-01 - Publicacion exitosa con suscripcion Gratuita
   Entonces la oferta se publica exitosamente
   Y queda asociada al empresario "laura.fernandez@empresa-ejemplo.com.ar"
 
-@wip
 Escenario: PUB-02 - Publicacion rechazada por titulo vacio
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y su suscripcion permite publicar una nueva oferta
   Cuando intenta publicar una oferta con titulo "", descripcion "Se busca desarrollador frontend" y ubicacion "Moron"
   Entonces la publicacion es rechazada porque el titulo es obligatorio
 
-@wip
 Escenario: PUB-03 - Publicacion rechazada por titulo demasiado largo
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y su suscripcion permite publicar una nueva oferta
   Cuando intenta publicar una oferta con titulo "Desarrollador backend Java para plataforma de pagos", descripcion "Se busca desarrollador para integrar el equipo" y ubicacion "CABA"
   Entonces la publicacion es rechazada porque el titulo supera los 50 caracteres
 
-@wip
 Escenario: PUB-04 - Publicacion rechazada por descripcion vacia
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y su suscripcion permite publicar una nueva oferta
   Cuando intenta publicar una oferta con titulo "Analista funcional", descripcion "" y ubicacion "Pilar"
   Entonces la publicacion es rechazada porque la descripcion es obligatoria
 
-@wip
 Escenario: PUB-05 - Publicacion rechazada por ubicacion vacia
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y su suscripcion permite publicar una nueva oferta
@@ -77,21 +73,18 @@ Escenario: PUB-10 - La suscripcion Corporativa permite publicar mas de cinco ofe
   Cuando publica una oferta con titulo "Lider tecnico", descripcion "Se busca lider para equipo de desarrollo" y ubicacion "CABA"
   Entonces la oferta se publica exitosamente
 
-@wip
 Escenario: PUB-11 - Se acepta un titulo de exactamente 50 caracteres
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y su suscripcion permite publicar una nueva oferta
   Cuando publica una oferta con titulo "Desarrollador backend Java para plataforma de pago", descripcion "Se busca desarrollador para integrar el equipo" y ubicacion "CABA"
   Entonces la oferta se publica exitosamente
 
-@wip
 Escenario: PUB-12 - Publicacion rechazada por descripcion demasiado larga
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y su suscripcion permite publicar una nueva oferta
   Cuando intenta publicar una oferta con titulo "Desarrollador backend", descripcion "Buscamos desarrollador/a backend con experiencia en TypeScript, Node.js y PostgreSQL para integrarse a un equipo interdisciplinario. Se valoran conocimientos de pruebas automatizadas, arquitectura hexagonal, metodologias agiles y trabajo colaborativo." y ubicacion "CABA"
   Entonces la publicacion es rechazada porque la descripcion supera los 250 caracteres
 
-@wip
 Escenario: PUB-13 - Publicacion rechazada por ubicacion demasiado larga
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y su suscripcion permite publicar una nueva oferta
