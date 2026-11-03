@@ -121,6 +121,14 @@ Then("la oferta se publica exitosamente", async function (this: MundoDeLaAplicac
   await expect(this.pagina.getByLabel("Título")).toHaveValue(this.ultimaOferta.titulo);
   await expect(this.pagina.getByLabel("Descripción")).toHaveValue(this.ultimaOferta.descripcion);
   await expect(this.pagina.getByLabel("Ubicación")).toHaveValue(this.ultimaOferta.ubicacion);
+
+  const enlaceNuevaOferta = this.pagina.getByRole("link", {
+    name: "Nueva oferta",
+  });
+
+  await expect(enlaceNuevaOferta).toBeVisible();
+  await expect(enlaceNuevaOferta).toHaveAttribute("href", "/ofertas/nueva");
+
   if (this.cantidadOfertasAntes !== undefined && this.emailEmpresario) {
     const resultado = await pool.query<{ cantidad: string }>(
       `SELECT COUNT(*) AS cantidad
@@ -217,4 +225,9 @@ When("intenta acceder a la publicacion de ofertas", async function (this: MundoD
 
 Then("debe autenticarse antes de publicar una oferta", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL(/\/login$/);
+  await expect(
+    this.pagina.getByRole("link", {
+      name: "Nueva oferta",
+    }),
+  ).toHaveCount(0);
 });
