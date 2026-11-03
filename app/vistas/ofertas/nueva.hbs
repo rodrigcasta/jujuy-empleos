@@ -1,11 +1,12 @@
 <div class="row justify-content-center">
-  <div class="col-lg-8">
-    <div class="card shadow-sm">
-      <div class="card-body p-4">
-        <h1 class="h2 mb-4">Publicar oferta</h1>
+  <div class="col-xl-6 col-lg-7 col-md-9">
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-body p-4 p-md-5">
+        <h1 class="h2 fw-bold mb-2">Publicar oferta</h1>
+        <p class="text-secondary mb-4">Completá los datos para comenzar la búsqueda de candidatos.</p>
 
         {{#if publicada}}
-          <div class="alert alert-success" role="alert">La oferta se publicó exitosamente</div>
+          <div class="alert alert-success" role="alert">✓ La oferta se publicó exitosamente.</div>
         {{/if}}
         {{#if error}}
           <div class="alert alert-danger" role="alert">{{error}}</div>
@@ -13,44 +14,51 @@
 
         <form method="post" action="/ofertas">
           <div class="mb-3">
-            <label for="titulo" class="form-label">Título</label>
+            <label for="titulo" class="form-label fw-semibold">Título <span class="text-primary">*</span></label>
             <input
               id="titulo"
               name="titulo"
               type="text"
-              class="form-control"
+              class="form-control form-control-lg"
               maxlength="50"
+              placeholder="Ej. Desarrollador backend"
               value="{{nueva.titulo}}"
               required
             />
           </div>
 
           <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
+            <label for="descripcion" class="form-label fw-semibold">Descripción
+              <span class="text-primary">*</span></label>
             <textarea
               id="descripcion"
               name="descripcion"
-              class="form-control"
+              class="form-control form-control-lg"
               rows="5"
               maxlength="250"
+              placeholder="Describí las responsabilidades y los requisitos del puesto"
               required
             >{{nueva.descripcion}}</textarea>
           </div>
 
           <div class="mb-3">
-            <label for="ubicacion" class="form-label">Ubicación</label>
+            <label for="ubicacion" class="form-label fw-semibold">Ubicación <span class="text-primary">*</span></label>
             <input
               id="ubicacion"
               name="ubicacion"
               type="text"
-              class="form-control"
+              class="form-control form-control-lg"
               maxlength="70"
+              placeholder="Ej. Tres de Febrero"
               value="{{nueva.ubicacion}}"
               required
             />
           </div>
 
-          <button type="submit" class="btn btn-primary">Publicar oferta</button>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Publicar oferta</button>
+          {{#unless publicada}}
+            <p class="text-secondary small text-center mt-3 mb-0">* Campos obligatorios</p>
+          {{/unless}}
         </form>
       </div>
     </div>

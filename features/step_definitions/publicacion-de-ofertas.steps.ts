@@ -108,6 +108,19 @@ When(
 
 Then("la oferta se publica exitosamente", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina.getByRole("alert")).toContainText("La oferta se publicó exitosamente");
+  await expect(this.pagina.getByText("Completá los datos para comenzar la búsqueda de candidatos.")).toBeVisible();
+  await expect(this.pagina.locator(".text-primary")).toHaveCount(3);
+  await expect(this.pagina.getByLabel("Título")).toHaveAttribute("placeholder", "Ej. Desarrollador backend");
+  await expect(this.pagina.getByLabel("Descripción")).toHaveAttribute(
+    "placeholder",
+    "Describí las responsabilidades y los requisitos del puesto",
+  );
+  await expect(this.pagina.getByLabel("Ubicación")).toHaveAttribute("placeholder", "Ej. Tres de Febrero");
+  await expect(this.pagina.getByRole("button", { name: "Publicar oferta" })).toHaveClass(/w-100/);
+  assert.ok(this.ultimaOferta);
+  await expect(this.pagina.getByLabel("Título")).toHaveValue(this.ultimaOferta.titulo);
+  await expect(this.pagina.getByLabel("Descripción")).toHaveValue(this.ultimaOferta.descripcion);
+  await expect(this.pagina.getByLabel("Ubicación")).toHaveValue(this.ultimaOferta.ubicacion);
   if (this.cantidadOfertasAntes !== undefined && this.emailEmpresario) {
     const resultado = await pool.query<{ cantidad: string }>(
       `SELECT COUNT(*) AS cantidad
@@ -177,7 +190,10 @@ Then(
   "la publicacion es rechazada porque su suscripcion no permite publicar mas ofertas",
   async function (this: MundoDeLaAplicacion) {
     await expect(this.pagina).toHaveURL(/\/?limite=ofertas$/);
-    await expect(this.pagina.getByRole("alert")).toContainText("La suscripcion no permite publicar mas ofertas");
+    await expect(this.pagina.getByRole("heading", { name: "Inicio" })).toBeVisible();
+    await expect(this.pagina.getByRole("alert")).toContainText(
+      "Alcanzaste el límite de publicaciones permitido por tu suscripción.",
+    );
     assert.ok(this.emailEmpresario);
     assert.notEqual(this.cantidadOfertasAntes, undefined);
     const resultado = await pool.query<{ cantidad: string }>(

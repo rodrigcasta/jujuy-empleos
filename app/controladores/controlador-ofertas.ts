@@ -12,6 +12,10 @@ interface FormularioOferta {
   ubicacion?: string;
 }
 
+type SesionConOferta = NonNullable<Request["session"]> & {
+  ofertaPublicada?: FormularioOferta;
+};
+
 export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
   const router = express.Router();
 
@@ -24,9 +28,15 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
 
     const publicada = req.query.publicada === "1";
     if (publicada || (await sistemaOfertas.puedePublicar(empresario))) {
+      const sesion = req.session as SesionConOferta | null | undefined;
+      const ofertaPublicada = publicada ? sesion?.ofertaPublicada : undefined;
+      if (sesion) {
+        delete sesion.ofertaPublicada;
+      }
       res.render("ofertas/nueva", {
         titulo: "Publicar oferta",
         publicada,
+        nueva: ofertaPublicada,
       });
     } else {
       res.redirect(EstadoHttp.ENCONTRADO, "/?limite=ofertas");
@@ -44,6 +54,10 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
 
     try {
       await sistemaOfertas.publicar(empresario, titulo ?? "", descripcion ?? "", ubicacion ?? "");
+      const sesion = req.session as SesionConOferta | null | undefined;
+      if (sesion) {
+        sesion.ofertaPublicada = { titulo, descripcion, ubicacion };
+      }
       res.redirect(EstadoHttp.VER_OTRO, "/ofertas/nueva?publicada=1");
     } catch (error: unknown) {
       registrarExcepcion(req, error);
