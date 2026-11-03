@@ -41,7 +41,6 @@ Escenario: PUB-06 - Un usuario no autenticado no puede publicar
   Cuando intenta acceder a la publicacion de ofertas
   Entonces debe autenticarse antes de publicar una oferta
 
-@wip
 Escenario: PUB-07 - La suscripcion Gratuita no permite una segunda oferta
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y tiene una suscripcion "Gratuita"
@@ -49,7 +48,6 @@ Escenario: PUB-07 - La suscripcion Gratuita no permite una segunda oferta
   Cuando intenta publicar una oferta con titulo "Programador Jr.", descripcion "Se busca profesional freelance" y ubicacion "Pilar"
   Entonces la publicacion es rechazada porque su suscripcion no permite publicar mas ofertas
 
-@wip
 Escenario: PUB-08 - La suscripcion Profesional permite una quinta oferta
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y tiene una suscripcion "Profesional"
@@ -57,7 +55,6 @@ Escenario: PUB-08 - La suscripcion Profesional permite una quinta oferta
   Cuando publica una oferta con titulo "Desarrollador TypeScript", descripcion "Se busca desarrollador para aplicacion web" y ubicacion "CABA"
   Entonces la oferta se publica exitosamente
 
-@wip
 Escenario: PUB-09 - La suscripcion Profesional no permite una sexta oferta
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y tiene una suscripcion "Profesional"
@@ -65,7 +62,6 @@ Escenario: PUB-09 - La suscripcion Profesional no permite una sexta oferta
   Cuando intenta publicar una oferta con titulo "Desarrollador TypeScript", descripcion "Se busca desarrollador para aplicacion web" y ubicacion "CABA"
   Entonces la publicacion es rechazada porque su suscripcion no permite publicar mas ofertas
 
-@wip
 Escenario: PUB-10 - La suscripcion Corporativa permite publicar mas de cinco ofertas
   Dado que el empresario "laura.fernandez@empresa-ejemplo.com.ar" esta autenticado
   Y tiene una suscripcion "Corporativa"

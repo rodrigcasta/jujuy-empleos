@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import pool from "../../app/adaptadores/pool";
+import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
+import Oferta from "../../app/dominio/oferta";
 import { registrarse } from "../support/acciones";
 import { MundoDeLaAplicacion } from "../support/mundo";
 
@@ -13,6 +15,9 @@ const completarYEnviarOferta = async (
 ) => {
   mundo.ultimaOferta = { titulo, descripcion, ubicacion };
   await mundo.pagina.goto("/ofertas/nueva");
+  if (!mundo.pagina.url().includes("/ofertas/nueva")) {
+    return;
+  }
   await mundo.pagina.locator("[maxlength]").evaluateAll((campos) => {
     campos.forEach((campo) => campo.removeAttribute("maxlength"));
   });
@@ -62,7 +67,29 @@ Given("todavia no publico ninguna oferta", async function (this: MundoDeLaAplica
      WHERE usuarios.email = $1`,
     [this.emailEmpresario],
   );
-  assert.equal(Number(resultado.rows[0].cantidad), 0);
+  this.cantidadOfertasAntes = Number(resultado.rows[0].cantidad);
+  assert.equal(this.cantidadOfertasAntes, 0);
+});
+
+Given(/^ya publico (\d+) ofertas?$/, async function (this: MundoDeLaAplicacion, cantidad: string) {
+  assert.ok(this.emailEmpresario);
+  const resultado = await pool.query<{ id: number }>("SELECT id FROM usuarios WHERE email = $1", [
+    this.emailEmpresario,
+  ]);
+  assert.equal(resultado.rows.length, 1);
+  const repositorioOferta = new RepositorioOfertaSql();
+  this.cantidadOfertasAntes = Number(cantidad);
+  for (let numero = 1; numero <= this.cantidadOfertasAntes; numero += 1) {
+    await repositorioOferta.guardar(
+      new Oferta(
+        `Oferta ${numero}`,
+        `Descripcion de la oferta ${numero}`,
+        "Buenos Aires",
+        resultado.rows[0].id,
+        new Date("2026-11-02T15:00:00.000Z"),
+      ),
+    );
+  }
 });
 
 When(
@@ -81,6 +108,16 @@ When(
 
 Then("la oferta se publica exitosamente", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina.getByRole("alert")).toContainText("La oferta se publicó exitosamente");
+  if (this.cantidadOfertasAntes !== undefined && this.emailEmpresario) {
+    const resultado = await pool.query<{ cantidad: string }>(
+      `SELECT COUNT(*) AS cantidad
+       FROM ofertas
+       JOIN usuarios ON usuarios.id = ofertas.id_empresario
+       WHERE usuarios.email = $1`,
+      [this.emailEmpresario],
+    );
+    assert.equal(Number(resultado.rows[0].cantidad), this.cantidadOfertasAntes + 1);
+  }
 });
 
 Then("queda asociada al empresario {string}", async function (email: string) {
@@ -133,6 +170,24 @@ Then(
   "la publicacion es rechazada porque la ubicacion supera los 70 caracteres",
   async function (this: MundoDeLaAplicacion) {
     await comprobarRechazo(this, "La ubicación tiene más de 70 caracteres");
+  },
+);
+
+Then(
+  "la publicacion es rechazada porque su suscripcion no permite publicar mas ofertas",
+  async function (this: MundoDeLaAplicacion) {
+    await expect(this.pagina).toHaveURL(/\/?limite=ofertas$/);
+    await expect(this.pagina.getByRole("alert")).toContainText("La suscripcion no permite publicar mas ofertas");
+    assert.ok(this.emailEmpresario);
+    assert.notEqual(this.cantidadOfertasAntes, undefined);
+    const resultado = await pool.query<{ cantidad: string }>(
+      `SELECT COUNT(*) AS cantidad
+       FROM ofertas
+       JOIN usuarios ON usuarios.id = ofertas.id_empresario
+       WHERE usuarios.email = $1`,
+      [this.emailEmpresario],
+    );
+    assert.equal(Number(resultado.rows[0].cantidad), this.cantidadOfertasAntes);
   },
 );
 

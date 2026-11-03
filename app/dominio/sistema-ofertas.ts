@@ -13,13 +13,17 @@ export default class SistemaOfertas {
   }
 
   public async publicar(empresario: Usuario, titulo: string, descripcion: string, ubicacion: string): Promise<Oferta> {
-    const cantidadOfertasPublicadas = await this.repositorioOferta.contarPorEmpresario(empresario.obtenerId());
-    if (!empresario.puedePublicar(cantidadOfertasPublicadas)) {
+    if (!(await this.puedePublicar(empresario))) {
       throw new LimiteDeOfertasAlcanzadoError();
     }
 
     const oferta = new Oferta(titulo, descripcion, ubicacion, empresario.obtenerId(), this.obtenerFechaActual());
     await this.repositorioOferta.guardar(oferta);
     return oferta;
+  }
+
+  public async puedePublicar(empresario: Usuario): Promise<boolean> {
+    const cantidadOfertasPublicadas = await this.repositorioOferta.contarPorEmpresario(empresario.obtenerId());
+    return empresario.puedePublicar(cantidadOfertasPublicadas);
   }
 }

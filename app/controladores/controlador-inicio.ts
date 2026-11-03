@@ -7,8 +7,8 @@ import { EstadoHttp } from "../web/estado-http";
 export const crearControladorInicio = () => {
   const router = express.Router();
 
-  router.get("/", (_req: Request, res: Response) => {
-    res.render("inicio/inicio", { titulo: "Inicio" });
+  router.get("/", (req: Request, res: Response) => {
+    res.render("inicio/inicio", { titulo: "Inicio", limiteOfertas: req.query.limite === "ofertas" });
   });
 
   // Devuelve la versión del package.json

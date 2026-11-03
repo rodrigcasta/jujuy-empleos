@@ -48,4 +48,24 @@ describe("SistemaOfertas", () => {
       expect(repositorioOferta.guardar).not.toHaveBeenCalled();
     });
   });
+
+  describe("puedePublicar", () => {
+    test("deberia permitir publicar si la suscripcion conserva capacidad", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Profesional");
+      repositorioOferta.contarPorEmpresario.mockResolvedValue(4);
+
+      const puedePublicar = await sistemaOfertas.puedePublicar(empresario);
+
+      expect(puedePublicar).toBe(true);
+    });
+
+    test("deberia rechazar publicar si la suscripcion agoto su capacidad", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      repositorioOferta.contarPorEmpresario.mockResolvedValue(1);
+
+      const puedePublicar = await sistemaOfertas.puedePublicar(empresario);
+
+      expect(puedePublicar).toBe(false);
+    });
+  });
 });
