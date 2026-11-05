@@ -1,5 +1,6 @@
 import { Mock, mock } from "ts-jest-mocker";
 import LimiteDeOfertasAlcanzadoError from "../../app/dominio/limite-de-ofertas-alcanzado-error";
+import Oferta from "../../app/dominio/oferta";
 import { IRepositorioOferta } from "../../app/dominio/puerto-repositorio-oferta";
 import SistemaOfertas from "../../app/dominio/sistema-ofertas";
 import Usuario from "../../app/dominio/usuario";
@@ -66,6 +67,21 @@ describe("SistemaOfertas", () => {
       const puedePublicar = await sistemaOfertas.puedePublicar(empresario);
 
       expect(puedePublicar).toBe(false);
+    });
+  });
+
+  describe("listar", () => {
+    test("deberia listar todas las ofertas publicadas", async () => {
+      const ofertasPublicadas = [
+        new Oferta("Oferta reciente", "Descripcion reciente", "CABA", 7, FECHA_ACTUAL, 2),
+        new Oferta("Oferta anterior", "Descripcion anterior", "Moron", 8, new Date("2026-11-01T15:00:00.000Z"), 1),
+      ];
+      repositorioOferta.listar.mockResolvedValue(ofertasPublicadas);
+
+      const ofertas = await sistemaOfertas.listar();
+
+      expect(ofertas).toEqual(ofertasPublicadas);
+      expect(repositorioOferta.listar).toHaveBeenCalledTimes(1);
     });
   });
 });

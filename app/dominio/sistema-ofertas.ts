@@ -26,4 +26,8 @@ export default class SistemaOfertas {
     const cantidadOfertasPublicadas = await this.repositorioOferta.contarPorEmpresario(empresario.obtenerId());
     return empresario.puedePublicar(cantidadOfertasPublicadas);
   }
+
+  public async listar(): Promise<Oferta[]> {
+    return this.repositorioOferta.listar();
+  }
 }
