@@ -101,5 +101,30 @@ describe("RepositorioOfertaSql", () => {
       expect(ofertas).toHaveLength(1);
       expect(ofertas[0]).toMatchObject(oferta);
     });
+
+    test("deberia ordenar las ofertas desde la mas reciente", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const ofertaAnterior = new Oferta(
+        "Oferta anterior",
+        "Esta oferta fue publicada primero",
+        "CABA",
+        empresario.obtenerId(),
+        new Date("2026-11-03T15:00:00.000Z"),
+      );
+      const ofertaReciente = new Oferta(
+        "Oferta reciente",
+        "Esta oferta fue publicada despues",
+        "CABA",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      await repositorioOferta.guardar(ofertaAnterior);
+      await repositorioOferta.guardar(ofertaReciente);
+
+      const ofertas = await repositorioOferta.listar();
+
+      expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta reciente", "Oferta anterior"]);
+    });
   });
 });

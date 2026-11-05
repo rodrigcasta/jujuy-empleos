@@ -37,7 +37,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
   }
 
   public async listar(): Promise<Oferta[]> {
-    const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas");
+    const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas ORDER BY fecha_publicacion DESC");
     return resultado.rows.map(
       (oferta) =>
         new Oferta(
