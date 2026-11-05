@@ -27,7 +27,6 @@ Escenario: LIST-04 - Muestra todas las ofertas en la lista
   Cuando visualizo la lista de ofertas
   Entonces la lista muestra las 20 ofertas
 
-@wip
 Escenario: LIST-05 - Trunca una descripcion extensa
   Dado que existe la oferta con titulo "Desarrollador backend", descripcion "Buscamos desarrollador con experiencia en TypeScript y PostgreSQL" y ubicacion "CABA"
   Cuando visualizo la lista de ofertas

@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
@@ -87,3 +88,19 @@ Then("la oferta con titulo {string} se muestra segunda", async function (this: M
 Then("la lista muestra las {int} ofertas", async function (this: MundoDeLaAplicacion, cantidadOfertas: number) {
   await expect(this.pagina.locator("article")).toHaveCount(cantidadOfertas);
 });
+
+Then("se muestra la descripcion {string}", async function (this: MundoDeLaAplicacion, descripcion: string) {
+  await expect(this.pagina.locator("article p")).toHaveText(descripcion);
+});
+
+Then(
+  "se muestran {int} caracteres de la descripcion original antes de los tres puntos finales",
+  async function (this: MundoDeLaAplicacion, cantidadCaracteres: number) {
+    const descripcion = await this.pagina.locator("article p").textContent();
+    if (descripcion === null) {
+      throw new Error("No se encontro la descripcion de la oferta");
+    }
+    assert.ok(descripcion.endsWith("..."));
+    assert.equal(descripcion.slice(0, -3).length, cantidadCaracteres);
+  },
+);

@@ -6,6 +6,13 @@ import { EstadoHttp } from "../web/estado-http";
 import { registrarExcepcion, renderizarError } from "../web/registrar-excepcion";
 import { usuarioActual } from "../web/autenticacion";
 
+const CANTIDAD_CARACTERES_RESUMEN = 50;
+
+const resumirDescripcion = (descripcion: string): string =>
+  descripcion.length > CANTIDAD_CARACTERES_RESUMEN
+    ? `${descripcion.slice(0, CANTIDAD_CARACTERES_RESUMEN)}...`
+    : descripcion;
+
 interface FormularioOferta {
   titulo?: string;
   descripcion?: string;
@@ -26,7 +33,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
       sinOfertas: ofertas.length === 0,
       ofertas: ofertas.map((oferta) => ({
         titulo: oferta.obtenerTitulo(),
-        descripcion: oferta.obtenerDescripcion(),
+        descripcion: resumirDescripcion(oferta.obtenerDescripcion()),
         ubicacion: oferta.obtenerUbicacion(),
       })),
     });
