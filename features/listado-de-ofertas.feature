@@ -22,7 +22,6 @@ Escenario: LIST-03 - Muestra las ofertas ordenadas de mas reciente a mas antigua
   Entonces la oferta con titulo "Product owner" se muestra primera
   Y la oferta con titulo "Desarrollador Sr Java" se muestra segunda
 
-@wip
 Escenario: LIST-04 - Muestra todas las ofertas en la lista
   Dado que existen 20 ofertas
   Cuando visualizo la lista de ofertas

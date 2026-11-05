@@ -41,6 +41,23 @@ Given(
   },
 );
 
+Given("que existen {int} ofertas", async function (cantidadOfertas: number) {
+  const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+  await new RepositorioUsuarioSql().guardar(empresario);
+  const repositorioOferta = new RepositorioOfertaSql();
+  for (let numeroOferta = 1; numeroOferta <= cantidadOfertas; numeroOferta += 1) {
+    await repositorioOferta.guardar(
+      new Oferta(
+        `Oferta ${numeroOferta}`,
+        `Descripcion de la oferta ${numeroOferta}`,
+        "Buenos Aires",
+        empresario.obtenerId(),
+        FECHA_DE_REFERENCIA,
+      ),
+    );
+  }
+});
+
 When("visualizo la lista de ofertas", async function (this: MundoDeLaAplicacion) {
   await this.pagina.goto("/ofertas");
 });
@@ -65,4 +82,8 @@ Then("la oferta con titulo {string} se muestra primera", async function (this: M
 
 Then("la oferta con titulo {string} se muestra segunda", async function (this: MundoDeLaAplicacion, titulo: string) {
   await expect(this.pagina.locator("article h2").nth(1)).toHaveText(titulo);
+});
+
+Then("la lista muestra las {int} ofertas", async function (this: MundoDeLaAplicacion, cantidadOfertas: number) {
+  await expect(this.pagina.locator("article")).toHaveCount(cantidadOfertas);
 });
