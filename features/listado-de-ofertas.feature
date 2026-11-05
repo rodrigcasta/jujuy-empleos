@@ -15,7 +15,6 @@ Escenario: LIST-02 - Muestra la lista vacia cuando no hay ofertas
   Cuando visualizo la lista de ofertas
   Entonces la lista se muestra vacia
 
-@wip
 Escenario: LIST-03 - Muestra las ofertas ordenadas de mas reciente a mas antigua
   Dado que existe la oferta con titulo "Desarrollador Sr Java" que fue creada hace 2 dias
   Y que existe la oferta con titulo "Product owner" que fue creada hace 1 dia
