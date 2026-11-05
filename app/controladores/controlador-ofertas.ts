@@ -24,6 +24,11 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
     res.render("ofertas/listado", {
       titulo: "Ofertas laborales",
       sinOfertas: ofertas.length === 0,
+      ofertas: ofertas.map((oferta) => ({
+        titulo: oferta.obtenerTitulo(),
+        descripcion: oferta.obtenerDescripcion(),
+        ubicacion: oferta.obtenerUbicacion(),
+      })),
     });
   });
 

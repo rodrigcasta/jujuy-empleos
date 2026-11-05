@@ -4,7 +4,6 @@ Característica: Listado de ofertas laborales
   Quiero consultar las ofertas laborales publicadas
   Para conocer las oportunidades disponibles
 
-@wip
 Escenario: LIST-01 - Muestra una oferta existente
   Dado que existe la oferta con titulo "Desarrollador Sr Java", descripcion "Se busca desarrollador con experiencia en Java" y ubicacion "Moreno"
   Y no soy un usuario registrado
