@@ -2,6 +2,15 @@ import Oferta from "../dominio/oferta";
 import { IRepositorioOferta } from "../dominio/puerto-repositorio-oferta";
 import pool from "./pool";
 
+interface OfertaPersistida {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  ubicacion: string;
+  fecha_publicacion: Date;
+  id_empresario: number;
+}
+
 export default class RepositorioOfertaSql implements IRepositorioOferta {
   public async guardar(oferta: Oferta): Promise<void> {
     const resultado = await pool.query<{ id: number }>(
@@ -25,6 +34,21 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
       [idEmpresario],
     );
     return Number(resultado.rows[0].cantidad);
+  }
+
+  public async listar(): Promise<Oferta[]> {
+    const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas");
+    return resultado.rows.map(
+      (oferta) =>
+        new Oferta(
+          oferta.titulo,
+          oferta.descripcion,
+          oferta.ubicacion,
+          oferta.id_empresario,
+          oferta.fecha_publicacion,
+          oferta.id,
+        ),
+    );
   }
 
   public async eliminarTodos(): Promise<void> {

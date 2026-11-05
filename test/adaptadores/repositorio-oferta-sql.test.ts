@@ -81,4 +81,25 @@ describe("RepositorioOfertaSql", () => {
       expect(cantidad).toBe(2);
     });
   });
+
+  describe("listar", () => {
+    test("deberia recuperar una oferta persistida", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const fechaPublicacion = new Date("2026-11-04T15:00:00.000Z");
+      const oferta = new Oferta(
+        "Desarrollador TypeScript",
+        "Se busca desarrollador con experiencia en TypeScript",
+        "CABA",
+        empresario.obtenerId(),
+        fechaPublicacion,
+      );
+      await repositorioOferta.guardar(oferta);
+
+      const ofertas = await repositorioOferta.listar();
+
+      expect(ofertas).toHaveLength(1);
+      expect(ofertas[0]).toMatchObject(oferta);
+    });
+  });
 });
