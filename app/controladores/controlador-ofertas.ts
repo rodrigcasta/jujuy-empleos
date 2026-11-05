@@ -19,6 +19,14 @@ type SesionConOferta = NonNullable<Request["session"]> & {
 export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
   const router = express.Router();
 
+  router.get("/", async (_req: Request, res: Response) => {
+    const ofertas = await sistemaOfertas.listar();
+    res.render("ofertas/listado", {
+      titulo: "Ofertas laborales",
+      sinOfertas: ofertas.length === 0,
+    });
+  });
+
   router.get("/nueva", async (req: Request, res: Response) => {
     const empresario = usuarioActual(req);
     if (!empresario) {

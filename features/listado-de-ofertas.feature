@@ -11,7 +11,6 @@ Escenario: LIST-01 - Muestra una oferta existente
   Cuando visualizo la lista de ofertas
   Entonces se muestra la oferta con titulo "Desarrollador Sr Java", descripcion "Se busca desarrollador con experiencia en Java" y ubicacion "Moreno"
 
-@wip
 Escenario: LIST-02 - Muestra la lista vacia cuando no hay ofertas
   Dado que no existen ofertas
   Cuando visualizo la lista de ofertas

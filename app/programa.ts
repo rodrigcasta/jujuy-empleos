@@ -38,7 +38,7 @@ app.use(crearControladorInicio());
 app.use(crearControladorAutenticacion(sistemaUsuarios));
 // Ningún usuario anónimo puede acceder a las páginas de alumnos
 app.use("/alumnos", requiereAutenticacion, crearControladorAlumnos(sistemaAlumnos));
-app.use("/ofertas", requiereAutenticacion, crearControladorOfertas(sistemaOfertas));
+app.use("/ofertas", crearControladorOfertas(sistemaOfertas));
 
 const server = app
   .listen(port, () => {
