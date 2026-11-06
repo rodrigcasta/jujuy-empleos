@@ -4,7 +4,7 @@
 
   {{#if noEncontrada}}
   <div class="border border-primary-subtle rounded-3 bg-body-tertiary p-5 text-center d-flex flex-column align-items-center justify-content-center"
-    style="border-style: dashed !important; min-height: 250px;">
+    style="border-style: dashed !important; min-height: 310px; background-color: #f8fafc !important;">
     <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3 fw-bold"
       style="width: 3.25rem; height: 3.25rem;" aria-hidden="true">!</span>
     <strong class="d-block mb-2">{{mensaje}}</strong>
@@ -16,16 +16,16 @@
   </div>
   {{else}}
   <article class="border rounded-3 bg-body p-4 shadow-sm">
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
-      <h2 class="h4 mb-0">{{detalle.titulo}}</h2>
-      <span class="badge text-bg-primary">{{detalle.ubicacion}}</span>
-    </div>
+    <h2 class="h4 mb-3">{{detalle.titulo}}</h2>
+    <span class="badge text-primary-emphasis bg-primary-subtle mb-4">{{detalle.ubicacion}}</span>
 
     <h3 class="h6 text-uppercase text-secondary">Descripción</h3>
     <p>{{detalle.descripcion}}</p>
 
     <h3 class="h6 text-uppercase text-secondary mt-4">Contacto</h3>
-    <a href="mailto:{{detalle.emailEmpresario}}">{{detalle.emailEmpresario}}</a>
+    <a href="mailto:{{detalle.emailEmpresario}}" class="fw-semibold text-decoration-none">
+      {{detalle.emailEmpresario}}
+    </a>
 
     <div class="mt-4">
       <a href="/ofertas" class="btn btn-outline-primary">
