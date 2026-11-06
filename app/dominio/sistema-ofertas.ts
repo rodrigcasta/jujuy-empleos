@@ -1,6 +1,7 @@
 import { DetalleOferta } from "./detalle-oferta";
 import LimiteDeOfertasAlcanzadoError from "./limite-de-ofertas-alcanzado-error";
 import Oferta from "./oferta";
+import OfertaNoEncontradaError from "./oferta-no-encontrada-error";
 import { IRepositorioOferta } from "./puerto-repositorio-oferta";
 import Usuario from "./usuario";
 
@@ -32,7 +33,11 @@ export default class SistemaOfertas {
     return this.repositorioOferta.listar();
   }
 
-  public async obtenerDetallePorId(id: number): Promise<DetalleOferta | null> {
-    return this.repositorioOferta.recuperarDetallePorId(id);
+  public async obtenerDetallePorId(id: number): Promise<DetalleOferta> {
+    const detalle = await this.repositorioOferta.recuperarDetallePorId(id);
+    if (detalle === null) {
+      throw new OfertaNoEncontradaError();
+    }
+    return detalle;
   }
 }

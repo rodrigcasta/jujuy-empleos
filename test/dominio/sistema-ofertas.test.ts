@@ -1,6 +1,7 @@
 import { Mock, mock } from "ts-jest-mocker";
 import LimiteDeOfertasAlcanzadoError from "../../app/dominio/limite-de-ofertas-alcanzado-error";
 import Oferta from "../../app/dominio/oferta";
+import OfertaNoEncontradaError from "../../app/dominio/oferta-no-encontrada-error";
 import { IRepositorioOferta } from "../../app/dominio/puerto-repositorio-oferta";
 import SistemaOfertas from "../../app/dominio/sistema-ofertas";
 import Usuario from "../../app/dominio/usuario";
@@ -100,6 +101,15 @@ describe("SistemaOfertas", () => {
 
       expect(detalle).toEqual(detalleEsperado);
       expect(repositorioOferta.recuperarDetallePorId).toHaveBeenCalledWith(2);
+    });
+
+    test("deberia informar si la oferta no existe", async () => {
+      repositorioOferta.recuperarDetallePorId.mockResolvedValue(null);
+
+      const consulta = sistemaOfertas.obtenerDetallePorId(9999);
+
+      await expect(consulta).rejects.toThrow(OfertaNoEncontradaError);
+      await expect(consulta).rejects.toThrow("No se encontró la oferta solicitada");
     });
   });
 });
