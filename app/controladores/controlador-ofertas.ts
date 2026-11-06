@@ -32,6 +32,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
       titulo: "Ofertas laborales",
       sinOfertas: ofertas.length === 0,
       ofertas: ofertas.map((oferta) => ({
+        id: oferta.obtenerId(),
         titulo: oferta.obtenerTitulo(),
         descripcion: resumirDescripcion(oferta.obtenerDescripcion()),
         ubicacion: oferta.obtenerUbicacion(),
@@ -61,6 +62,14 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
     } else {
       res.redirect(EstadoHttp.ENCONTRADO, "/?limite=ofertas");
     }
+  });
+
+  router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
+    const detalle = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
+    res.render("ofertas/detalle", {
+      titulo: "Detalle de la oferta",
+      detalle,
+    });
   });
 
   router.post("/", async (req: Request<Record<string, string>, unknown, FormularioOferta>, res: Response) => {

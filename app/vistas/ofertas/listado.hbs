@@ -21,7 +21,9 @@
     {{#each ofertas}}
     <article class="col-12">
       <div class="border rounded-3 bg-body p-4 shadow-sm">
-        <h2 class="h5 mb-2">{{titulo}}</h2>
+        <h2 class="h5 mb-2">
+          <a href="/ofertas/{{id}}" class="text-decoration-none">{{titulo}}</a>
+        </h2>
         <p class="text-secondary mb-3">{{descripcion}}</p>
         <span class="fw-semibold">{{ubicacion}}</span>
       </div>

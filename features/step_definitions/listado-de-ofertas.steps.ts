@@ -11,12 +11,14 @@ const FECHA_DE_REFERENCIA = new Date("2026-11-04T15:00:00.000Z");
 
 Given(
   "que existe la oferta con titulo {string}, descripcion {string} y ubicacion {string}",
-  async function (titulo: string, descripcion: string, ubicacion: string) {
-    const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+  async function (this: MundoDeLaAplicacion, titulo: string, descripcion: string, ubicacion: string) {
+    const emailEmpresario = "empresa1@empresa1.com";
+    const empresario = new Usuario("Laura", "Fernandez", emailEmpresario, "hash");
     await new RepositorioUsuarioSql().guardar(empresario);
     await new RepositorioOfertaSql().guardar(
       new Oferta(titulo, descripcion, ubicacion, empresario.obtenerId(), new Date("2026-11-04T15:00:00.000Z")),
     );
+    this.emailEmpresario = emailEmpresario;
   },
 );
 

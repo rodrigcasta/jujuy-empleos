@@ -4,7 +4,6 @@ Característica: Detalle de una oferta laboral
   Quiero ver los detalles de una oferta
   Para poder contactar al empresario
 
-@wip
 Escenario: DET-01 - Consulta el detalle de una oferta existente
   Dado que existe la oferta con titulo "Desarrollador Backend", descripcion "Se busca desarrollador para trabajo remoto" y ubicacion "Pilar"
   Y fue publicada por el empresario con email "empresa1@empresa1.com"

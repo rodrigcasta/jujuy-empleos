@@ -1,0 +1,24 @@
+<section>
+  <h1>Detalle de la oferta</h1>
+  <p class="text-secondary">Conocé la oportunidad y sus datos de contacto.</p>
+
+  <article class="border rounded-3 bg-body p-4 shadow-sm">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+      <h2 class="h4 mb-0">{{detalle.titulo}}</h2>
+      <span class="badge text-bg-primary">{{detalle.ubicacion}}</span>
+    </div>
+
+    <h3 class="h6 text-uppercase text-secondary">Descripción</h3>
+    <p>{{detalle.descripcion}}</p>
+
+    <h3 class="h6 text-uppercase text-secondary mt-4">Contacto</h3>
+    <a href="mailto:{{detalle.emailEmpresario}}">{{detalle.emailEmpresario}}</a>
+
+    <div class="mt-4">
+      <a href="/ofertas" class="btn btn-outline-primary">
+        <span aria-hidden="true">←</span>
+        Volver
+      </a>
+    </div>
+  </article>
+</section>
