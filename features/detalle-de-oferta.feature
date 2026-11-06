@@ -15,7 +15,6 @@ Escenario: DET-01 - Consulta el detalle de una oferta existente
   Y el email del empresario es "empresa1@empresa1.com"
   Y puedo volver al listado de ofertas
 
-@wip
 Escenario: DET-02 - Informa cuando la oferta no existe
   Dado que no existe una oferta con id 9999
   Cuando intento consultar el detalle de la oferta con id 9999

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
+import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
 import { MundoDeLaAplicacion } from "../support/mundo";
 
 Given("fue publicada por el empresario con email {string}", function (this: MundoDeLaAplicacion, email: string) {
@@ -33,4 +34,18 @@ Then("el email del empresario es {string}", async function (this: MundoDeLaAplic
 
 Then("puedo volver al listado de ofertas", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina.getByRole("link", { name: /Volver/ })).toHaveAttribute("href", "/ofertas");
+});
+
+Given("que no existe una oferta con id {int}", async function (id: number) {
+  const detalle = await new RepositorioOfertaSql().recuperarDetallePorId(id);
+  assert.equal(detalle, null);
+});
+
+When("intento consultar el detalle de la oferta con id {int}", async function (this: MundoDeLaAplicacion, id: number) {
+  const respuesta = await this.pagina.goto(`/ofertas/${id}`);
+  assert.equal(respuesta?.status(), 404);
+});
+
+Then("veo el mensaje {string}", async function (this: MundoDeLaAplicacion, mensaje: string) {
+  await expect(this.pagina.getByText(mensaje, { exact: true })).toBeVisible();
 });

@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import SistemaOfertas from "../dominio/sistema-ofertas";
 import DatosDeOfertaInvalidos from "../dominio/datos-de-oferta-invalidos";
 import LimiteDeOfertasAlcanzadoError from "../dominio/limite-de-ofertas-alcanzado-error";
+import OfertaNoEncontradaError from "../dominio/oferta-no-encontrada-error";
 import { EstadoHttp } from "../web/estado-http";
 import { registrarExcepcion, renderizarError } from "../web/registrar-excepcion";
 import { usuarioActual } from "../web/autenticacion";
@@ -65,11 +66,24 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
   });
 
   router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
-    const detalle = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
-    res.render("ofertas/detalle", {
-      titulo: "Detalle de la oferta",
-      detalle,
-    });
+    try {
+      const detalle = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
+      res.render("ofertas/detalle", {
+        titulo: "Detalle de la oferta",
+        detalle,
+      });
+    } catch (error: unknown) {
+      registrarExcepcion(req, error);
+      if (error instanceof OfertaNoEncontradaError) {
+        res.status(EstadoHttp.NO_ENCONTRADO).render("ofertas/detalle", {
+          titulo: "Detalle de la oferta",
+          noEncontrada: true,
+          mensaje: error.message,
+        });
+      } else {
+        renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo obtener el detalle de la oferta");
+      }
+    }
   });
 
   router.post("/", async (req: Request<Record<string, string>, unknown, FormularioOferta>, res: Response) => {

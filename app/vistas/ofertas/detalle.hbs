@@ -2,6 +2,19 @@
   <h1>Detalle de la oferta</h1>
   <p class="text-secondary">Conocé la oportunidad y sus datos de contacto.</p>
 
+  {{#if noEncontrada}}
+  <div class="border border-primary-subtle rounded-3 bg-body-tertiary p-5 text-center d-flex flex-column align-items-center justify-content-center"
+    style="border-style: dashed !important; min-height: 250px;">
+    <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary mb-3 fw-bold"
+      style="width: 3.25rem; height: 3.25rem;" aria-hidden="true">!</span>
+    <strong class="d-block mb-2">{{mensaje}}</strong>
+    <span class="text-secondary mb-4">Es posible que la oferta ya no esté disponible.</span>
+    <a href="/ofertas" class="btn btn-outline-primary">
+      <span aria-hidden="true">←</span>
+      Volver a ofertas
+    </a>
+  </div>
+  {{else}}
   <article class="border rounded-3 bg-body p-4 shadow-sm">
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
       <h2 class="h4 mb-0">{{detalle.titulo}}</h2>
@@ -21,4 +34,5 @@
       </a>
     </div>
   </article>
+  {{/if}}
 </section>
