@@ -84,4 +84,22 @@ describe("SistemaOfertas", () => {
       expect(repositorioOferta.listar).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe("obtenerDetallePorId", () => {
+    test("deberia obtener el detalle de una oferta existente", async () => {
+      const detalleEsperado = {
+        id: 2,
+        titulo: "Desarrollador Backend",
+        descripcion: "Se busca desarrollador para trabajo remoto",
+        ubicacion: "Pilar",
+        emailEmpresario: "empresa1@empresa1.com",
+      };
+      repositorioOferta.recuperarDetallePorId.mockResolvedValue(detalleEsperado);
+
+      const detalle = await sistemaOfertas.obtenerDetallePorId(2);
+
+      expect(detalle).toEqual(detalleEsperado);
+      expect(repositorioOferta.recuperarDetallePorId).toHaveBeenCalledWith(2);
+    });
+  });
 });

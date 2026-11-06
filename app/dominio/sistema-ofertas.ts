@@ -1,3 +1,4 @@
+import { DetalleOferta } from "./detalle-oferta";
 import LimiteDeOfertasAlcanzadoError from "./limite-de-ofertas-alcanzado-error";
 import Oferta from "./oferta";
 import { IRepositorioOferta } from "./puerto-repositorio-oferta";
@@ -29,5 +30,9 @@ export default class SistemaOfertas {
 
   public async listar(): Promise<Oferta[]> {
     return this.repositorioOferta.listar();
+  }
+
+  public async obtenerDetallePorId(id: number): Promise<DetalleOferta | null> {
+    return this.repositorioOferta.recuperarDetallePorId(id);
   }
 }
