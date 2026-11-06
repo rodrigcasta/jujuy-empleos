@@ -1,4 +1,5 @@
 import Oferta from "../dominio/oferta";
+import { DetalleOferta } from "../dominio/detalle-oferta";
 import { IRepositorioOferta } from "../dominio/puerto-repositorio-oferta";
 import pool from "./pool";
 
@@ -49,6 +50,34 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
           oferta.id,
         ),
     );
+  }
+
+  public async recuperarDetallePorId(id: number): Promise<DetalleOferta | null> {
+    const resultado = await pool.query<{
+      id: number;
+      titulo: string;
+      descripcion: string;
+      ubicacion: string;
+      email_empresario: string;
+    }>(
+      `SELECT ofertas.id, ofertas.titulo, ofertas.descripcion, ofertas.ubicacion,
+              usuarios.email AS email_empresario
+       FROM ofertas
+       INNER JOIN usuarios ON usuarios.id = ofertas.id_empresario
+       WHERE ofertas.id = $1`,
+      [id],
+    );
+    const oferta = resultado.rows[0];
+    if (oferta === undefined) {
+      return null;
+    }
+    return {
+      id: oferta.id,
+      titulo: oferta.titulo,
+      descripcion: oferta.descripcion,
+      ubicacion: oferta.ubicacion,
+      emailEmpresario: oferta.email_empresario,
+    };
   }
 
   public async eliminarTodos(): Promise<void> {

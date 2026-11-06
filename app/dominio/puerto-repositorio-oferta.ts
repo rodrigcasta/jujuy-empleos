@@ -1,3 +1,4 @@
+import { DetalleOferta } from "./detalle-oferta";
 import Oferta from "./oferta";
 
 export interface IRepositorioOferta {
@@ -6,4 +7,6 @@ export interface IRepositorioOferta {
   contarPorEmpresario(idEmpresario: number): Promise<number>;
 
   listar(): Promise<Oferta[]>;
+
+  recuperarDetallePorId(id: number): Promise<DetalleOferta | null>;
 }

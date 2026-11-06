@@ -127,4 +127,29 @@ describe("RepositorioOfertaSql", () => {
       expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta reciente", "Oferta anterior"]);
     });
   });
+
+  describe("recuperarDetallePorId", () => {
+    test("deberia recuperar el detalle de una oferta con el email del empresario", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const oferta = new Oferta(
+        "Desarrollador Backend",
+        "Se busca desarrollador para trabajo remoto",
+        "Pilar",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      await repositorioOferta.guardar(oferta);
+
+      const detalle = await repositorioOferta.recuperarDetallePorId(oferta.obtenerId());
+
+      expect(detalle).toEqual({
+        id: oferta.obtenerId(),
+        titulo: "Desarrollador Backend",
+        descripcion: "Se busca desarrollador para trabajo remoto",
+        ubicacion: "Pilar",
+        emailEmpresario: "empresa1@empresa1.com",
+      });
+    });
+  });
 });
