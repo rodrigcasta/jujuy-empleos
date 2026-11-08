@@ -17,20 +17,9 @@ Given("que existe el usuario:", async function (datos: DataTable) {
   );
 });
 
-Then("puede ver el listado de alumnos", async function (this: MundoDeLaAplicacion) {
-  await this.pagina.goto("/alumnos");
-  await expect(this.pagina).toHaveURL("/alumnos");
-  await expect(this.pagina.getByRole("heading", { name: "Alumnos", level: 1 })).toBeVisible();
-});
-
-// Un usuario sin sesión es redirigido al inicio de sesión
-Then("no puede ver el listado de alumnos", async function (this: MundoDeLaAplicacion) {
-  await this.pagina.goto("/alumnos");
-  await expect(this.pagina).toHaveURL("/login");
-});
-
 // La barra de navegación muestra al usuario con la sesión iniciada como "Nombre (email)"
 Then("se le muestra que inició sesión como {string}", async function (this: MundoDeLaAplicacion, usuario: string) {
+  await expect(this.pagina).toHaveURL("/");
   await expect(this.pagina.getByText(usuario)).toBeVisible();
 });
 

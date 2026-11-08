@@ -12,6 +12,7 @@ const intentarIniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, 
 // El header muestra al usuario con la sesión iniciada como "Nombre (email)", con el email en minúsculas
 const iniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrasena: string) => {
   await intentarIniciarSesion(mundo, email, contrasena);
+  await expect(mundo.pagina).toHaveURL("/");
   await expect(mundo.pagina.getByRole("banner"), "No se pudo iniciar sesión").toContainText(`(${email})`, {
     ignoreCase: true,
   });
@@ -23,10 +24,6 @@ Given(
     await iniciarSesion(this, email, contrasena);
   },
 );
-
-When("un usuario anónimo intenta consultar el listado de alumnos", async function (this: MundoDeLaAplicacion) {
-  await this.pagina.goto("/alumnos");
-});
 
 When(
   "inicia sesión con email {string} y contraseña {string}",

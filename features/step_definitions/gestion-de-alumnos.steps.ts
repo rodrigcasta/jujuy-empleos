@@ -22,7 +22,7 @@ const filaDelAlumno = (pagina: Page, padron: string) => pagina.locator(`#alumno-
 Given("que inició sesión un usuario registrado", async function (this: MundoDeLaAplicacion) {
   // Registrarse inicia la sesión en el navegador del escenario
   await registrarse(this, { ...USUARIO_REGISTRADO, confirmación: USUARIO_REGISTRADO.contraseña });
-  await expect(this.pagina, "No se pudo registrar el usuario").toHaveURL("/alumnos");
+  await expect(this.pagina, "No se pudo registrar el usuario").toHaveURL("/");
 });
 
 // Los alumnos de los antecedentes se guardan directamente, sin pasar por la interfaz

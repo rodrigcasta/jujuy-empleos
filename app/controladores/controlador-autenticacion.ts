@@ -25,21 +25,21 @@ interface FormularioRegistro {
 export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) => {
   const router = express.Router();
 
-  // Inicia la sesión del usuario y lo lleva al listado de alumnos
+  // Inicia la sesión del usuario y lo lleva a la página de inicio
   const iniciarSesion = (req: Request, res: Response, usuario: Usuario) => {
     req.login(usuario, (error) => {
       if (error) {
         registrarExcepcion(req, error);
         renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo iniciar la sesión");
       } else {
-        res.redirect(EstadoHttp.VER_OTRO, "/alumnos");
+        res.redirect(EstadoHttp.VER_OTRO, "/");
       }
     });
   };
 
   router.get("/login", (req: Request, res: Response) => {
     if (req.isAuthenticated()) {
-      res.redirect(EstadoHttp.ENCONTRADO, "/alumnos");
+      res.redirect(EstadoHttp.ENCONTRADO, "/");
     } else {
       res.render("autenticacion/login", { titulo: "Iniciar sesión" });
     }
@@ -67,7 +67,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
 
   router.get("/registro", (req: Request, res: Response) => {
     if (req.isAuthenticated()) {
-      res.redirect(EstadoHttp.ENCONTRADO, "/alumnos");
+      res.redirect(EstadoHttp.ENCONTRADO, "/");
     } else {
       res.render("autenticacion/registro", { titulo: "Registro de empresario" });
     }

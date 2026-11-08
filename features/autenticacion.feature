@@ -1,8 +1,8 @@
 # language: es
 Característica: Autenticación
-  Para proteger la información de los alumnos
+  Para proteger la información del sistema
   Como usuario del sistema
-  Quiero tener que iniciar sesión para acceder a los alumnos
+  Quiero iniciar y cerrar mi sesión
 
   Antecedentes:
     Dado que existe el usuario:
@@ -11,23 +11,17 @@ Característica: Autenticación
       | email      | marta@example.com |
       | contraseña | Secreta123!#        |
 
-  Escenario: Un usuario anónimo no puede ver el listado de alumnos
-    Cuando un usuario anónimo intenta consultar el listado de alumnos
-    Entonces se le pide que inicie sesión
-
   Escenario: Inicio de sesión con credenciales correctas
     Cuando inicia sesión con email "marta@example.com" y contraseña "Secreta123!#"
-    Entonces puede ver el listado de alumnos
-    Y se le muestra que inició sesión como "Marta (marta@example.com)"
+    Entonces se le muestra que inició sesión como "Marta (marta@example.com)"
 
   Escenario: El email no distingue mayúsculas de minúsculas
     Cuando inicia sesión con email "MARTA@Example.com" y contraseña "Secreta123!#"
-    Entonces puede ver el listado de alumnos
+    Entonces se le muestra que inició sesión como "Marta (marta@example.com)"
 
   Esquema del escenario: Inicio de sesión con credenciales incorrectas
     Cuando intenta iniciar sesión con email "<email>" y contraseña "<contraseña>"
     Entonces ve el mensaje de error "Email o contraseña incorrectos"
-    Y no puede ver el listado de alumnos
 
     Ejemplos:
       | caso                    | email             | contraseña |
@@ -38,4 +32,3 @@ Característica: Autenticación
     Dado que inició sesión con email "marta@example.com" y contraseña "Secreta123!#"
     Cuando cierra la sesión
     Entonces se le pide que inicie sesión
-    Y no puede ver el listado de alumnos

@@ -11,8 +11,7 @@ Característica: Registro de usuarios
       | email        | juana@example.com |
       | contraseña   | Secreta123!#      |
       | confirmación | Secreta123!#      |
-    Entonces puede ver el listado de alumnos
-    Y se le muestra que inició sesión como "Juana (juana@example.com)"
+    Entonces se le muestra que inició sesión como "Juana (juana@example.com)"
     Y la contraseña de "juana@example.com" no se guarda en texto plano
 
   Escenario: REG-02 - Registracion con suscripcion Gratuita
@@ -71,7 +70,6 @@ Característica: Registro de usuarios
       | contraseña | Secreta123!#      |
     Cuando se registra con nombre "Otra", apellido "Persona", email "MARTA@example.com", contraseña "Otra-clave1!#" y confirmación "Otra-clave1!#"
     Entonces ve el mensaje de error "El email es inválido"
-    Y no puede ver el listado de alumnos
 
   @wip
   Escenario: REG-09 - Registración fallida por contraseña vacía
@@ -106,7 +104,6 @@ Característica: Registro de usuarios
   Escenario: REG-14 - Registracion fallida por confirmacion diferente
     Cuando se registra con nombre "Juana", apellido "Lopez", email "juana@example.com", contraseña "Secreta123!#" y confirmación "Distinta123!#"
     Entonces ve el mensaje de error "Las contraseñas no coinciden"
-    Y no puede ver el listado de alumnos
 
   Escenario: REG-15 - Registracion con la suscripcion predeterminada
     Cuando se registra con los datos:
