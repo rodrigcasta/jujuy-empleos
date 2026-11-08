@@ -1,8 +1,8 @@
 {
-  "name": "ts-template",
+  "name": "jujuy-empleos",
   "version": "0.0.8",
-  "description": "",
-  "author": "nicopaez",
+  "description": "Sistema de ofertas laborales del Equipo Jujuy",
+  "author": "Equipo Jujuy",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
