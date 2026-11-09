@@ -1,6 +1,10 @@
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
+import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
+import SistemaUsuarios from "../../app/dominio/sistema-usuarios";
 import { MundoDeLaAplicacion } from "../support/mundo";
+
+const sistemaUsuarios = () => new SistemaUsuarios(new RepositorioUsuarioSql());
 
 const intentarIniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrasena: string) => {
   await mundo.pagina.goto("/login");
@@ -17,6 +21,20 @@ const iniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrase
     ignoreCase: true,
   });
 };
+
+Given(
+  "que existe un empresario registrado con email {string} y contraseña {string}",
+  async function (email: string, contrasena: string) {
+    await sistemaUsuarios().registrarEmpresario("Marta", "Suarez", email, contrasena, contrasena, "Profesional");
+  },
+);
+
+Given(
+  "existe un aspirante registrado con email {string} y contraseña {string}",
+  async function (email: string, contrasena: string) {
+    await sistemaUsuarios().registrarAspirante("Sofia", "Martinez", email, contrasena, contrasena);
+  },
+);
 
 Given(
   "que inició sesión con email {string} y contraseña {string}",
@@ -46,4 +64,12 @@ When("cierra la sesión", async function (this: MundoDeLaAplicacion) {
 // Se le pide que inicie sesión redirigiéndolo a la página de inicio de sesión
 Then("se le pide que inicie sesión", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL("/login");
+});
+
+Then("queda autenticado como {string}", async function (this: MundoDeLaAplicacion, email: string) {
+  await expect(this.pagina.getByRole("banner")).toContainText(email);
+});
+
+Then("es dirigido al inicio", async function (this: MundoDeLaAplicacion) {
+  await expect(this.pagina).toHaveURL("/");
 });

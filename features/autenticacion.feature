@@ -8,7 +8,6 @@ Característica: Inicio de sesión
     Dado que existe un empresario registrado con email "marta.suarez@empresa-ejemplo.com.ar" y contraseña "Empresa2026!#"
     Y existe un aspirante registrado con email "sofia.martinez@correo-ejemplo.com.ar" y contraseña "Empleo2026!#"
 
-  @wip
   Esquema del escenario: LOG-01 - Inicio de sesión exitoso
     Cuando inicia sesión con email "<email>" y contraseña "<contraseña>"
     Entonces queda autenticado como "<email_normalizado>"
