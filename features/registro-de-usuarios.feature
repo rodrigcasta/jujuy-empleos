@@ -115,6 +115,7 @@ Característica: Registro de usuarios
       | email        | laura.profesional@empresa-ejemplo.com.ar |
       | contraseña   | Empresa2026!#                           |
       | confirmación | Empresa2026!#                           |
+      | tipo_usuario | Empresario                               |
     Entonces el usuario "laura.profesional@empresa-ejemplo.com.ar" queda registrado con suscripcion "Profesional"
 
   @wip
@@ -159,7 +160,7 @@ Característica: Registro de usuarios
     Y no se registra un nuevo usuario
 
   Escenario: Suscripcion Profesional seleccionada inicialmente
-    Cuando inicia una registracion
+    Cuando inicia una registracion como empresario
     Entonces puede elegir las suscripciones:
       | Gratuita    |
       | Profesional |

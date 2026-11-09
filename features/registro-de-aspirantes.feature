@@ -4,7 +4,6 @@ Característica: Registracion para aspirante
   Quiero registrarme en la aplicacion
   Para poder postularme a una oferta de trabajo
 
-  @wip
   Escenario: ASP-01 - Registracion exitosa de aspirante
     Dado que no existe un usuario registrado con email "sofia.martinez@correo-ejemplo.com.ar"
     Cuando Sofia Martinez se registra como aspirante con email "sofia.martinez@correo-ejemplo.com.ar", contrasena "Empleo2026!#" y confirmacion "Empleo2026!#"

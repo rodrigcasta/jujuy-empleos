@@ -43,6 +43,7 @@ Given("tiene una suscripcion {string}", async function (this: MundoDeLaAplicacio
     contraseña: "Empresa2026!#",
     confirmación: "Empresa2026!#",
     suscripcion,
+    tipoUsuario: "Empresario",
   });
 });
 
@@ -55,6 +56,7 @@ Given("su suscripcion permite publicar una nueva oferta", async function (this: 
     contraseña: "Empresa2026!#",
     confirmación: "Empresa2026!#",
     suscripcion: "Gratuita",
+    tipoUsuario: "Empresario",
   });
 });
 

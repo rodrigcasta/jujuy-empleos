@@ -20,6 +20,7 @@ interface FormularioRegistro {
   contrasena?: string;
   confirmacion?: string;
   suscripcion?: string;
+  tipo_usuario?: string;
 }
 
 export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) => {
@@ -69,30 +70,39 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
     if (req.isAuthenticated()) {
       res.redirect(EstadoHttp.ENCONTRADO, "/");
     } else {
-      res.render("autenticacion/registro", { titulo: "Registro de empresario" });
+      res.render("autenticacion/registro", { titulo: "Crear cuenta" });
     }
   });
 
   router.post("/registro", async (req: Request<Record<string, string>, unknown, FormularioRegistro>, res: Response) => {
-    const { nombre, apellido, email, contrasena, confirmacion, suscripcion } = req.body;
+    const { nombre, apellido, email, contrasena, confirmacion, suscripcion, tipo_usuario } = req.body;
     // Las contraseñas no se devuelven al formulario
     const renderizarFormulario = (estado: EstadoHttp, error: string) => {
       res.status(estado).render("autenticacion/registro", {
-        titulo: "Registro de empresario",
+        titulo: "Crear cuenta",
         error,
-        nuevo: { nombre, apellido, email },
+        nuevo: { nombre, apellido, email, tipoUsuario: tipo_usuario },
       });
     };
 
     try {
-      const usuario = await sistemaUsuarios.registrar(
-        nombre ?? "",
-        apellido ?? "",
-        email ?? "",
-        contrasena ?? "",
-        confirmacion,
-        suscripcion,
-      );
+      const usuario =
+        tipo_usuario === "Aspirante"
+          ? await sistemaUsuarios.registrarAspirante(
+              nombre ?? "",
+              apellido ?? "",
+              email ?? "",
+              contrasena ?? "",
+              confirmacion,
+            )
+          : await sistemaUsuarios.registrar(
+              nombre ?? "",
+              apellido ?? "",
+              email ?? "",
+              contrasena ?? "",
+              confirmacion,
+              suscripcion,
+            );
       iniciarSesion(req, res, usuario);
     } catch (error: unknown) {
       registrarExcepcion(req, error);

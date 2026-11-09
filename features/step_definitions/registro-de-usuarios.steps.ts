@@ -14,6 +14,7 @@ When("se registra con los datos:", async function (this: MundoDeLaAplicacion, ta
     contraseña: datos["contraseña"],
     confirmación: datos["confirmación"],
     suscripcion: datos["suscripcion"],
+    tipoUsuario: datos["tipo_usuario"],
   });
 });
 
@@ -27,7 +28,7 @@ When(
     contraseña: string,
     confirmación: string,
   ) {
-    await registrarse(this, { nombre, apellido, email, contraseña, confirmación });
+    await registrarse(this, { nombre, apellido, email, contraseña, confirmación, tipoUsuario: "Empresario" });
   },
 );
 
@@ -42,6 +43,11 @@ Then("la contraseña de {string} no se guarda en texto plano", async function (e
 
 When("inicia una registracion", async function (this: MundoDeLaAplicacion) {
   await this.pagina.goto("/registro");
+});
+
+When("inicia una registracion como empresario", async function (this: MundoDeLaAplicacion) {
+  await this.pagina.goto("/registro");
+  await this.pagina.getByText("Empresario", { exact: true }).click();
 });
 
 Then("puede elegir las suscripciones:", async function (this: MundoDeLaAplicacion, tabla: DataTable) {

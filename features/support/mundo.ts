@@ -15,6 +15,7 @@ export class MundoDeLaAplicacion extends World {
   private contexto?: BrowserContext;
   private paginaAbierta?: Page;
   public emailEmpresario?: string;
+  public emailUsuarioRegistrado?: string;
   public ultimaOferta?: { titulo: string; descripcion: string; ubicacion: string };
   public cantidadOfertasAntes?: number;
 

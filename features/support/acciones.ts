@@ -9,6 +9,7 @@ export interface DatosDeRegistro {
   contraseña: string;
   confirmación: string;
   suscripcion?: string;
+  tipoUsuario: string;
 }
 
 // El usuario que se registra en el step "que inició sesión un usuario registrado"
@@ -23,6 +24,9 @@ export const registrarse = async (mundo: MundoDeLaAplicacion, datos: DatosDeRegi
   const pagina = mundo.pagina;
 
   await pagina.goto("/registro");
+
+  await pagina.getByText(datos.tipoUsuario, { exact: true }).click();
+
   await pagina.getByLabel("Nombre").fill(datos.nombre);
   await pagina.getByLabel("Apellido").fill(datos.apellido);
   await pagina.getByLabel("Email").fill(datos.email);
