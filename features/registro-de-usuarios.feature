@@ -11,6 +11,7 @@ Característica: Registro de usuarios
       | email        | juana@example.com |
       | contraseña   | Secreta123!#      |
       | confirmación | Secreta123!#      |
+      | tipo_usuario | Empresario        |
     Entonces se le muestra que inició sesión como "Juana (juana@example.com)"
     Y la contraseña de "juana@example.com" no se guarda en texto plano
 
@@ -22,6 +23,7 @@ Característica: Registro de usuarios
       | contraseña   | Empresa2026!#                         |
       | confirmación | Empresa2026!#                         |
       | suscripcion  | Gratuita                               |
+      | tipo_usuario | Empresario                             |
     Entonces el usuario "laura.fernandez@empresa-ejemplo.com.ar" queda registrado con suscripcion "Gratuita"
 
   Escenario: REG-03 - Registracion con suscripcion Corporativa
@@ -32,6 +34,7 @@ Característica: Registro de usuarios
       | contraseña   | Empresa2026!#                           |
       | confirmación | Empresa2026!#                           |
       | suscripcion  | Corporativa                              |
+      | tipo_usuario | Empresario                               |
     Entonces el usuario "laura.corporativa@empresa-ejemplo.com.ar" queda registrado con suscripcion "Corporativa"
 
   @wip
@@ -147,6 +150,13 @@ Característica: Registro de usuarios
   Escenario: REG-20 - Registración fallida por email demasiado largo
     Cuando intento registrar un empresario con nombre "Laura", apellido "Fernandez", email "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.com", contraseña "Empresa2026!#", confirmación "Empresa2026!#" y suscripción "Profesional"
     Entonces la registración falla porque el email supera los 254 caracteres
+
+  @wip
+  Escenario: REG-21 - Registracion de empresario rechazada por email perteneciente a un aspirante
+    Dado que existe un aspirante registrado con email "pedro.sanchez@correo-ejemplo.com.ar"
+    Cuando Pedro Sanchez intenta registrarse como empresario con email "pedro.sanchez@correo-ejemplo.com.ar", contrasena "Empresa2026!#", confirmacion "Empresa2026!#" y suscripcion "Profesional"
+    Entonces ve el mensaje de error "El email es invalido"
+    Y no se registra un nuevo usuario
 
   Escenario: Suscripcion Profesional seleccionada inicialmente
     Cuando inicia una registracion
