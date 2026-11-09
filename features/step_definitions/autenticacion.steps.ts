@@ -25,17 +25,27 @@ const iniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrase
 
 Given(
   "que existe un empresario registrado con email {string} y contraseña {string}",
-  async function (email: string, contrasena: string) {
+  async function (this: MundoDeLaAplicacion, email: string, contrasena: string) {
     await sistemaUsuarios().registrarEmpresario("Marta", "Suarez", email, contrasena, contrasena, "Profesional");
+    this.contrasenasUsuarios.set(email, contrasena);
   },
 );
 
 Given(
   "existe un aspirante registrado con email {string} y contraseña {string}",
-  async function (email: string, contrasena: string) {
+  async function (this: MundoDeLaAplicacion, email: string, contrasena: string) {
     await sistemaUsuarios().registrarAspirante("Sofia", "Martinez", email, contrasena, contrasena);
+    this.contrasenasUsuarios.set(email, contrasena);
   },
 );
+
+Given("que el aspirante {string} está autenticado", async function (this: MundoDeLaAplicacion, email: string) {
+  const contrasena = this.contrasenasUsuarios.get(email);
+  if (!contrasena) {
+    throw new Error(`No se prepararon credenciales para ${email}`);
+  }
+  await iniciarSesion(this, email, contrasena);
+});
 
 Given(
   "que inició sesión con email {string} y contraseña {string}",
@@ -60,6 +70,10 @@ When(
 
 When("cierra la sesión", async function (this: MundoDeLaAplicacion) {
   await this.presionar("Cerrar sesión");
+});
+
+When("intenta acceder a la página de inicio de sesión", async function (this: MundoDeLaAplicacion) {
+  await this.pagina.goto("/login");
 });
 
 // Se le pide que inicie sesión redirigiéndolo a la página de inicio de sesión

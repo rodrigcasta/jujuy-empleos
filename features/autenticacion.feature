@@ -28,7 +28,6 @@ Característica: Inicio de sesión
       | contraseña incorrecta | marta.suarez@empresa-ejemplo.com.ar | Incorrecta1!# |
       | usuario inexistente   | nadie@correo-ejemplo.com.ar         | Empleo2026!#  |
 
-  @wip
   Escenario: LOG-03 - Un usuario autenticado no vuelve al login
     Dado que el aspirante "sofia.martinez@correo-ejemplo.com.ar" está autenticado
     Cuando intenta acceder a la página de inicio de sesión

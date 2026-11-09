@@ -17,6 +17,7 @@ export class MundoDeLaAplicacion extends World {
   public emailEmpresario?: string;
   public emailUsuarioRegistrado?: string;
   public emailIntentoInicioSesion?: string;
+  public contrasenasUsuarios = new Map<string, string>();
   public cantidadUsuariosAntes?: number;
   public ultimaOferta?: { titulo: string; descripcion: string; ubicacion: string };
   public cantidadOfertasAntes?: number;
