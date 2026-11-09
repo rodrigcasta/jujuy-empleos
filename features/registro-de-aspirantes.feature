@@ -12,11 +12,10 @@ Característica: Registracion para aspirante
     Y no tiene una suscripcion asociada
     Y queda autenticada en la aplicacion
 
-  @wip
   Escenario: ASP-02 - Registracion fallida por datos invalidos
     Dado que no existe un usuario registrado con email "correo-invalido"
     Cuando Ana Torres intenta registrarse como aspirante con email "correo-invalido", contrasena "Empleo2026!#" y confirmacion "Empleo2026!#"
-    Entonces ve el mensaje de error "El email es invalido"
+    Entonces ve el mensaje de error "El email es inválido"
     Y no se registra un nuevo usuario
 
   @wip

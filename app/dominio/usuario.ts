@@ -157,7 +157,7 @@ export default class Usuario {
       throw new DatosDeUsuarioInvalidos("El email es obligatorio");
     }
     if (!Usuario.FORMATO_EMAIL.test(normalizado)) {
-      throw new DatosDeUsuarioInvalidos("El email no es válido");
+      throw new DatosDeUsuarioInvalidos("El email es inválido");
     }
     return normalizado;
   }

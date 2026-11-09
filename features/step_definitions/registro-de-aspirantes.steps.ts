@@ -25,6 +25,21 @@ When(
   },
 );
 
+When(
+  "Ana Torres intenta registrarse como aspirante con email {string}, contrasena {string} y confirmacion {string}",
+  async function (this: MundoDeLaAplicacion, email: string, contrasena: string, confirmacion: string) {
+    this.emailUsuarioRegistrado = email;
+    await registrarse(this, {
+      nombre: "Ana",
+      apellido: "Torres",
+      email,
+      contraseña: contrasena,
+      confirmación: confirmacion,
+      tipoUsuario: "Aspirante",
+    });
+  },
+);
+
 Then("la registracion resulta exitosa", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL("/");
 });
@@ -51,4 +66,10 @@ Then("no tiene una suscripcion asociada", async function (this: MundoDeLaAplicac
 Then("queda autenticada en la aplicacion", async function (this: MundoDeLaAplicacion) {
   assert.ok(this.emailUsuarioRegistrado);
   await expect(this.pagina.getByText(`Sofia (${this.emailUsuarioRegistrado})`)).toBeVisible();
+});
+
+Then("no se registra un nuevo usuario", async function (this: MundoDeLaAplicacion) {
+  assert.ok(this.emailUsuarioRegistrado);
+  const resultado = await pool.query("SELECT 1 FROM usuarios WHERE email = $1", [this.emailUsuarioRegistrado]);
+  assert.equal(resultado.rows.length, 0);
 });
