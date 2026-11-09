@@ -11,7 +11,7 @@ const intentarIniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, 
   await mundo.pagina.goto("/login");
   await mundo.pagina.getByLabel("Email").fill(email);
   await mundo.pagina.getByLabel("Contraseña").fill(contrasena);
-  await mundo.presionar("Ingresar");
+  await mundo.presionar("Iniciar sesión");
 };
 
 // El header muestra al usuario con la sesión iniciada como "Nombre (email)", con el email en minúsculas
