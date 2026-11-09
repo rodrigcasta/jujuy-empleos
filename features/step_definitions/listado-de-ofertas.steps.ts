@@ -63,7 +63,7 @@ Given("que existen {int} ofertas", async function (cantidadOfertas: number) {
 
 When("visualizo la lista de ofertas", async function (this: MundoDeLaAplicacion) {
   await this.pagina.goto("/");
-  await this.pagina.getByRole("link", { name: "Ofertas", exact: true }).click();
+  await this.seguirEnlace("Ofertas");
   await expect(this.pagina).toHaveURL(/\/ofertas$/);
 });
 

@@ -48,10 +48,18 @@ export class MundoDeLaAplicacion extends World {
     await this.esperarNavegacion(() => locator.click());
   }
 
+  public async seguirEnlace(enlace: string | Locator) {
+    const locator = typeof enlace === "string" ? this.pagina.getByRole("link", { name: enlace, exact: true }) : enlace;
+    await this.esperarNavegacion(() => locator.click());
+  }
+
   private async esperarNavegacion(accion: () => Promise<unknown>) {
     const navegacion = this.pagina.waitForEvent("framenavigated", (frame) => frame === this.pagina.mainFrame());
-    await Promise.all([navegacion, accion()]);
-    await this.pagina.waitForLoadState();
+    const respuesta = this.pagina.waitForResponse(
+      (response) => response.request().isNavigationRequest() && response.frame() === this.pagina.mainFrame(),
+    );
+    await Promise.all([navegacion, respuesta, accion()]);
+    await this.pagina.waitForLoadState("networkidle");
   }
 }
 

@@ -12,7 +12,7 @@ When(
   "selecciono la oferta {string} desde el listado de ofertas",
   async function (this: MundoDeLaAplicacion, titulo: string) {
     await this.pagina.goto("/ofertas");
-    await this.pagina.getByRole("link", { name: titulo, exact: true }).click();
+    await this.seguirEnlace(this.pagina.getByRole("link", { name: titulo, exact: true }));
   },
 );
 
