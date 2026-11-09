@@ -88,6 +88,9 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
     };
 
     try {
+      if (tipo_usuario !== "Aspirante" && tipo_usuario !== "Empresario") {
+        throw new DatosDeUsuarioInvalidos("Debe seleccionar un tipo de usuario");
+      }
       const usuario =
         tipo_usuario === "Aspirante"
           ? await sistemaUsuarios.registrarAspirante(

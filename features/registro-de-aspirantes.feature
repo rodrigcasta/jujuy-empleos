@@ -29,3 +29,8 @@ Característica: Registracion para aspirante
     Cuando intenta registrarse con nombre vacio, apellido "Martinez", email "sofia.martinez@correo-ejemplo.com.ar", contrasena "Empleo2026!#" y confirmacion "Empleo2026!#"
     Entonces ve el mensaje de error "El nombre es obligatorio"
     Y continua seleccionada la opcion "Aspirante"
+
+  Escenario: ASP-05 - Registracion fallida sin seleccionar tipo de usuario
+    Cuando intenta registrarse sin seleccionar tipo de usuario con nombre "Sofia", apellido "Martinez", email "sofia.martinez@correo-ejemplo.com.ar", contrasena "Empleo2026!#" y confirmacion "Empleo2026!#"
+    Entonces ve el mensaje de error "Debe seleccionar un tipo de usuario"
+    Y no se registra un nuevo usuario

@@ -88,6 +88,28 @@ When(
   },
 );
 
+When(
+  "intenta registrarse sin seleccionar tipo de usuario con nombre {string}, apellido {string}, email {string}, contrasena {string} y confirmacion {string}",
+  async function (
+    this: MundoDeLaAplicacion,
+    nombre: string,
+    apellido: string,
+    email: string,
+    contrasena: string,
+    confirmacion: string,
+  ) {
+    const resultado = await pool.query("SELECT COUNT(*)::int AS cantidad FROM usuarios");
+    this.cantidadUsuariosAntes = resultado.rows[0].cantidad;
+    await this.pagina.goto("/registro");
+    await this.pagina.getByLabel("Nombre").fill(nombre);
+    await this.pagina.getByLabel("Apellido").fill(apellido);
+    await this.pagina.getByLabel("Email").fill(email);
+    await this.pagina.getByLabel("Contraseña *", { exact: true }).fill(contrasena);
+    await this.pagina.getByLabel("Repetir contraseña *", { exact: true }).fill(confirmacion);
+    await this.presionar("Crear cuenta");
+  },
+);
+
 Then("la registracion resulta exitosa", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL("/");
 });
