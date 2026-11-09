@@ -7,6 +7,7 @@ import { MundoDeLaAplicacion } from "../support/mundo";
 const sistemaUsuarios = () => new SistemaUsuarios(new RepositorioUsuarioSql());
 
 const intentarIniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrasena: string) => {
+  mundo.emailIntentoInicioSesion = email;
   await mundo.pagina.goto("/login");
   await mundo.pagina.getByLabel("Email").fill(email);
   await mundo.pagina.getByLabel("Contraseña").fill(contrasena);
@@ -72,4 +73,11 @@ Then("queda autenticado como {string}", async function (this: MundoDeLaAplicacio
 
 Then("es dirigido al inicio", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL("/");
+});
+
+Then("no queda autenticado", async function (this: MundoDeLaAplicacion) {
+  await expect(this.pagina).toHaveURL("/login");
+  await expect(this.pagina.getByRole("link", { name: "Iniciar sesión", exact: true })).toBeVisible();
+  await expect(this.pagina.getByLabel("Email")).toHaveValue(this.emailIntentoInicioSesion ?? "");
+  await expect(this.pagina.getByLabel("Contraseña")).toHaveValue("");
 });

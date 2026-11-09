@@ -16,6 +16,7 @@ export class MundoDeLaAplicacion extends World {
   private paginaAbierta?: Page;
   public emailEmpresario?: string;
   public emailUsuarioRegistrado?: string;
+  public emailIntentoInicioSesion?: string;
   public cantidadUsuariosAntes?: number;
   public ultimaOferta?: { titulo: string; descripcion: string; ubicacion: string };
   public cantidadOfertasAntes?: number;

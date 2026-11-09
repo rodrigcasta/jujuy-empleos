@@ -18,7 +18,6 @@ Característica: Inicio de sesión
       | empresario | MARTA.SUAREZ@EMPRESA-EJEMPLO.COM.AR               | Empresa2026!# | marta.suarez@empresa-ejemplo.com.ar |
       | aspirante  | sofia.martinez@correo-ejemplo.com.ar              | Empleo2026!#  | sofia.martinez@correo-ejemplo.com.ar |
 
-  @wip
   Esquema del escenario: LOG-02 - Credenciales incorrectas
     Cuando intenta iniciar sesión con email "<email>" y contraseña "<contraseña>"
     Entonces ve el mensaje de error "Email o contraseña incorrectos"
