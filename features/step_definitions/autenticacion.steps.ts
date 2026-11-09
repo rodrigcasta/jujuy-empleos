@@ -47,6 +47,14 @@ Given("que el aspirante {string} está autenticado", async function (this: Mundo
   await iniciarSesion(this, email, contrasena);
 });
 
+Given("que el empresario {string} está autenticado", async function (this: MundoDeLaAplicacion, email: string) {
+  const contrasena = this.contrasenasUsuarios.get(email);
+  if (!contrasena) {
+    throw new Error(`No se prepararon credenciales para ${email}`);
+  }
+  await iniciarSesion(this, email, contrasena);
+});
+
 Given(
   "que inició sesión con email {string} y contraseña {string}",
   async function (this: MundoDeLaAplicacion, email: string, contrasena: string) {
@@ -94,4 +102,9 @@ Then("no queda autenticado", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina.getByRole("link", { name: "Iniciar sesión", exact: true })).toBeVisible();
   await expect(this.pagina.getByLabel("Email")).toHaveValue(this.emailIntentoInicioSesion ?? "");
   await expect(this.pagina.getByLabel("Contraseña")).toHaveValue("");
+});
+
+Then("deja de estar autenticado", async function (this: MundoDeLaAplicacion) {
+  await expect(this.pagina.getByRole("link", { name: "Iniciar sesión", exact: true })).toBeVisible();
+  await expect(this.pagina.getByRole("button", { name: "Cerrar sesión", exact: true })).toHaveCount(0);
 });

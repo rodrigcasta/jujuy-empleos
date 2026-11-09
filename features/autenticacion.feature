@@ -33,7 +33,6 @@ Característica: Inicio de sesión
     Cuando intenta acceder a la página de inicio de sesión
     Entonces es dirigido al inicio
 
-  @wip
   Escenario: LOG-04 - Cierre de sesión
     Dado que el empresario "marta.suarez@empresa-ejemplo.com.ar" está autenticado
     Cuando cierra la sesión
