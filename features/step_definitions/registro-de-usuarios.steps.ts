@@ -1,9 +1,15 @@
 import assert from "node:assert/strict";
-import { DataTable, Then, When } from "@cucumber/cucumber";
+import { DataTable, Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import pool from "../../app/adaptadores/pool";
+import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
+import SistemaUsuarios from "../../app/dominio/sistema-usuarios";
 import { registrarse } from "../support/acciones";
 import { MundoDeLaAplicacion } from "../support/mundo";
+
+Given("que existe un aspirante registrado con email {string}", async function (email: string) {
+  await new SistemaUsuarios(new RepositorioUsuarioSql()).registrarAspirante("Pedro", "Sanchez", email, "Empleo2026!#");
+});
 
 When("se registra con los datos:", async function (this: MundoDeLaAplicacion, tabla: DataTable) {
   const datos = tabla.rowsHash();
@@ -29,6 +35,29 @@ When(
     confirmación: string,
   ) {
     await registrarse(this, { nombre, apellido, email, contraseña, confirmación, tipoUsuario: "Empresario" });
+  },
+);
+
+When(
+  "Pedro Sanchez intenta registrarse como empresario con email {string}, contrasena {string}, confirmacion {string} y suscripcion {string}",
+  async function (
+    this: MundoDeLaAplicacion,
+    email: string,
+    contrasena: string,
+    confirmacion: string,
+    suscripcion: string,
+  ) {
+    const resultado = await pool.query("SELECT COUNT(*)::int AS cantidad FROM usuarios");
+    this.cantidadUsuariosAntes = resultado.rows[0].cantidad;
+    await registrarse(this, {
+      nombre: "Pedro",
+      apellido: "Sanchez",
+      email,
+      contraseña: contrasena,
+      confirmación: confirmacion,
+      suscripcion,
+      tipoUsuario: "Empresario",
+    });
   },
 );
 
