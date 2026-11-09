@@ -9,7 +9,7 @@ import { MundoDeLaAplicacion } from "../support/mundo";
 // Se guarda directamente, sin pasar por la interfaz, para que el navegador del escenario siga sin sesión
 Given("que existe el usuario:", async function (datos: DataTable) {
   const usuario = datos.rowsHash();
-  await new SistemaUsuarios(new RepositorioUsuarioSql()).registrar(
+  await new SistemaUsuarios(new RepositorioUsuarioSql()).registrarEmpresario(
     usuario["nombre"],
     usuario["apellido"],
     usuario["email"],

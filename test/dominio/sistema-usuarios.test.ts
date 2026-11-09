@@ -14,12 +14,12 @@ describe("SistemaUsuarios", () => {
     sistemaUsuarios = new SistemaUsuarios(mockRepositorioUsuario);
   });
 
-  describe("registrar", () => {
+  describe("registrarEmpresario", () => {
     test("deberia crear un Usuario con la contraseña hasheada y guardarlo en el repositorio", async () => {
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(null);
       mockRepositorioUsuario.guardar.mockResolvedValue(undefined);
 
-      const usuario = await sistemaUsuarios.registrar(
+      const usuario = await sistemaUsuarios.registrarEmpresario(
         "Juana",
         "Lopez",
         "Juana@Example.com",
@@ -38,10 +38,10 @@ describe("SistemaUsuarios", () => {
     });
 
     test("deberia arrojar UsuarioYaExisteError si ya hay un usuario con el mismo email", async () => {
-      const existente = await Usuario.registrar("Juana", "Lopez", "juana@ejemplo.com", "Secreta123!#");
+      const existente = await Usuario.registrarEmpresario("Juana", "Lopez", "juana@ejemplo.com", "Secreta123!#");
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(existente);
 
-      const registrar = sistemaUsuarios.registrar("Otra", "Persona", "JUANA@EJEMPLO.COM", "Otra-clave1!#");
+      const registrar = sistemaUsuarios.registrarEmpresario("Otra", "Persona", "JUANA@EJEMPLO.COM", "Otra-clave1!#");
 
       await expect(registrar).rejects.toThrow(UsuarioYaExisteError);
 
@@ -54,14 +54,14 @@ describe("SistemaUsuarios", () => {
 
     test("deberia arrojar DatosDeUsuarioInvalidos y no guardar si la confirmacion no coincide", async () => {
       await expect(
-        sistemaUsuarios.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#", "Distinta123!#"),
+        sistemaUsuarios.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Secreta123!#", "Distinta123!#"),
       ).rejects.toThrow("Las contraseñas no coinciden");
 
       expect(mockRepositorioUsuario.guardar).not.toHaveBeenCalled();
     });
 
     test("deberia arrojar DatosDeUsuarioInvalidos y no guardar si los datos son invalidos", async () => {
-      await expect(sistemaUsuarios.registrar("Juana", "Lopez", "juana@example.com", "Corta")).rejects.toThrow(
+      await expect(sistemaUsuarios.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Corta")).rejects.toThrow(
         DatosDeUsuarioInvalidos,
       );
 
@@ -92,7 +92,7 @@ describe("SistemaUsuarios", () => {
     let usuario: Usuario;
 
     beforeEach(async () => {
-      usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#");
+      usuario = await Usuario.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Secreta123!#");
     });
 
     test("deberia devolver el usuario si el email y la contraseña son correctos", async () => {

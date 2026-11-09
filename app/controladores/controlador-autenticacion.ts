@@ -100,7 +100,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
               contrasena ?? "",
               confirmacion,
             )
-          : await sistemaUsuarios.registrar(
+          : await sistemaUsuarios.registrarEmpresario(
               nombre ?? "",
               apellido ?? "",
               email ?? "",

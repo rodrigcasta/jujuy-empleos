@@ -13,7 +13,12 @@ Given("que no existe un usuario registrado con email {string}", async function (
 });
 
 Given("que existe un empresario registrado con email {string}", async function (email: string) {
-  await new SistemaUsuarios(new RepositorioUsuarioSql()).registrar("Maria", "Gonzalez", email, "Empresa2026!#");
+  await new SistemaUsuarios(new RepositorioUsuarioSql()).registrarEmpresario(
+    "Maria",
+    "Gonzalez",
+    email,
+    "Empresa2026!#",
+  );
 });
 
 Given("que Sofia eligio registrarse como aspirante", async function (this: MundoDeLaAplicacion) {

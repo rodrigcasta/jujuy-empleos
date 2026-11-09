@@ -9,7 +9,7 @@ export default class SistemaUsuarios {
     this.repositorioUsuario = repoUsuario;
   }
 
-  public async registrar(
+  public async registrarEmpresario(
     nombre: string,
     apellido: string,
     email: string,
@@ -17,7 +17,7 @@ export default class SistemaUsuarios {
     confirmacion?: string,
     suscripcion?: string,
   ): Promise<Usuario> {
-    const usuario = await Usuario.registrar(nombre, apellido, email, contrasena, confirmacion, suscripcion);
+    const usuario = await Usuario.registrarEmpresario(nombre, apellido, email, contrasena, confirmacion, suscripcion);
     return this.guardarSiNoExiste(usuario);
   }
 

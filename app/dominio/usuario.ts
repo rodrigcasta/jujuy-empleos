@@ -62,7 +62,7 @@ export default class Usuario {
 
   // Crea un usuario nuevo a partir de la contraseña en texto plano, que solo se usa para calcular el hash.
   // La confirmación de la contraseña es opcional: solo se valida si está presente.
-  public static async registrar(
+  public static async registrarEmpresario(
     nombre: string,
     apellido: string,
     email: string,

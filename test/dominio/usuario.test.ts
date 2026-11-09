@@ -57,9 +57,9 @@ describe("Usuario", () => {
     });
   });
 
-  describe("registrar", () => {
+  describe("registrarEmpresario", () => {
     test("deberia guardar un hash de la contraseña y no la contraseña en texto plano", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#");
+      const usuario = await Usuario.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Secreta123!#");
 
       expect(usuario.obtenerHashContrasena()).not.toEqual("Secreta123!#");
       expect(usuario.obtenerHashContrasena()).not.toContain("Secreta123!#");
@@ -67,26 +67,26 @@ describe("Usuario", () => {
     });
 
     test("deberia generar hashes distintos para la misma contraseña", async () => {
-      const usuario1 = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#");
-      const usuario2 = await Usuario.registrar("Ana", "Garcia", "ana@example.com", "Secreta123!#");
+      const usuario1 = await Usuario.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Secreta123!#");
+      const usuario2 = await Usuario.registrarEmpresario("Ana", "Garcia", "ana@example.com", "Secreta123!#");
 
       expect(usuario1.obtenerHashContrasena()).not.toEqual(usuario2.obtenerHashContrasena());
     });
 
     test("deberia arrojar DatosDeUsuarioInvalidos si la contraseña tiene menos de 8 caracteres", async () => {
-      await expect(Usuario.registrar("Juana", "Lopez", "juana@example.com", "corta")).rejects.toThrow(
+      await expect(Usuario.registrarEmpresario("Juana", "Lopez", "juana@example.com", "corta")).rejects.toThrow(
         "La contraseña debe tener al menos 8 caracteres",
       );
     });
 
     test("deberia arrojar DatosDeUsuarioInvalidos si los demas datos son invalidos", async () => {
-      await expect(Usuario.registrar("Juana", "Lopez", "no-es-un-email", "Secreta123!#")).rejects.toThrow(
+      await expect(Usuario.registrarEmpresario("Juana", "Lopez", "no-es-un-email", "Secreta123!#")).rejects.toThrow(
         DatosDeUsuarioInvalidos,
       );
     });
 
-    test("deberia registrar un usuario con suscripcion Profesional", async () => {
-      const usuario = await Usuario.registrar(
+    test("deberia registrar un empresario con suscripcion Profesional", async () => {
+      const usuario = await Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -100,15 +100,22 @@ describe("Usuario", () => {
 
     test("deberia rechazar un email de mas de 254 caracteres", async () => {
       const email = `${"a".repeat(243)}@ejemplo.com`;
-      const usuario = Usuario.registrar("Laura", "Fernandez", email, "Empresa2026!#", "Empresa2026!#", "Profesional");
+      const usuario = Usuario.registrarEmpresario(
+        "Laura",
+        "Fernandez",
+        email,
+        "Empresa2026!#",
+        "Empresa2026!#",
+        "Profesional",
+      );
 
       await expect(usuario).rejects.toThrow("El email no puede tener mas de 254 caracteres");
     });
 
-    test("deberia registrar un usuario con una contraseña de 20 caracteres", async () => {
+    test("deberia registrar un empresario con una contraseña de 20 caracteres", async () => {
       const contrasena = "EmpresaSegura2026!#$";
 
-      const usuario = await Usuario.registrar(
+      const usuario = await Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -123,7 +130,7 @@ describe("Usuario", () => {
     test("deberia rechazar una contraseña de mas de 20 caracteres", async () => {
       const contrasena = "EmpresaSegura2026!#$A";
 
-      const usuario = Usuario.registrar(
+      const usuario = Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -136,7 +143,7 @@ describe("Usuario", () => {
     });
 
     test("deberia rechazar la contraseña vacia", async () => {
-      const usuario = Usuario.registrar(
+      const usuario = Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -151,7 +158,7 @@ describe("Usuario", () => {
     test("deberia rechazar una contraseña sin letra minuscula", async () => {
       const contrasena = "EMPRESA2026!#";
 
-      const usuario = Usuario.registrar(
+      const usuario = Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -166,7 +173,7 @@ describe("Usuario", () => {
     test("deberia rechazar una contraseña sin al menos una letra mayúscula", async () => {
       const contrasena = "empresa2026!#";
 
-      const usuario = Usuario.registrar(
+      const usuario = Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -181,7 +188,7 @@ describe("Usuario", () => {
     test("deberia rechazar una contraseña sin al menos un numero", async () => {
       const contrasena = "Empresa!#";
 
-      const usuario = Usuario.registrar(
+      const usuario = Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -196,7 +203,7 @@ describe("Usuario", () => {
     test("deberia rechazar una contraseña sin al menos dos símbolos", async () => {
       const contrasena = "Empresa2026!";
 
-      const usuario = Usuario.registrar(
+      const usuario = Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -213,7 +220,7 @@ describe("Usuario", () => {
       async (simbolos) => {
         const contrasena = `Empresa2026${simbolos}`;
 
-        const usuario = await Usuario.registrar(
+        const usuario = await Usuario.registrarEmpresario(
           "Laura",
           "Fernandez",
           "laura.fernandez@empresa-ejemplo.com.ar",
@@ -227,7 +234,7 @@ describe("Usuario", () => {
     );
 
     test.each(["Gratuita", "Corporativa"])("deberia registrar un usuario con suscripcion %s", async (suscripcion) => {
-      const usuario = await Usuario.registrar(
+      const usuario = await Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -239,8 +246,8 @@ describe("Usuario", () => {
       expect(usuario.obtenerSuscripcion()).toBe(suscripcion);
     });
 
-    test("deberia registrar un usuario con suscripcion profesional de forma predeterminada", async () => {
-      const usuario = await Usuario.registrar(
+    test("deberia registrar un empresario con suscripcion profesional de forma predeterminada", async () => {
+      const usuario = await Usuario.registrarEmpresario(
         "Laura",
         "Fernandez",
         "laura.fernandez@empresa-ejemplo.com.ar",
@@ -267,32 +274,50 @@ describe("Usuario", () => {
 
   describe("registrar con confirmacion de contraseña", () => {
     test("deberia registrar al usuario si la confirmacion coincide con la contraseña", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#", "Secreta123!#");
+      const usuario = await Usuario.registrarEmpresario(
+        "Juana",
+        "Lopez",
+        "juana@example.com",
+        "Secreta123!#",
+        "Secreta123!#",
+      );
 
       expect(await usuario.verificarContrasena("Secreta123!#")).toBe(true);
     });
 
     test("deberia arrojar DatosDeUsuarioInvalidos si la confirmacion no coincide con la contraseña", async () => {
-      const registrar = Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#", "Distinta123");
+      const registrar = Usuario.registrarEmpresario(
+        "Juana",
+        "Lopez",
+        "juana@example.com",
+        "Secreta123!#",
+        "Distinta123",
+      );
 
       await expect(registrar).rejects.toThrow(DatosDeUsuarioInvalidos);
       await expect(registrar).rejects.toThrow("Las contraseñas no coinciden");
     });
 
     test("deberia validar la confirmacion aunque este vacia", async () => {
-      await expect(Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#", "")).rejects.toThrow(
-        "Las contraseñas no coinciden",
-      );
+      await expect(
+        Usuario.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Secreta123!#", ""),
+      ).rejects.toThrow("Las contraseñas no coinciden");
     });
 
     test("no deberia validar la confirmacion si no esta presente", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#", undefined);
+      const usuario = await Usuario.registrarEmpresario(
+        "Juana",
+        "Lopez",
+        "juana@example.com",
+        "Secreta123!#",
+        undefined,
+      );
 
       expect(usuario.obtenerEmail()).toEqual("juana@example.com");
     });
 
     test("deberia validar el largo de la contraseña antes que la confirmacion", async () => {
-      await expect(Usuario.registrar("Juana", "Lopez", "juana@example.com", "Corta", "Otra")).rejects.toThrow(
+      await expect(Usuario.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Corta", "Otra")).rejects.toThrow(
         "La contraseña debe tener al menos 8 caracteres",
       );
     });
@@ -300,13 +325,13 @@ describe("Usuario", () => {
 
   describe("verificarContrasena", () => {
     test("deberia devolver true si la contraseña es correcta", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#");
+      const usuario = await Usuario.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Secreta123!#");
 
       expect(await usuario.verificarContrasena("Secreta123!#")).toBe(true);
     });
 
     test("deberia devolver false si la contraseña es incorrecta", async () => {
-      const usuario = await Usuario.registrar("Juana", "Lopez", "juana@example.com", "Secreta123!#");
+      const usuario = await Usuario.registrarEmpresario("Juana", "Lopez", "juana@example.com", "Secreta123!#");
 
       expect(await usuario.verificarContrasena("otra-clave")).toBe(false);
     });
