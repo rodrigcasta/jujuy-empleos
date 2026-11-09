@@ -69,13 +69,15 @@ export default class Usuario {
     confirmacion?: string,
     suscripcion: string = Usuario.SUSCRIPCION_PREDETERMINADA,
   ): Promise<Usuario> {
-    // Se validan todos los datos antes de calcular el hash, que es costoso
-    Usuario.validarContrasena(contrasena, confirmacion);
-    Usuario.validarNombre(nombre, "nombre");
-    Usuario.validarNombre(apellido, "apellido");
-    Usuario.validarEmail(email);
-    const hashContrasena = await bcrypt.hash(contrasena, Usuario.COSTO_HASH);
-    return new Usuario(nombre, apellido, email, hashContrasena, 0, suscripcion);
+    return Usuario.registrarConTipo(
+      nombre,
+      apellido,
+      email,
+      contrasena,
+      confirmacion,
+      suscripcion,
+      Usuario.TIPO_USUARIO_EMPRESARIO,
+    );
   }
 
   public static async registrarAspirante(
@@ -85,12 +87,33 @@ export default class Usuario {
     contrasena: string,
     confirmacion?: string,
   ): Promise<Usuario> {
+    return Usuario.registrarConTipo(
+      nombre,
+      apellido,
+      email,
+      contrasena,
+      confirmacion,
+      null,
+      Usuario.TIPO_USUARIO_ASPIRANTE,
+    );
+  }
+
+  private static async registrarConTipo(
+    nombre: string,
+    apellido: string,
+    email: string,
+    contrasena: string,
+    confirmacion: string | undefined,
+    suscripcion: string | null,
+    tipoUsuario: TipoUsuario,
+  ): Promise<Usuario> {
+    // Se validan todos los datos antes de calcular el hash, que es costoso
     Usuario.validarContrasena(contrasena, confirmacion);
     Usuario.validarNombre(nombre, "nombre");
     Usuario.validarNombre(apellido, "apellido");
     Usuario.validarEmail(email);
     const hashContrasena = await bcrypt.hash(contrasena, Usuario.COSTO_HASH);
-    return new Usuario(nombre, apellido, email, hashContrasena, 0, null, Usuario.TIPO_USUARIO_ASPIRANTE);
+    return new Usuario(nombre, apellido, email, hashContrasena, 0, suscripcion, tipoUsuario);
   }
 
   public async verificarContrasena(contrasena: string): Promise<boolean> {
