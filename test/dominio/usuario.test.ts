@@ -1,4 +1,4 @@
-import Usuario from "../../app/dominio/usuario";
+import Usuario, { TipoUsuario } from "../../app/dominio/usuario";
 import DatosDeUsuarioInvalidos from "../../app/dominio/datos-de-usuario-invalidos";
 
 describe("Usuario", () => {
@@ -44,6 +44,16 @@ describe("Usuario", () => {
 
     test("deberia arrojar DatosDeUsuarioInvalidos si no tiene hash de contraseña", () => {
       expect(() => new Usuario("Juana", "Lopez", "juana@example.com", "")).toThrow(DatosDeUsuarioInvalidos);
+    });
+
+    test.each<[string, string | null, TipoUsuario]>([
+      ["empresario sin suscripcion", null, "Empresario"],
+      ["aspirante con suscripcion", "Profesional", "Aspirante"],
+    ])("deberia rechazar %s", (_caso, suscripcion, tipoUsuario) => {
+      const crear = () => new Usuario("Juana", "Lopez", "juana@example.com", "hash", 0, suscripcion, tipoUsuario);
+
+      expect(crear).toThrow(DatosDeUsuarioInvalidos);
+      expect(crear).toThrow("La suscripción no corresponde al tipo de usuario");
     });
   });
 

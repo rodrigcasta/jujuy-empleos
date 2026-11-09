@@ -45,6 +45,7 @@ export default class Usuario {
     if (!hashContrasena) {
       throw new DatosDeUsuarioInvalidos("El usuario debe tener una contraseña");
     }
+    Usuario.validarTipoYSuscripcion(tipoUsuario, suscripcion);
     this.hashContrasena = hashContrasena;
     this.id = id;
     this.suscripcion = suscripcion;
@@ -227,5 +228,13 @@ export default class Usuario {
 
   private static contarSimbolos(contrasena: string): number {
     return [...contrasena].filter((caracter) => Usuario.PATRON_SIMBOLO.test(caracter)).length;
+  }
+
+  private static validarTipoYSuscripcion(tipoUsuario: TipoUsuario, suscripcion: string | null): void {
+    const esEmpresarioValido = tipoUsuario === Usuario.TIPO_USUARIO_EMPRESARIO && suscripcion !== null;
+    const esAspiranteValido = tipoUsuario === Usuario.TIPO_USUARIO_ASPIRANTE && suscripcion === null;
+    if (!esEmpresarioValido && !esAspiranteValido) {
+      throw new DatosDeUsuarioInvalidos("La suscripción no corresponde al tipo de usuario");
+    }
   }
 }
