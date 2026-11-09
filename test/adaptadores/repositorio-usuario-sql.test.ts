@@ -30,6 +30,22 @@ describe("RepositorioUsuario", () => {
         repositorioUsuario.guardar(new Usuario("Otra", "Persona", "juana@example.com", "hash")),
       ).rejects.toThrow(UsuarioYaExisteError);
     });
+
+    test("deberia persistir y recuperar un aspirante sin suscripcion", async () => {
+      const aspirante = await Usuario.registrarAspirante(
+        "Sofia",
+        "Martinez",
+        "sofia.martinez@correo-ejemplo.com.ar",
+        "Empleo2026!#",
+        "Empleo2026!#",
+      );
+
+      await repositorioUsuario.guardar(aspirante);
+      const resultado = await repositorioUsuario.recuperarPorId(aspirante.obtenerId());
+
+      expect(resultado?.obtenerTipoUsuario()).toBe("Aspirante");
+      expect(resultado?.obtenerSuscripcion()).toBeNull();
+    });
   });
 
   describe("recuperarPorEmail", () => {

@@ -1,4 +1,4 @@
-import Usuario from "../dominio/usuario";
+import Usuario, { TipoUsuario } from "../dominio/usuario";
 import UsuarioYaExisteError from "../dominio/usuario-ya-existe-error";
 import pool from "./pool";
 import ErrorPostgres from "./error-postgres";
@@ -11,22 +11,24 @@ interface FilaUsuario {
   apellido: string;
   email: string;
   hash_contrasena: string;
-  suscripcion: string;
+  suscripcion: string | null;
+  tipo_usuario: TipoUsuario;
 }
 
-const COLUMNAS = "id, nombre, apellido, email, hash_contrasena, suscripcion";
+const COLUMNAS = "id, nombre, apellido, email, hash_contrasena, suscripcion, tipo_usuario";
 
 export default class RepositorioUsuarioSql implements IRepositorioUsuario {
   public async guardar(usuario: Usuario): Promise<void> {
     try {
       const resultado = await pool.query<Pick<FilaUsuario, "id">>(
-        "INSERT INTO usuarios (nombre, apellido, email, hash_contrasena,suscripcion) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+        "INSERT INTO usuarios (nombre, apellido, email, hash_contrasena, suscripcion, tipo_usuario) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
         [
           usuario.obtenerNombre(),
           usuario.obtenerApellido(),
           usuario.obtenerEmail(),
           usuario.obtenerHashContrasena(),
           usuario.obtenerSuscripcion(),
+          usuario.obtenerTipoUsuario(),
         ],
       );
       usuario.cambiarId(resultado.rows[0].id);
@@ -55,6 +57,14 @@ export default class RepositorioUsuarioSql implements IRepositorioUsuario {
   }
 
   private deserializarUsuario(row: FilaUsuario): Usuario {
-    return new Usuario(row.nombre, row.apellido, row.email, row.hash_contrasena, row.id, row.suscripcion);
+    return new Usuario(
+      row.nombre,
+      row.apellido,
+      row.email,
+      row.hash_contrasena,
+      row.id,
+      row.suscripcion,
+      row.tipo_usuario,
+    );
   }
 }
