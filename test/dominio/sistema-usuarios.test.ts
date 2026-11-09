@@ -69,6 +69,25 @@ describe("SistemaUsuarios", () => {
     });
   });
 
+  describe("registrarAspirante", () => {
+    test("deberia guardar un aspirante sin suscripcion", async () => {
+      mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(null);
+      mockRepositorioUsuario.guardar.mockResolvedValue(undefined);
+
+      const aspirante = await sistemaUsuarios.registrarAspirante(
+        "Sofia",
+        "Martinez",
+        "sofia.martinez@correo-ejemplo.com.ar",
+        "Empleo2026!#",
+        "Empleo2026!#",
+      );
+
+      expect(aspirante.obtenerTipoUsuario()).toBe("Aspirante");
+      expect(aspirante.obtenerSuscripcion()).toBeNull();
+      expect(mockRepositorioUsuario.guardar).toHaveBeenCalledWith(aspirante);
+    });
+  });
+
   describe("autenticar", () => {
     let usuario: Usuario;
 

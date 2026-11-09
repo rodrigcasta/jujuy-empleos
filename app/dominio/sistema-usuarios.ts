@@ -28,6 +28,24 @@ export default class SistemaUsuarios {
     return usuario;
   }
 
+  public async registrarAspirante(
+    nombre: string,
+    apellido: string,
+    email: string,
+    contrasena: string,
+    confirmacion?: string,
+  ): Promise<Usuario> {
+    const aspirante = await Usuario.registrarAspirante(nombre, apellido, email, contrasena, confirmacion);
+
+    const existente = await this.repositorioUsuario.recuperarPorEmail(aspirante.obtenerEmail());
+    if (existente) {
+      throw new UsuarioYaExisteError();
+    }
+
+    await this.repositorioUsuario.guardar(aspirante);
+    return aspirante;
+  }
+
   // Devuelve null tanto si el usuario no existe como si la contraseña es incorrecta,
   // para no revelar qué emails están registrados
   public async autenticar(email: string, contrasena: string): Promise<Usuario | null> {
