@@ -3,6 +3,7 @@ import LimiteDeOfertasAlcanzadoError from "./limite-de-ofertas-alcanzado-error";
 import Oferta from "./oferta";
 import OfertaNoEncontradaError from "./oferta-no-encontrada-error";
 import { IRepositorioOferta } from "./puerto-repositorio-oferta";
+import PublicacionNoAutorizadaError from "./publicacion-no-autorizada-error";
 import Usuario from "./usuario";
 
 export default class SistemaOfertas {
@@ -15,6 +16,7 @@ export default class SistemaOfertas {
   }
 
   public async publicar(empresario: Usuario, titulo: string, descripcion: string, ubicacion: string): Promise<Oferta> {
+    this.validarEmpresario(empresario);
     if (!(await this.puedePublicar(empresario))) {
       throw new LimiteDeOfertasAlcanzadoError();
     }
@@ -25,6 +27,7 @@ export default class SistemaOfertas {
   }
 
   public async puedePublicar(empresario: Usuario): Promise<boolean> {
+    this.validarEmpresario(empresario);
     const cantidadOfertasPublicadas = await this.repositorioOferta.contarPorEmpresario(empresario.obtenerId());
     return empresario.puedePublicar(cantidadOfertasPublicadas);
   }
@@ -39,5 +42,11 @@ export default class SistemaOfertas {
       throw new OfertaNoEncontradaError();
     }
     return detalle;
+  }
+
+  private validarEmpresario(usuario: Usuario): void {
+    if (!usuario.esEmpresario()) {
+      throw new PublicacionNoAutorizadaError();
+    }
   }
 }

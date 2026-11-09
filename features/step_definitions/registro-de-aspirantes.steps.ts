@@ -26,6 +26,21 @@ Given("que Sofia eligio registrarse como aspirante", async function (this: Mundo
   await this.pagina.getByText("Aspirante", { exact: true }).click();
 });
 
+Given(
+  "que Sofia esta autenticada como aspirante con email {string}",
+  async function (this: MundoDeLaAplicacion, email: string) {
+    await registrarse(this, {
+      nombre: "Sofia",
+      apellido: "Martinez",
+      email,
+      contraseña: "Empleo2026!#",
+      confirmación: "Empleo2026!#",
+      tipoUsuario: "Aspirante",
+    });
+    await expect(this.pagina).toHaveURL("/");
+  },
+);
+
 When(
   "Sofia Martinez se registra como aspirante con email {string}, contrasena {string} y confirmacion {string}",
   async function (this: MundoDeLaAplicacion, email: string, contrasena: string, confirmacion: string) {
@@ -151,4 +166,20 @@ Then("no se registra un nuevo usuario", async function (this: MundoDeLaAplicacio
 
 Then("continua seleccionada la opcion {string}", async function (this: MundoDeLaAplicacion, opcion: string) {
   await expect(this.pagina.getByRole("radio", { name: opcion })).toBeChecked();
+});
+
+Then("no ve la opcion {string}", async function (this: MundoDeLaAplicacion, opcion: string) {
+  await expect(this.pagina.getByRole("link", { name: opcion, exact: true })).toHaveCount(0);
+});
+
+When("intenta acceder directamente a la publicacion de ofertas", async function (this: MundoDeLaAplicacion) {
+  await this.pagina.goto("/ofertas/nueva");
+});
+
+Then("es dirigida al inicio", async function (this: MundoDeLaAplicacion) {
+  await expect(this.pagina).toHaveURL("/");
+});
+
+Then("no accede al formulario de publicacion", async function (this: MundoDeLaAplicacion) {
+  await expect(this.pagina.getByRole("heading", { name: "Publicar oferta" })).toHaveCount(0);
 });

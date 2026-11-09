@@ -3,6 +3,7 @@ import LimiteDeOfertasAlcanzadoError from "../../app/dominio/limite-de-ofertas-a
 import Oferta from "../../app/dominio/oferta";
 import OfertaNoEncontradaError from "../../app/dominio/oferta-no-encontrada-error";
 import { IRepositorioOferta } from "../../app/dominio/puerto-repositorio-oferta";
+import PublicacionNoAutorizadaError from "../../app/dominio/publicacion-no-autorizada-error";
 import SistemaOfertas from "../../app/dominio/sistema-ofertas";
 import Usuario from "../../app/dominio/usuario";
 
@@ -47,6 +48,21 @@ describe("SistemaOfertas", () => {
       );
 
       await expect(publicacion).rejects.toThrow(LimiteDeOfertasAlcanzadoError);
+      expect(repositorioOferta.guardar).not.toHaveBeenCalled();
+    });
+
+    test("deberia impedir que un aspirante publique ofertas", async () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 7, null, "Aspirante");
+
+      const publicacion = sistemaOfertas.publicar(
+        aspirante,
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+      );
+
+      await expect(publicacion).rejects.toThrow(PublicacionNoAutorizadaError);
+      expect(repositorioOferta.contarPorEmpresario).not.toHaveBeenCalled();
       expect(repositorioOferta.guardar).not.toHaveBeenCalled();
     });
   });

@@ -34,3 +34,10 @@ Característica: Registracion para aspirante
     Cuando intenta registrarse sin seleccionar tipo de usuario con nombre "Sofia", apellido "Martinez", email "sofia.martinez@correo-ejemplo.com.ar", contrasena "Empleo2026!#" y confirmacion "Empleo2026!#"
     Entonces ve el mensaje de error "Debe seleccionar un tipo de usuario"
     Y no se registra un nuevo usuario
+
+  Escenario: ASP-06 - Un aspirante no puede publicar ofertas
+    Dado que Sofia esta autenticada como aspirante con email "sofia.martinez@correo-ejemplo.com.ar"
+    Entonces no ve la opcion "Nueva oferta"
+    Cuando intenta acceder directamente a la publicacion de ofertas
+    Entonces es dirigida al inicio
+    Y no accede al formulario de publicacion

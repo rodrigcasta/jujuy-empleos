@@ -33,7 +33,7 @@
 
             <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
             <li class="nav-item"><a class="nav-link" href="/ofertas">Ofertas</a></li>
-            {{#if usuarioActual}}
+            {{#if usuarioActual.esEmpresario}}
             <li class="nav-item"><a class="nav-link" href="/ofertas/nueva">Nueva oferta</a></li>{{/if}}
           </ul>
           {{#if usuarioActual}}

@@ -60,6 +60,10 @@ export default class Usuario {
     return this.tipoUsuario;
   }
 
+  public esEmpresario(): boolean {
+    return this.tipoUsuario === Usuario.TIPO_USUARIO_EMPRESARIO;
+  }
+
   // Crea un usuario nuevo a partir de la contraseña en texto plano, que solo se usa para calcular el hash.
   // La confirmación de la contraseña es opcional: solo se valida si está presente.
   public static async registrarEmpresario(

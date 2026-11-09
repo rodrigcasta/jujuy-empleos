@@ -6,6 +6,7 @@ import OfertaNoEncontradaError from "../dominio/oferta-no-encontrada-error";
 import { EstadoHttp } from "../web/estado-http";
 import { registrarExcepcion, renderizarError } from "../web/registrar-excepcion";
 import { usuarioActual } from "../web/autenticacion";
+import Usuario from "../dominio/usuario";
 
 const CANTIDAD_CARACTERES_RESUMEN = 50;
 
@@ -27,6 +28,19 @@ type SesionConOferta = NonNullable<Request["session"]> & {
 export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
   const router = express.Router();
 
+  const obtenerEmpresarioAutenticado = (req: Request, res: Response): Usuario | undefined => {
+    const usuario = usuarioActual(req);
+    if (!usuario) {
+      res.redirect(EstadoHttp.ENCONTRADO, "/login");
+      return undefined;
+    }
+    if (!usuario.esEmpresario()) {
+      res.redirect(EstadoHttp.ENCONTRADO, "/");
+      return undefined;
+    }
+    return usuario;
+  };
+
   router.get("/", async (_req: Request, res: Response) => {
     const ofertas = await sistemaOfertas.listar();
     res.render("ofertas/listado", {
@@ -42,9 +56,8 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
   });
 
   router.get("/nueva", async (req: Request, res: Response) => {
-    const empresario = usuarioActual(req);
+    const empresario = obtenerEmpresarioAutenticado(req, res);
     if (!empresario) {
-      res.redirect(EstadoHttp.ENCONTRADO, "/login");
       return;
     }
 
@@ -87,9 +100,8 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
   });
 
   router.post("/", async (req: Request<Record<string, string>, unknown, FormularioOferta>, res: Response) => {
-    const empresario = usuarioActual(req);
+    const empresario = obtenerEmpresarioAutenticado(req, res);
     if (!empresario) {
-      res.redirect(EstadoHttp.ENCONTRADO, "/login");
       return;
     }
 

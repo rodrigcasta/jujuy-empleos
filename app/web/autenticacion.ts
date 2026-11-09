@@ -84,7 +84,11 @@ export const configurarAutenticacion = (app: Express, sistemaUsuarios: SistemaUs
   app.use((req: Request, res: Response, next: NextFunction) => {
     const usuario = usuarioActual(req);
     if (usuario) {
-      res.locals.usuarioActual = { nombre: usuario.obtenerNombre(), email: usuario.obtenerEmail() };
+      res.locals.usuarioActual = {
+        nombre: usuario.obtenerNombre(),
+        email: usuario.obtenerEmail(),
+        esEmpresario: usuario.esEmpresario(),
+      };
     }
     next();
   });
