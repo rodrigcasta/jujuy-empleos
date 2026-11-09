@@ -18,14 +18,7 @@ export default class SistemaUsuarios {
     suscripcion?: string,
   ): Promise<Usuario> {
     const usuario = await Usuario.registrar(nombre, apellido, email, contrasena, confirmacion, suscripcion);
-
-    const existente = await this.repositorioUsuario.recuperarPorEmail(usuario.obtenerEmail());
-    if (existente) {
-      throw new UsuarioYaExisteError();
-    }
-
-    await this.repositorioUsuario.guardar(usuario);
-    return usuario;
+    return this.guardarSiNoExiste(usuario);
   }
 
   public async registrarAspirante(
@@ -36,14 +29,17 @@ export default class SistemaUsuarios {
     confirmacion?: string,
   ): Promise<Usuario> {
     const aspirante = await Usuario.registrarAspirante(nombre, apellido, email, contrasena, confirmacion);
+    return this.guardarSiNoExiste(aspirante);
+  }
 
-    const existente = await this.repositorioUsuario.recuperarPorEmail(aspirante.obtenerEmail());
+  private async guardarSiNoExiste(usuario: Usuario): Promise<Usuario> {
+    const existente = await this.repositorioUsuario.recuperarPorEmail(usuario.obtenerEmail());
     if (existente) {
       throw new UsuarioYaExisteError();
     }
 
-    await this.repositorioUsuario.guardar(aspirante);
-    return aspirante;
+    await this.repositorioUsuario.guardar(usuario);
+    return usuario;
   }
 
   // Devuelve null tanto si el usuario no existe como si la contraseña es incorrecta,
