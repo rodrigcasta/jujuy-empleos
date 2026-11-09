@@ -24,7 +24,6 @@ Característica: Registracion para aspirante
     Entonces ve el mensaje de error "El email es inválido"
     Y no se registra un nuevo usuario
 
-  @wip
   Escenario: ASP-04 - Se conserva el tipo de usuario ante un error
     Dado que Sofia eligio registrarse como aspirante
     Cuando intenta registrarse con nombre vacio, apellido "Martinez", email "sofia.martinez@correo-ejemplo.com.ar", contrasena "Empleo2026!#" y confirmacion "Empleo2026!#"

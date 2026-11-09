@@ -43,6 +43,7 @@
                   class="btn-check"
                   autocomplete="off"
                   required
+                  {{#if esEmpresario}}checked{{/if}}
                 />
                 <label for="tipo-empresario" class="btn opcion-seleccion w-100 h-100 text-start p-3">
                   <span class="d-block fw-semibold">Empresario</span>
@@ -58,6 +59,7 @@
                   class="btn-check"
                   autocomplete="off"
                   required
+                  {{#if esAspirante}}checked{{/if}}
                 />
                 <label for="tipo-aspirante" class="btn opcion-seleccion w-100 h-100 text-start p-3">
                   <span class="d-block fw-semibold">Aspirante</span>

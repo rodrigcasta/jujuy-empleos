@@ -27,9 +27,9 @@ describe("Usuario", () => {
     });
 
     test.each([
-      ["nombre vacio", "", "Lopez", "juana@example.com", "El campo nombre es obligatorio"],
-      ["nombre con solo espacios", "   ", "Lopez", "juana@example.com", "El campo nombre es obligatorio"],
-      ["apellido vacio", "Juana", "", "juana@example.com", "El campo apellido es obligatorio"],
+      ["nombre vacio", "", "Lopez", "juana@example.com", "El nombre es obligatorio"],
+      ["nombre con solo espacios", "   ", "Lopez", "juana@example.com", "El nombre es obligatorio"],
+      ["apellido vacio", "Juana", "", "juana@example.com", "El apellido es obligatorio"],
       ["nombre demasiado largo", "a".repeat(21), "Lopez", "juana@example.com", "no puede tener más de 20"],
       ["apellido demasiado largo", "Juana", "a".repeat(21), "juana@example.com", "no puede tener más de 20"],
       ["email sin arroba", "Juana", "Lopez", "juana.example.com", "El email es inválido"],

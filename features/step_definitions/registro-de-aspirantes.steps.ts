@@ -16,6 +16,11 @@ Given("que existe un empresario registrado con email {string}", async function (
   await new SistemaUsuarios(new RepositorioUsuarioSql()).registrar("Maria", "Gonzalez", email, "Empresa2026!#");
 });
 
+Given("que Sofia eligio registrarse como aspirante", async function (this: MundoDeLaAplicacion) {
+  await this.pagina.goto("/registro");
+  await this.pagina.getByText("Aspirante", { exact: true }).click();
+});
+
 When(
   "Sofia Martinez se registra como aspirante con email {string}, contrasena {string} y confirmacion {string}",
   async function (this: MundoDeLaAplicacion, email: string, contrasena: string, confirmacion: string) {
@@ -65,6 +70,24 @@ When(
   },
 );
 
+When(
+  "intenta registrarse con nombre vacio, apellido {string}, email {string}, contrasena {string} y confirmacion {string}",
+  async function (
+    this: MundoDeLaAplicacion,
+    apellido: string,
+    email: string,
+    contrasena: string,
+    confirmacion: string,
+  ) {
+    await this.pagina.getByLabel("Nombre").fill("");
+    await this.pagina.getByLabel("Apellido").fill(apellido);
+    await this.pagina.getByLabel("Email").fill(email);
+    await this.pagina.getByLabel("Contraseña *", { exact: true }).fill(contrasena);
+    await this.pagina.getByLabel("Repetir contraseña *", { exact: true }).fill(confirmacion);
+    await this.presionar("Crear cuenta");
+  },
+);
+
 Then("la registracion resulta exitosa", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL("/");
 });
@@ -97,4 +120,8 @@ Then("no se registra un nuevo usuario", async function (this: MundoDeLaAplicacio
   assert.notEqual(this.cantidadUsuariosAntes, undefined);
   const resultado = await pool.query("SELECT COUNT(*)::int AS cantidad FROM usuarios");
   assert.equal(resultado.rows[0].cantidad, this.cantidadUsuariosAntes);
+});
+
+Then("continua seleccionada la opcion {string}", async function (this: MundoDeLaAplicacion, opcion: string) {
+  await expect(this.pagina.getByRole("radio", { name: opcion })).toBeChecked();
 });

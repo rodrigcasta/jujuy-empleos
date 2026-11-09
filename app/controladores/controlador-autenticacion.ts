@@ -82,6 +82,8 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
         titulo: "Crear cuenta",
         error,
         nuevo: { nombre, apellido, email, tipoUsuario: tipo_usuario },
+        esAspirante: tipo_usuario === "Aspirante",
+        esEmpresario: tipo_usuario === "Empresario",
       });
     };
 

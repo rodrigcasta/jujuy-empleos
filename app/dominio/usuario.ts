@@ -215,7 +215,7 @@ export default class Usuario {
   private static validarNombre(valor: string, campo: string): string {
     const normalizado = valor.trim();
     if (normalizado === "") {
-      throw new DatosDeUsuarioInvalidos(`El campo ${campo} es obligatorio`);
+      throw new DatosDeUsuarioInvalidos(`El ${campo} es obligatorio`);
     }
     if (normalizado.length > Usuario.LARGO_MAXIMO_NOMBRE) {
       throw new DatosDeUsuarioInvalidos(
