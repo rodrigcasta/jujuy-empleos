@@ -240,6 +240,19 @@ describe("Usuario", () => {
 
       expect(usuario.obtenerSuscripcion()).toBe("Profesional");
     });
+
+    test("deberia registrar un aspirante sin suscripcion", async () => {
+      const usuario = await Usuario.registrarAspirante(
+        "Sofia",
+        "Martinez",
+        "sofia.martinez@correo-ejemplo.com.ar",
+        "Empleo2026!#",
+        "Empleo2026!#",
+      );
+
+      expect(usuario.obtenerTipoUsuario()).toBe("Aspirante");
+      expect(usuario.obtenerSuscripcion()).toBeNull();
+    });
   });
 
   describe("registrar con confirmacion de contraseña", () => {

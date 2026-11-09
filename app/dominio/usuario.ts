@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import DatosDeUsuarioInvalidos from "./datos-de-usuario-invalidos";
 
+export type TipoUsuario = "Aspirante" | "Empresario";
+
 export default class Usuario {
   private static readonly LARGO_MAXIMO_NOMBRE = 20;
   private static readonly LARGO_MAXIMO_EMAIL = 254;
@@ -11,6 +13,8 @@ export default class Usuario {
   private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
   private static readonly SUSCRIPCION_GRATUITA = "Gratuita";
   private static readonly SUSCRIPCION_CORPORATIVA = "Corporativa";
+  private static readonly TIPO_USUARIO_EMPRESARIO: TipoUsuario = "Empresario";
+  private static readonly TIPO_USUARIO_ASPIRANTE: TipoUsuario = "Aspirante";
   private static readonly LIMITE_PUBLICACION_GRATUITA = 1;
   private static readonly LIMITE_PUBLICACION_PROFESIONAL = 5;
   private static readonly PATRON_MINUSCULA = /[a-z]/;
@@ -23,7 +27,8 @@ export default class Usuario {
   private email: string;
   private hashContrasena: string;
   private id: number;
-  private suscripcion: string;
+  private suscripcion: string | null;
+  private tipoUsuario: TipoUsuario;
 
   constructor(
     nombre: string,
@@ -31,7 +36,8 @@ export default class Usuario {
     email: string,
     hashContrasena: string,
     id: number = 0,
-    suscripcion: string = Usuario.SUSCRIPCION_PREDETERMINADA,
+    suscripcion: string | null = Usuario.SUSCRIPCION_PREDETERMINADA,
+    tipoUsuario: TipoUsuario = Usuario.TIPO_USUARIO_EMPRESARIO,
   ) {
     this.nombre = Usuario.validarNombre(nombre, "nombre");
     this.apellido = Usuario.validarNombre(apellido, "apellido");
@@ -42,10 +48,15 @@ export default class Usuario {
     this.hashContrasena = hashContrasena;
     this.id = id;
     this.suscripcion = suscripcion;
+    this.tipoUsuario = tipoUsuario;
   }
 
-  public obtenerSuscripcion(): string {
+  public obtenerSuscripcion(): string | null {
     return this.suscripcion;
+  }
+
+  public obtenerTipoUsuario(): TipoUsuario {
+    return this.tipoUsuario;
   }
 
   // Crea un usuario nuevo a partir de la contraseña en texto plano, que solo se usa para calcular el hash.
@@ -65,6 +76,21 @@ export default class Usuario {
     Usuario.validarEmail(email);
     const hashContrasena = await bcrypt.hash(contrasena, Usuario.COSTO_HASH);
     return new Usuario(nombre, apellido, email, hashContrasena, 0, suscripcion);
+  }
+
+  public static async registrarAspirante(
+    nombre: string,
+    apellido: string,
+    email: string,
+    contrasena: string,
+    confirmacion?: string,
+  ): Promise<Usuario> {
+    Usuario.validarContrasena(contrasena, confirmacion);
+    Usuario.validarNombre(nombre, "nombre");
+    Usuario.validarNombre(apellido, "apellido");
+    Usuario.validarEmail(email);
+    const hashContrasena = await bcrypt.hash(contrasena, Usuario.COSTO_HASH);
+    return new Usuario(nombre, apellido, email, hashContrasena, 0, null, Usuario.TIPO_USUARIO_ASPIRANTE);
   }
 
   public async verificarContrasena(contrasena: string): Promise<boolean> {
