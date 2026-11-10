@@ -15,6 +15,14 @@
     </a>
   </div>
   {{else}}
+  {{#if postulacionRegistrada}}
+  <div class="alert alert-success" role="alert">Tu postulación fue registrada</div>
+  {{/if}}
+
+  {{#if errorDePostulacion}}
+  <div class="alert alert-danger" role="alert">{{errorDePostulacion}}</div>
+  {{/if}}
+
   <article class="border rounded-3 bg-body p-4 shadow-sm">
     <h2 class="h4 mb-3">{{detalle.titulo}}</h2>
     <span class="badge text-primary-emphasis bg-primary-subtle mb-4">{{detalle.ubicacion}}</span>
@@ -27,25 +35,17 @@
       {{detalle.emailEmpresario}}
     </a>
 
-    {{#if postulacionRegistrada}}
-    <div class="alert alert-success mt-4" role="alert">Tu postulación fue registrada</div>
-    {{/if}}
-
-    {{#if errorDePostulacion}}
-    <div class="alert alert-danger mt-4" role="alert">{{errorDePostulacion}}</div>
-    {{/if}}
-
-    {{#if puedePostularse}}
-    <form action="/ofertas/{{detalle.id}}/postulaciones" method="post" class="mt-4">
-      <button type="submit" class="btn btn-primary">Postularse</button>
-    </form>
-    {{/if}}
-
-    <div class="mt-4">
+    <div class="d-flex justify-content-between align-items-center mt-4">
       <a href="/ofertas" class="btn btn-outline-primary">
         <span aria-hidden="true">←</span>
         Volver
       </a>
+
+      {{#if puedePostularse}}
+      <form action="/ofertas/{{detalle.id}}/postulaciones" method="post">
+        <button type="submit" class="btn btn-primary">Postularse</button>
+      </form>
+      {{/if}}
     </div>
   </article>
   {{/if}}
