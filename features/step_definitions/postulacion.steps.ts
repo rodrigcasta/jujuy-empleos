@@ -8,6 +8,10 @@ import Oferta from "../../app/dominio/oferta";
 import SistemaUsuarios from "../../app/dominio/sistema-usuarios";
 import { MundoDeLaAplicacion } from "../support/mundo";
 
+Given("que no hay un usuario autenticado", function () {
+  // Cada escenario comienza con un contexto de navegador nuevo y sin sesión.
+});
+
 Given(
   "que existe la oferta {string} publicada por {string}",
   async function (this: MundoDeLaAplicacion, titulo: string, emailEmpresario: string) {
@@ -54,8 +58,34 @@ When("intenta postularse nuevamente a la oferta {string}", async function (this:
   await this.presionar("Postularse");
 });
 
+When("intenta postularse a la oferta {string}", async function (this: MundoDeLaAplicacion, titulo: string) {
+  const resultado = await pool.query<{ id: number }>("SELECT id FROM ofertas WHERE titulo = $1", [titulo]);
+  assert.equal(resultado.rows.length, 1);
+  const rutaPostulacion = `/ofertas/${resultado.rows[0].id}/postulaciones`;
+  await this.pagina.goto(`/ofertas/${resultado.rows[0].id}`);
+  await Promise.all([
+    this.pagina.waitForURL("/login"),
+    this.pagina.evaluate((ruta) => {
+      const formulario = document.createElement("form");
+      formulario.method = "post";
+      formulario.action = ruta;
+      document.body.appendChild(formulario);
+      formulario.submit();
+    }, rutaPostulacion),
+  ]);
+});
+
 Then("ve el mensaje {string}", async function (this: MundoDeLaAplicacion, mensaje: string) {
   await expect(this.pagina.getByRole("alert")).toContainText(mensaje);
+});
+
+Then("es dirigido al inicio de sesión", async function (this: MundoDeLaAplicacion) {
+  await expect(this.pagina).toHaveURL("/login");
+});
+
+Then("no se registra una postulación", async function () {
+  const resultado = await pool.query<{ cantidad: string }>("SELECT COUNT(*) AS cantidad FROM postulaciones");
+  assert.equal(Number(resultado.rows[0].cantidad), 0);
 });
 
 Then(

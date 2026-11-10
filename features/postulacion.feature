@@ -20,7 +20,6 @@ Característica: Postulación a ofertas
     Entonces ve el mensaje "Ya te postulaste a esta oferta"
     Y conserva una única postulación a la oferta "Desarrollador Backend"
 
-  @wip
   Escenario: POS-03 - Visitante no autenticado
     Dado que no hay un usuario autenticado
     Cuando intenta postularse a la oferta "Desarrollador Backend"
