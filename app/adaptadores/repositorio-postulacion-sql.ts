@@ -1,0 +1,31 @@
+import Postulacion from "../dominio/postulacion";
+import { IRepositorioPostulacion } from "../dominio/puerto-repositorio-postulacion";
+import pool from "./pool";
+
+export default class RepositorioPostulacionSql implements IRepositorioPostulacion {
+  public async guardar(postulacion: Postulacion): Promise<void> {
+    const resultado = await pool.query<{ id: number }>(
+      `INSERT INTO postulaciones (id_aspirante, id_oferta)
+       VALUES ($1, $2)
+       RETURNING id`,
+      [postulacion.obtenerIdAspirante(), postulacion.obtenerIdOferta()],
+    );
+    postulacion.asignarId(resultado.rows[0].id);
+  }
+
+  public async existePara(idOferta: number, idAspirante: number): Promise<boolean> {
+    const resultado = await pool.query<{ existe: boolean }>(
+      `SELECT EXISTS(
+         SELECT 1
+         FROM postulaciones
+         WHERE id_oferta = $1 AND id_aspirante = $2
+       ) AS existe`,
+      [idOferta, idAspirante],
+    );
+    return resultado.rows[0].existe;
+  }
+
+  public async eliminarTodos(): Promise<void> {
+    await pool.query("DELETE FROM postulaciones");
+  }
+}
