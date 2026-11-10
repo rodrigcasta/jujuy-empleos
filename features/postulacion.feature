@@ -13,7 +13,6 @@ Característica: Postulación a ofertas
     Entonces ve el mensaje "Tu postulación fue registrada"
     Y queda registrada una postulación de "sofia.martinez@correo-ejemplo.com.ar" a la oferta "Desarrollador Backend"
 
-  @wip
   Escenario: POS-02 - Postulación duplicada
     Dado que el aspirante "sofia.martinez@correo-ejemplo.com.ar" está autenticado
     Y ya se postuló a la oferta "Desarrollador Backend"

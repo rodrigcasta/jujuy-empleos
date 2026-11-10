@@ -8,6 +8,7 @@ import { registrarExcepcion, renderizarError } from "../web/registrar-excepcion"
 import { usuarioActual } from "../web/autenticacion";
 import Usuario from "../dominio/usuario";
 import SistemaPostulaciones from "../dominio/sistema-postulaciones";
+import PostulacionDuplicadaError from "../dominio/postulacion-duplicada-error";
 
 const CANTIDAD_CARACTERES_RESUMEN = 50;
 
@@ -25,6 +26,7 @@ interface FormularioOferta {
 type SesionDeOfertas = NonNullable<Request["session"]> & {
   ofertaPublicada?: FormularioOferta;
   postulacionRegistradaEnOferta?: number;
+  errorDePostulacion?: { idOferta: number; mensaje: string };
 };
 
 export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaPostulaciones: SistemaPostulaciones) => {
@@ -86,14 +88,20 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
       const usuario = usuarioActual(req);
       const sesion = req.session as SesionDeOfertas | null | undefined;
       const postulacionRegistrada = sesion?.postulacionRegistradaEnOferta === detalle.id;
+      const errorDePostulacion =
+        sesion?.errorDePostulacion?.idOferta === detalle.id ? sesion.errorDePostulacion : undefined;
       if (postulacionRegistrada && sesion) {
         delete sesion.postulacionRegistradaEnOferta;
+      }
+      if (errorDePostulacion && sesion) {
+        delete sesion.errorDePostulacion;
       }
       res.render("ofertas/detalle", {
         titulo: "Detalle de la oferta",
         detalle,
         puedePostularse: usuario?.esAspirante(),
         postulacionRegistrada,
+        errorDePostulacion: errorDePostulacion?.mensaje,
       });
     } catch (error: unknown) {
       registrarExcepcion(req, error);
@@ -126,7 +134,16 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
       res.redirect(EstadoHttp.VER_OTRO, `/ofertas/${idOferta}`);
     } catch (error: unknown) {
       registrarExcepcion(req, error);
-      renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo registrar la postulación");
+      if (error instanceof PostulacionDuplicadaError) {
+        const idOferta = Number(req.params.id);
+        const sesion = req.session as SesionDeOfertas | null | undefined;
+        if (sesion) {
+          sesion.errorDePostulacion = { idOferta, mensaje: error.message };
+        }
+        res.redirect(EstadoHttp.VER_OTRO, `/ofertas/${idOferta}`);
+      } else {
+        renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo registrar la postulación");
+      }
     }
   });
 

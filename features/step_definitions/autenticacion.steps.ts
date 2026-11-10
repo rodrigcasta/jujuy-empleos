@@ -21,6 +21,7 @@ const iniciarSesion = async (mundo: MundoDeLaAplicacion, email: string, contrase
   await expect(mundo.pagina.getByRole("banner"), "No se pudo iniciar sesión").toContainText(`(${email})`, {
     ignoreCase: true,
   });
+  mundo.emailUsuarioAutenticado = email;
 };
 
 Given(

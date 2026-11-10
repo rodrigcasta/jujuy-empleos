@@ -40,6 +40,20 @@ When("se postula a la oferta {string} desde su detalle", async function (this: M
   await this.presionar("Postularse");
 });
 
+Given("ya se postuló a la oferta {string}", async function (this: MundoDeLaAplicacion, titulo: string) {
+  const resultado = await pool.query<{ id: number }>("SELECT id FROM ofertas WHERE titulo = $1", [titulo]);
+  assert.equal(resultado.rows.length, 1);
+  await this.pagina.goto(`/ofertas/${resultado.rows[0].id}`);
+  await this.presionar("Postularse");
+});
+
+When("intenta postularse nuevamente a la oferta {string}", async function (this: MundoDeLaAplicacion, titulo: string) {
+  const resultado = await pool.query<{ id: number }>("SELECT id FROM ofertas WHERE titulo = $1", [titulo]);
+  assert.equal(resultado.rows.length, 1);
+  await this.pagina.goto(`/ofertas/${resultado.rows[0].id}`);
+  await this.presionar("Postularse");
+});
+
 Then("ve el mensaje {string}", async function (this: MundoDeLaAplicacion, mensaje: string) {
   await expect(this.pagina.getByRole("alert")).toContainText(mensaje);
 });
@@ -58,3 +72,17 @@ Then(
     assert.equal(Number(resultado.rows[0].cantidad), 1);
   },
 );
+
+Then("conserva una única postulación a la oferta {string}", async function (this: MundoDeLaAplicacion, titulo: string) {
+  const emailAspirante = this.emailUsuarioAutenticado;
+  assert.ok(emailAspirante);
+  const resultado = await pool.query<{ cantidad: string }>(
+    `SELECT COUNT(*) AS cantidad
+       FROM postulaciones
+       INNER JOIN usuarios ON usuarios.id = postulaciones.id_aspirante
+       INNER JOIN ofertas ON ofertas.id = postulaciones.id_oferta
+       WHERE usuarios.email = $1 AND ofertas.titulo = $2`,
+    [emailAspirante, titulo],
+  );
+  assert.equal(Number(resultado.rows[0].cantidad), 1);
+});
