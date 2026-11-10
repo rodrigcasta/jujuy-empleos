@@ -1,0 +1,60 @@
+import assert from "node:assert/strict";
+import { Given, Then, When } from "@cucumber/cucumber";
+import { expect } from "@playwright/test";
+import pool from "../../app/adaptadores/pool";
+import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
+import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
+import Oferta from "../../app/dominio/oferta";
+import SistemaUsuarios from "../../app/dominio/sistema-usuarios";
+import { MundoDeLaAplicacion } from "../support/mundo";
+
+Given(
+  "que existe la oferta {string} publicada por {string}",
+  async function (this: MundoDeLaAplicacion, titulo: string, emailEmpresario: string) {
+    const contrasena = "Empresa2026!#";
+    const empresario = await new SistemaUsuarios(new RepositorioUsuarioSql()).registrarEmpresario(
+      "Laura",
+      "Fernandez",
+      emailEmpresario,
+      contrasena,
+      contrasena,
+      "Profesional",
+    );
+    this.contrasenasUsuarios.set(emailEmpresario, contrasena);
+    await new RepositorioOfertaSql().guardar(
+      new Oferta(
+        titulo,
+        "Desarrollo y mantenimiento de servicios backend",
+        "Buenos Aires",
+        empresario.obtenerId(),
+        new Date("2026-11-09T15:00:00.000Z"),
+      ),
+    );
+  },
+);
+
+When("se postula a la oferta {string} desde su detalle", async function (this: MundoDeLaAplicacion, titulo: string) {
+  const resultado = await pool.query<{ id: number }>("SELECT id FROM ofertas WHERE titulo = $1", [titulo]);
+  assert.equal(resultado.rows.length, 1);
+  await this.pagina.goto(`/ofertas/${resultado.rows[0].id}`);
+  await this.presionar("Postularse");
+});
+
+Then("ve el mensaje {string}", async function (this: MundoDeLaAplicacion, mensaje: string) {
+  await expect(this.pagina.getByRole("alert")).toContainText(mensaje);
+});
+
+Then(
+  "queda registrada una postulación de {string} a la oferta {string}",
+  async function (emailAspirante: string, titulo: string) {
+    const resultado = await pool.query<{ cantidad: string }>(
+      `SELECT COUNT(*) AS cantidad
+       FROM postulaciones
+       INNER JOIN usuarios ON usuarios.id = postulaciones.id_aspirante
+       INNER JOIN ofertas ON ofertas.id = postulaciones.id_oferta
+       WHERE usuarios.email = $1 AND ofertas.titulo = $2`,
+      [emailAspirante, titulo],
+    );
+    assert.equal(Number(resultado.rows[0].cantidad), 1);
+  },
+);

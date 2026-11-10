@@ -7,6 +7,7 @@ import { EstadoHttp } from "../web/estado-http";
 import { registrarExcepcion, renderizarError } from "../web/registrar-excepcion";
 import { usuarioActual } from "../web/autenticacion";
 import Usuario from "../dominio/usuario";
+import SistemaPostulaciones from "../dominio/sistema-postulaciones";
 
 const CANTIDAD_CARACTERES_RESUMEN = 50;
 
@@ -21,11 +22,12 @@ interface FormularioOferta {
   ubicacion?: string;
 }
 
-type SesionConOferta = NonNullable<Request["session"]> & {
+type SesionDeOfertas = NonNullable<Request["session"]> & {
   ofertaPublicada?: FormularioOferta;
+  postulacionRegistradaEnOferta?: number;
 };
 
-export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
+export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaPostulaciones: SistemaPostulaciones) => {
   const router = express.Router();
 
   const obtenerEmpresarioAutenticado = (req: Request, res: Response): Usuario | undefined => {
@@ -63,7 +65,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
 
     const publicada = req.query.publicada === "1";
     if (publicada || (await sistemaOfertas.puedePublicar(empresario))) {
-      const sesion = req.session as SesionConOferta | null | undefined;
+      const sesion = req.session as SesionDeOfertas | null | undefined;
       const ofertaPublicada = publicada ? sesion?.ofertaPublicada : undefined;
       if (sesion) {
         delete sesion.ofertaPublicada;
@@ -81,9 +83,17 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
   router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
     try {
       const detalle = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
+      const usuario = usuarioActual(req);
+      const sesion = req.session as SesionDeOfertas | null | undefined;
+      const postulacionRegistrada = sesion?.postulacionRegistradaEnOferta === detalle.id;
+      if (postulacionRegistrada && sesion) {
+        delete sesion.postulacionRegistradaEnOferta;
+      }
       res.render("ofertas/detalle", {
         titulo: "Detalle de la oferta",
         detalle,
+        puedePostularse: usuario?.esAspirante(),
+        postulacionRegistrada,
       });
     } catch (error: unknown) {
       registrarExcepcion(req, error);
@@ -99,6 +109,27 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
     }
   });
 
+  router.post("/:id/postulaciones", async (req: Request<{ id: string }>, res: Response) => {
+    const aspirante = usuarioActual(req);
+    if (!aspirante) {
+      res.redirect(EstadoHttp.ENCONTRADO, "/login");
+      return;
+    }
+
+    try {
+      const idOferta = Number(req.params.id);
+      await sistemaPostulaciones.postular(aspirante, idOferta);
+      const sesion = req.session as SesionDeOfertas | null | undefined;
+      if (sesion) {
+        sesion.postulacionRegistradaEnOferta = idOferta;
+      }
+      res.redirect(EstadoHttp.VER_OTRO, `/ofertas/${idOferta}`);
+    } catch (error: unknown) {
+      registrarExcepcion(req, error);
+      renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo registrar la postulación");
+    }
+  });
+
   router.post("/", async (req: Request<Record<string, string>, unknown, FormularioOferta>, res: Response) => {
     const empresario = obtenerEmpresarioAutenticado(req, res);
     if (!empresario) {
@@ -109,7 +140,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas) => {
 
     try {
       await sistemaOfertas.publicar(empresario, titulo ?? "", descripcion ?? "", ubicacion ?? "");
-      const sesion = req.session as SesionConOferta | null | undefined;
+      const sesion = req.session as SesionDeOfertas | null | undefined;
       if (sesion) {
         sesion.ofertaPublicada = { titulo, descripcion, ubicacion };
       }

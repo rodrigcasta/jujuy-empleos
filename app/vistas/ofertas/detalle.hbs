@@ -27,6 +27,16 @@
       {{detalle.emailEmpresario}}
     </a>
 
+    {{#if postulacionRegistrada}}
+    <div class="alert alert-success mt-4" role="alert">Tu postulación fue registrada</div>
+    {{/if}}
+
+    {{#if puedePostularse}}
+    <form action="/ofertas/{{detalle.id}}/postulaciones" method="post" class="mt-4">
+      <button type="submit" class="btn btn-primary">Postularse</button>
+    </form>
+    {{/if}}
+
     <div class="mt-4">
       <a href="/ofertas" class="btn btn-outline-primary">
         <span aria-hidden="true">←</span>

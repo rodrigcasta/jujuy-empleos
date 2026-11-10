@@ -7,7 +7,6 @@ Característica: Postulación a ofertas
   Antecedentes:
     Dado que existe la oferta "Desarrollador Backend" publicada por "empresa@ejemplo.com.ar"
 
-  @wip
   Escenario: POS-01 - Postulación exitosa
     Dado que el aspirante "sofia.martinez@correo-ejemplo.com.ar" está autenticado
     Cuando se postula a la oferta "Desarrollador Backend" desde su detalle

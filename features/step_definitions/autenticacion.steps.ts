@@ -40,9 +40,11 @@ Given(
 );
 
 Given("que el aspirante {string} está autenticado", async function (this: MundoDeLaAplicacion, email: string) {
-  const contrasena = this.contrasenasUsuarios.get(email);
-  if (!contrasena) {
-    throw new Error(`No se prepararon credenciales para ${email}`);
+  let contrasena = this.contrasenasUsuarios.get(email);
+  if (contrasena === undefined) {
+    contrasena = "Aspirante2026!#";
+    await sistemaUsuarios().registrarAspirante("Sofia", "Martinez", email, contrasena, contrasena);
+    this.contrasenasUsuarios.set(email, contrasena);
   }
   await iniciarSesion(this, email, contrasena);
 });

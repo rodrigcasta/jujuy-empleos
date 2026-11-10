@@ -10,6 +10,8 @@ import { crearControladorInicio } from "./controladores/controlador-inicio";
 import { crearControladorAutenticacion } from "./controladores/controlador-autenticacion";
 import SistemaOfertas from "./dominio/sistema-ofertas";
 import { crearControladorOfertas } from "./controladores/controlador-ofertas";
+import RepositorioPostulacionSql from "./adaptadores/repositorio-postulacion-sql";
+import SistemaPostulaciones from "./dominio/sistema-postulaciones";
 
 const app = express();
 const port = parseInt(process.env.PORT || "3000");
@@ -27,12 +29,13 @@ app.use(logDeRequests);
 
 const sistemaUsuarios = new SistemaUsuarios(new RepositorioUsuarioSql());
 const sistemaOfertas = new SistemaOfertas(new RepositorioOfertaSql());
+const sistemaPostulaciones = new SistemaPostulaciones(new RepositorioPostulacionSql());
 
 configurarAutenticacion(app, sistemaUsuarios);
 
 app.use(crearControladorInicio());
 app.use(crearControladorAutenticacion(sistemaUsuarios));
-app.use("/ofertas", crearControladorOfertas(sistemaOfertas));
+app.use("/ofertas", crearControladorOfertas(sistemaOfertas, sistemaPostulaciones));
 
 const server = app
   .listen(port, () => {
