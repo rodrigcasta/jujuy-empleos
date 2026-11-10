@@ -1,11 +1,13 @@
 export default class Postulacion {
   private idAspirante: number;
   private idOferta: number;
+  private fechaPostulacion: Date;
   private id: number;
 
-  constructor(idAspirante: number, idOferta: number, id: number = 0) {
+  constructor(idAspirante: number, idOferta: number, fechaPostulacion: Date, id: number = 0) {
     this.idAspirante = idAspirante;
     this.idOferta = idOferta;
+    this.fechaPostulacion = fechaPostulacion;
     this.id = id;
   }
 
@@ -15,6 +17,10 @@ export default class Postulacion {
 
   public obtenerIdOferta(): number {
     return this.idOferta;
+  }
+
+  public obtenerFechaPostulacion(): Date {
+    return this.fechaPostulacion;
   }
 
   public obtenerId(): number {

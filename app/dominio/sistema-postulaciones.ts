@@ -6,9 +6,11 @@ import Usuario from "./usuario";
 
 export default class SistemaPostulaciones {
   private repositorioPostulacion: IRepositorioPostulacion;
+  private obtenerFechaActual: () => Date;
 
-  constructor(repositorioPostulacion: IRepositorioPostulacion) {
+  constructor(repositorioPostulacion: IRepositorioPostulacion, obtenerFechaActual: () => Date = () => new Date()) {
     this.repositorioPostulacion = repositorioPostulacion;
+    this.obtenerFechaActual = obtenerFechaActual;
   }
 
   public async postular(aspirante: Usuario, idOferta: number): Promise<Postulacion> {
@@ -18,7 +20,7 @@ export default class SistemaPostulaciones {
     if (await this.repositorioPostulacion.existePara(idOferta, aspirante.obtenerId())) {
       throw new PostulacionDuplicadaError();
     }
-    const postulacion = new Postulacion(aspirante.obtenerId(), idOferta);
+    const postulacion = new Postulacion(aspirante.obtenerId(), idOferta, this.obtenerFechaActual());
     await this.repositorioPostulacion.guardar(postulacion);
     return postulacion;
   }

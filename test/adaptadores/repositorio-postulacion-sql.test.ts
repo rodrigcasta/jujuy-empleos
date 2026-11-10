@@ -7,6 +7,7 @@ import Postulacion from "../../app/dominio/postulacion";
 import Usuario from "../../app/dominio/usuario";
 
 describe("RepositorioPostulacionSql", () => {
+  const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
   const repositorioPostulacion = new RepositorioPostulacionSql();
   const repositorioOferta = new RepositorioOfertaSql();
   const repositorioUsuario = new RepositorioUsuarioSql();
@@ -31,7 +32,7 @@ describe("RepositorioPostulacionSql", () => {
   describe("guardar", () => {
     test("deberia persistir una postulacion y asignarle un id", async () => {
       const { aspirante, oferta } = await crearAspiranteYOferta();
-      const postulacion = new Postulacion(aspirante.obtenerId(), oferta.obtenerId());
+      const postulacion = new Postulacion(aspirante.obtenerId(), oferta.obtenerId(), fechaPostulacion);
 
       await repositorioPostulacion.guardar(postulacion);
 
@@ -40,6 +41,7 @@ describe("RepositorioPostulacionSql", () => {
       expect(resultado.rows[0]).toMatchObject({
         id_aspirante: aspirante.obtenerId(),
         id_oferta: oferta.obtenerId(),
+        fecha_postulacion: fechaPostulacion,
       });
     });
   });
@@ -55,7 +57,9 @@ describe("RepositorioPostulacionSql", () => {
 
     test("deberia devolver verdadero si el aspirante ya se postulo a la oferta", async () => {
       const { aspirante, oferta } = await crearAspiranteYOferta();
-      await repositorioPostulacion.guardar(new Postulacion(aspirante.obtenerId(), oferta.obtenerId()));
+      await repositorioPostulacion.guardar(
+        new Postulacion(aspirante.obtenerId(), oferta.obtenerId(), fechaPostulacion),
+      );
 
       const existe = await repositorioPostulacion.existePara(oferta.obtenerId(), aspirante.obtenerId());
 

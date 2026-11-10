@@ -7,12 +7,13 @@ import SistemaPostulaciones from "../../app/dominio/sistema-postulaciones";
 import Usuario from "../../app/dominio/usuario";
 
 describe("SistemaPostulaciones", () => {
+  const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
   let repositorioPostulacion: Mock<IRepositorioPostulacion>;
   let sistemaPostulaciones: SistemaPostulaciones;
 
   beforeEach(() => {
     repositorioPostulacion = mock<IRepositorioPostulacion>();
-    sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion);
+    sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, () => fechaPostulacion);
   });
 
   describe("postular", () => {
@@ -25,6 +26,7 @@ describe("SistemaPostulaciones", () => {
 
       expect(postulacion.obtenerIdAspirante()).toBe(2);
       expect(postulacion.obtenerIdOferta()).toBe(5);
+      expect(postulacion.obtenerFechaPostulacion()).toEqual(fechaPostulacion);
       expect(postulacion).toBeInstanceOf(Postulacion);
       expect(repositorioPostulacion.existePara).toHaveBeenCalledWith(5, 2);
       expect(repositorioPostulacion.guardar).toHaveBeenCalledWith(postulacion);
