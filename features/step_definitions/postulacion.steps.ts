@@ -64,7 +64,7 @@ When("intenta postularse a la oferta {string}", async function (this: MundoDeLaA
   const rutaPostulacion = `/ofertas/${resultado.rows[0].id}/postulaciones`;
   await this.pagina.goto(`/ofertas/${resultado.rows[0].id}`);
   await Promise.all([
-    this.pagina.waitForURL("/login"),
+    this.pagina.waitForEvent("framenavigated", (frame) => frame === this.pagina.mainFrame()),
     this.pagina.evaluate((ruta) => {
       const formulario = document.createElement("form");
       formulario.method = "post";

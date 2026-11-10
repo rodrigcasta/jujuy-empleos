@@ -26,7 +26,6 @@ Característica: Postulación a ofertas
     Entonces es dirigido al inicio de sesión
     Y no se registra una postulación
 
-  @wip
   Escenario: POS-04 - Empresario no autorizado para postularse
     Dado que el empresario "empresa@ejemplo.com.ar" está autenticado
     Cuando intenta postularse a la oferta "Desarrollador Backend"

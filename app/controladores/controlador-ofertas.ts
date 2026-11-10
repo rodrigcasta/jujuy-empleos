@@ -9,6 +9,7 @@ import { usuarioActual } from "../web/autenticacion";
 import Usuario from "../dominio/usuario";
 import SistemaPostulaciones from "../dominio/sistema-postulaciones";
 import PostulacionDuplicadaError from "../dominio/postulacion-duplicada-error";
+import PostulacionNoAutorizadaError from "../dominio/postulacion-no-autorizada-error";
 
 const CANTIDAD_CARACTERES_RESUMEN = 50;
 
@@ -134,7 +135,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
       res.redirect(EstadoHttp.VER_OTRO, `/ofertas/${idOferta}`);
     } catch (error: unknown) {
       registrarExcepcion(req, error);
-      if (error instanceof PostulacionDuplicadaError) {
+      if (error instanceof PostulacionDuplicadaError || error instanceof PostulacionNoAutorizadaError) {
         const idOferta = Number(req.params.id);
         const sesion = req.session as SesionDeOfertas | null | undefined;
         if (sesion) {
