@@ -1,4 +1,5 @@
 import { Mock, mock } from "ts-jest-mocker";
+import PostulacionNoAutorizadaError from "../../app/dominio/postulacion-no-autorizada-error";
 import Postulacion from "../../app/dominio/postulacion";
 import { IRepositorioPostulacion } from "../../app/dominio/puerto-repositorio-postulacion";
 import SistemaPostulaciones from "../../app/dominio/sistema-postulaciones";
@@ -24,6 +25,16 @@ describe("SistemaPostulaciones", () => {
       expect(postulacion.obtenerIdOferta()).toBe(5);
       expect(postulacion).toBeInstanceOf(Postulacion);
       expect(repositorioPostulacion.guardar).toHaveBeenCalledWith(postulacion);
+    });
+
+    test("deberia impedir que un empresario se postule", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Profesional");
+
+      const postulacion = sistemaPostulaciones.postular(empresario, 5);
+
+      await expect(postulacion).rejects.toThrow(PostulacionNoAutorizadaError);
+      await expect(postulacion).rejects.toThrow("Solo los aspirantes pueden postularse a ofertas");
+      expect(repositorioPostulacion.guardar).not.toHaveBeenCalled();
     });
   });
 });
