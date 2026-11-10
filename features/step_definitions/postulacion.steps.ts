@@ -63,6 +63,10 @@ When("intenta postularse a la oferta {string}", async function (this: MundoDeLaA
   assert.equal(resultado.rows.length, 1);
   const rutaPostulacion = `/ofertas/${resultado.rows[0].id}/postulaciones`;
   await this.pagina.goto(`/ofertas/${resultado.rows[0].id}`);
+  if (this.emailUsuarioAutenticado === undefined) {
+    await this.presionar("Postularse");
+    return;
+  }
   await Promise.all([
     this.pagina.waitForEvent("framenavigated", (frame) => frame === this.pagina.mainFrame()),
     this.pagina.evaluate((ruta) => {

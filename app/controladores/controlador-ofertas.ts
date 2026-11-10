@@ -100,7 +100,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
       res.render("ofertas/detalle", {
         titulo: "Detalle de la oferta",
         detalle,
-        puedePostularse: usuario?.esAspirante(),
+        puedePostularse: usuario === undefined || usuario.esAspirante(),
         postulacionRegistrada,
         errorDePostulacion: errorDePostulacion?.mensaje,
       });
