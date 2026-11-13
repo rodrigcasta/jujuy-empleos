@@ -145,6 +145,7 @@ describe("RepositorioOfertaSql", () => {
 
       expect(detalle).toEqual({
         id: oferta.obtenerId(),
+        idEmpresario: empresario.obtenerId(),
         titulo: "Desarrollador Backend",
         descripcion: "Se busca desarrollador para trabajo remoto",
         ubicacion: "Pilar",

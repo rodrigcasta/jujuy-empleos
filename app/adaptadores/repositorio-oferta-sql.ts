@@ -55,12 +55,13 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
   public async recuperarDetallePorId(id: number): Promise<DetalleOferta | null> {
     const resultado = await pool.query<{
       id: number;
+      id_empresario: number;
       titulo: string;
       descripcion: string;
       ubicacion: string;
       email_empresario: string;
     }>(
-      `SELECT ofertas.id, ofertas.titulo, ofertas.descripcion, ofertas.ubicacion,
+      `SELECT ofertas.id, ofertas.id_empresario, ofertas.titulo, ofertas.descripcion, ofertas.ubicacion,
               usuarios.email AS email_empresario
        FROM ofertas
        INNER JOIN usuarios ON usuarios.id = ofertas.id_empresario
@@ -73,6 +74,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     }
     return {
       id: oferta.id,
+      idEmpresario: oferta.id_empresario,
       titulo: oferta.titulo,
       descripcion: oferta.descripcion,
       ubicacion: oferta.ubicacion,

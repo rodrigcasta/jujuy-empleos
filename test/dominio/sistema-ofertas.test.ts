@@ -106,6 +106,7 @@ describe("SistemaOfertas", () => {
     test("deberia obtener el detalle de una oferta existente", async () => {
       const detalleEsperado = {
         id: 2,
+        idEmpresario: 7,
         titulo: "Desarrollador Backend",
         descripcion: "Se busca desarrollador para trabajo remoto",
         ubicacion: "Pilar",
