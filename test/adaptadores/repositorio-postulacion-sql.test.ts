@@ -31,7 +31,8 @@ describe("RepositorioPostulacionSql", () => {
 
   describe("guardar", () => {
     test("deberia persistir una postulacion y asignarle un id", async () => {
-      const { aspirante, oferta } = await crearAspiranteYOferta();
+      const aspirante = await crearAspirante();
+      const oferta = await crearOferta();
       const postulacion = new Postulacion(aspirante.obtenerId(), oferta.obtenerId(), fechaPostulacion);
 
       await repositorioPostulacion.guardar(postulacion);
@@ -48,7 +49,8 @@ describe("RepositorioPostulacionSql", () => {
 
   describe("existePara", () => {
     test("deberia devolver falso si el aspirante no se postulo a la oferta", async () => {
-      const { aspirante, oferta } = await crearAspiranteYOferta();
+      const aspirante = await crearAspirante();
+      const oferta = await crearOferta();
 
       const existe = await repositorioPostulacion.existePara(oferta.obtenerId(), aspirante.obtenerId());
 
@@ -56,7 +58,8 @@ describe("RepositorioPostulacionSql", () => {
     });
 
     test("deberia devolver verdadero si el aspirante ya se postulo a la oferta", async () => {
-      const { aspirante, oferta } = await crearAspiranteYOferta();
+      const aspirante = await crearAspirante();
+      const oferta = await crearOferta();
       await repositorioPostulacion.guardar(
         new Postulacion(aspirante.obtenerId(), oferta.obtenerId(), fechaPostulacion),
       );
@@ -67,11 +70,30 @@ describe("RepositorioPostulacionSql", () => {
     });
   });
 
-  async function crearAspiranteYOferta(): Promise<{ aspirante: Usuario; oferta: Oferta }> {
+  describe("listarPorOferta", () => {
+    test("deberia listar los datos de los aspirantes postulados a una oferta", async () => {
+      const aspirante = await crearAspirante();
+      const oferta = await crearOferta();
+      await repositorioPostulacion.guardar(
+        new Postulacion(aspirante.obtenerId(), oferta.obtenerId(), fechaPostulacion),
+      );
+
+      const postulaciones = await repositorioPostulacion.listarPorOferta(oferta.obtenerId());
+
+      expect(postulaciones).toEqual([
+        {
+          nombre: "Sofia",
+          apellido: "Martinez",
+          email: "sofia@example.com",
+          fechaPostulacion,
+        },
+      ]);
+    });
+  });
+
+  async function crearOferta(): Promise<Oferta> {
     const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
-    const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 0, null, "Aspirante");
     await repositorioUsuario.guardar(empresario);
-    await repositorioUsuario.guardar(aspirante);
     const oferta = new Oferta(
       "Desarrollador Backend",
       "Se busca desarrollador para trabajo remoto",
@@ -80,6 +102,12 @@ describe("RepositorioPostulacionSql", () => {
       new Date("2026-11-09T15:00:00.000Z"),
     );
     await repositorioOferta.guardar(oferta);
-    return { aspirante, oferta };
+    return oferta;
+  }
+
+  async function crearAspirante(): Promise<Usuario> {
+    const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 0, null, "Aspirante");
+    await repositorioUsuario.guardar(aspirante);
+    return aspirante;
   }
 });

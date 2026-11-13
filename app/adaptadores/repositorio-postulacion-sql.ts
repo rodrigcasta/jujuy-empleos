@@ -1,5 +1,5 @@
 import Postulacion from "../dominio/postulacion";
-import { IRepositorioPostulacion } from "../dominio/puerto-repositorio-postulacion";
+import { DatosDePostulacion, IRepositorioPostulacion } from "../dominio/puerto-repositorio-postulacion";
 import pool from "./pool";
 
 export default class RepositorioPostulacionSql implements IRepositorioPostulacion {
@@ -23,6 +23,19 @@ export default class RepositorioPostulacionSql implements IRepositorioPostulacio
       [idOferta, idAspirante],
     );
     return resultado.rows[0].existe;
+  }
+
+  public async listarPorOferta(idOferta: number): Promise<DatosDePostulacion[]> {
+    const resultado = await pool.query<DatosDePostulacion>(
+      `SELECT usuarios.nombre, usuarios.apellido, usuarios.email,
+              postulaciones.fecha_postulacion AS "fechaPostulacion"
+       FROM postulaciones
+       INNER JOIN usuarios ON usuarios.id = postulaciones.id_aspirante
+       WHERE postulaciones.id_oferta = $1
+       ORDER BY postulaciones.fecha_postulacion ASC, postulaciones.id ASC`,
+      [idOferta],
+    );
+    return resultado.rows;
   }
 
   public async eliminarTodos(): Promise<void> {
