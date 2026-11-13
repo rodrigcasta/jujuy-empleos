@@ -55,4 +55,13 @@ describe("SistemaPostulaciones", () => {
       expect(repositorioPostulacion.guardar).not.toHaveBeenCalled();
     });
   });
+
+  describe("listarParaEmpresario", () => {
+    test("deberia impedir que un empresario consulte las postulaciones de una oferta ajena", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Profesional");
+
+      await expect(sistemaPostulaciones.listarParaEmpresario(empresario, 5, 8)).resolves.toBeNull();
+      expect(repositorioPostulacion.listarPorOferta).not.toHaveBeenCalled();
+    });
+  });
 });
