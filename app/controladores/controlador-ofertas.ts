@@ -18,6 +18,8 @@ const resumirDescripcion = (descripcion: string): string =>
     ? `${descripcion.slice(0, CANTIDAD_CARACTERES_RESUMEN)}...`
     : descripcion;
 
+const formatearFechaPostulacion = (fecha: Date): string => fecha.toISOString().slice(0, 10);
+
 interface FormularioOferta {
   titulo?: string;
   descripcion?: string;
@@ -87,6 +89,10 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
     try {
       const detalle = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
       const usuario = usuarioActual(req);
+      const postulaciones =
+        usuario === undefined
+          ? null
+          : await sistemaPostulaciones.listarParaEmpresario(usuario, detalle.id, detalle.idEmpresario);
       const sesion = req.session as SesionDeOfertas | null | undefined;
       const postulacionRegistrada = sesion?.postulacionRegistradaEnOferta === detalle.id;
       const errorDePostulacion =
@@ -103,6 +109,12 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
         puedePostularse: usuario === undefined || usuario.esAspirante(),
         postulacionRegistrada,
         errorDePostulacion: errorDePostulacion?.mensaje,
+        mostrarPostulaciones: postulaciones !== null,
+        sinPostulaciones: postulaciones?.length === 0,
+        postulaciones: (postulaciones ?? []).map((postulacion) => ({
+          ...postulacion,
+          fechaPostulacion: formatearFechaPostulacion(postulacion.fechaPostulacion),
+        })),
       });
     } catch (error: unknown) {
       registrarExcepcion(req, error);
@@ -113,7 +125,11 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
           mensaje: error.message,
         });
       } else {
-        renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo obtener el detalle de la oferta");
+        renderizarError(
+          res,
+          EstadoHttp.ERROR_INTERNO,
+          "No se pudo obtener el detalle de la oferta y sus postulaciones",
+        );
       }
     }
   });
@@ -143,7 +159,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
         }
         res.redirect(EstadoHttp.VER_OTRO, `/ofertas/${idOferta}`);
       } else {
-        renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo registrar la postulación");
+        renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo registrar la postulaciÃ³n");
       }
     }
   });
