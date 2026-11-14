@@ -96,7 +96,7 @@ Then("no visualiza datos de cuenta", async function (this: MundoDeLaAplicacion) 
   await expect(this.pagina.getByRole("heading", { name: "Mi cuenta", exact: true })).toHaveCount(0);
 });
 
-Then('accede a la sección "Mi cuenta"', async function (this: MundoDeLaAplicacion) {
+Then("visualiza la página de su cuenta", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL("/mi-cuenta");
   await expect(this.pagina.getByRole("heading", { name: "Mi cuenta", exact: true })).toBeVisible();
 });
