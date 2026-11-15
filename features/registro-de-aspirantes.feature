@@ -21,7 +21,7 @@ Característica: Registracion para aspirante
   Escenario: ASP-03 - Un empresario existente no puede registrarse como aspirante
     Dado que existe un empresario registrado con email "maria.gonzalez@empresa-ejemplo.com.ar"
     Cuando Maria Gonzalez intenta registrarse como aspirante con email "maria.gonzalez@empresa-ejemplo.com.ar", contrasena "Empleo2026!#" y confirmacion "Empleo2026!#"
-    Entonces ve el mensaje de error "El email es inválido"
+    Entonces ve el mensaje de error "Este email ya está en uso"
     Y no se registra un nuevo usuario
 
   Escenario: ASP-04 - Se conserva el tipo de usuario ante un error
