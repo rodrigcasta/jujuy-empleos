@@ -12,6 +12,7 @@ import SistemaOfertas from "./dominio/sistema-ofertas";
 import { crearControladorOfertas } from "./controladores/controlador-ofertas";
 import RepositorioPostulacionSql from "./adaptadores/repositorio-postulacion-sql";
 import SistemaPostulaciones from "./dominio/sistema-postulaciones";
+import { crearControladorCuenta } from "./controladores/controlador-cuenta";
 
 const app = express();
 const port = parseInt(process.env.PORT || "3000");
@@ -35,6 +36,7 @@ configurarAutenticacion(app, sistemaUsuarios);
 
 app.use(crearControladorInicio());
 app.use(crearControladorAutenticacion(sistemaUsuarios));
+app.use(crearControladorCuenta());
 app.use("/ofertas", crearControladorOfertas(sistemaOfertas, sistemaPostulaciones));
 
 const server = app
