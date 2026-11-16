@@ -8,5 +8,7 @@ export interface IRepositorioOferta {
 
   listar(): Promise<Oferta[]>;
 
+  recuperarPorId(id: number): Promise<Oferta | null>;
+
   recuperarDetallePorId(id: number): Promise<DetalleOferta | null>;
 }

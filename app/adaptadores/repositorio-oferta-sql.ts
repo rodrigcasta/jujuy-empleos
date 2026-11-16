@@ -55,6 +55,23 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     });
   }
 
+  public async recuperarPorId(id: number): Promise<Oferta | null> {
+    const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas WHERE id = $1", [id]);
+    const oferta = resultado.rows[0];
+    if (oferta === undefined) {
+      return null;
+    }
+    return new Oferta(
+      oferta.titulo,
+      oferta.descripcion,
+      oferta.ubicacion,
+      oferta.id_empresario,
+      oferta.fecha_publicacion,
+      oferta.id,
+      oferta.activa,
+    );
+  }
+
   public async recuperarDetallePorId(id: number): Promise<DetalleOferta | null> {
     const resultado = await pool.query<{
       id: number;
