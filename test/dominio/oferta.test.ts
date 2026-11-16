@@ -124,4 +124,18 @@ describe("Oferta", () => {
       expect(oferta.obtenerUbicacion()).toBe("Tres de Febrero");
     });
   });
+
+  describe("estadoOferta", () => {
+    test("deberia crear una oferta en estado activo", () => {
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        1,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      expect(oferta.obtenerEstado()).toBe("activa");
+    });
+  });
 });

@@ -1,4 +1,5 @@
 import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
+import EstadoOferta from "./estado-oferta";
 
 export default class Oferta {
   private static readonly LARGO_MAXIMO_TITULO = 50;
@@ -10,6 +11,7 @@ export default class Oferta {
   private idEmpresario: number;
   private fechaPublicacion: Date;
   private id: number;
+  private estado: EstadoOferta = "activa";
 
   constructor(
     titulo: string,
@@ -71,6 +73,10 @@ export default class Oferta {
 
   public obtenerId(): number {
     return this.id;
+  }
+
+  public obtenerEstado(): EstadoOferta {
+    return this.estado;
   }
 
   public asignarId(id: number): void {
