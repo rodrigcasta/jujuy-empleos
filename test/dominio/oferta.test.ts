@@ -148,7 +148,7 @@ describe("Oferta", () => {
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
-      oferta.cerrarOferta();
+      oferta.cerrar();
 
       expect(oferta.estaActiva()).toBe(false);
     });
@@ -162,9 +162,9 @@ describe("Oferta", () => {
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
-      oferta.cerrarOferta();
+      oferta.cerrar();
 
-      expect(() => oferta.cerrarOferta()).toThrow(OfertaYaCerradaError);
+      expect(() => oferta.cerrar()).toThrow(OfertaYaCerradaError);
     });
   });
 });

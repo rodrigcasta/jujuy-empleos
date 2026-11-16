@@ -79,7 +79,7 @@ export default class Oferta {
     return this.activa;
   }
 
-  public cerrarOferta(): void {
+  public cerrar(): void {
     if (!this.activa) {
       throw new OfertaYaCerradaError();
     }
