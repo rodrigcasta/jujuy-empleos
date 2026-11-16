@@ -11,7 +11,7 @@ export default class Oferta {
   private idEmpresario: number;
   private fechaPublicacion: Date;
   private id: number;
-  private activa: boolean = true;
+  private activa: boolean;
 
   constructor(
     titulo: string,
@@ -20,6 +20,7 @@ export default class Oferta {
     idEmpresario: number,
     fechaPublicacion: Date,
     id: number = 0,
+    activa: boolean = true,
   ) {
     const tituloNormalizado = titulo.trim();
     const descripcionNormaliza = descripcion.trim();
@@ -49,6 +50,7 @@ export default class Oferta {
     this.idEmpresario = idEmpresario;
     this.fechaPublicacion = fechaPublicacion;
     this.id = id;
+    this.activa = activa;
   }
 
   public obtenerTitulo(): string {

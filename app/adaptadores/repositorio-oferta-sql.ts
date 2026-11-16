@@ -10,6 +10,7 @@ interface OfertaPersistida {
   ubicacion: string;
   fecha_publicacion: Date;
   id_empresario: number;
+  activa: boolean;
 }
 
 export default class RepositorioOfertaSql implements IRepositorioOferta {
@@ -40,17 +41,18 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
 
   public async listar(): Promise<Oferta[]> {
     const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas ORDER BY fecha_publicacion DESC");
-    return resultado.rows.map(
-      (oferta) =>
-        new Oferta(
-          oferta.titulo,
-          oferta.descripcion,
-          oferta.ubicacion,
-          oferta.id_empresario,
-          oferta.fecha_publicacion,
-          oferta.id,
-        ),
-    );
+    return resultado.rows.map((oferta) => {
+      const ofertaDominio = new Oferta(
+        oferta.titulo,
+        oferta.descripcion,
+        oferta.ubicacion,
+        oferta.id_empresario,
+        oferta.fecha_publicacion,
+        oferta.id,
+        oferta.activa,
+      );
+      return ofertaDominio;
+    });
   }
 
   public async recuperarDetallePorId(id: number): Promise<DetalleOferta | null> {

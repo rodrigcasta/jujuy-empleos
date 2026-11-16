@@ -147,6 +147,26 @@ describe("RepositorioOfertaSql", () => {
 
       expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta reciente", "Oferta anterior"]);
     });
+
+    test("deberia recuperar una oferta cerrada como inactiva", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        empresario.obtenerId(),
+        new Date("2026-11-02T15:00:00.000Z"),
+      );
+      oferta.cerrar();
+
+      await repositorioOferta.guardar(oferta);
+
+      const ofertas = await repositorioOferta.listar();
+
+      expect(ofertas[0].estaActiva()).toBe(false);
+    });
   });
 
   describe("recuperarDetallePorId", () => {
