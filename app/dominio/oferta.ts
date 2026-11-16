@@ -1,5 +1,6 @@
 import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
 import EstadoOferta from "./estado-oferta";
+import OfertaYaCerrada from "./oferta-ya-cerrada";
 
 export default class Oferta {
   private static readonly LARGO_MAXIMO_TITULO = 50;
@@ -80,6 +81,10 @@ export default class Oferta {
   }
 
   public cerrarOferta(): void {
+    if (this.estado === "cerrada") {
+      throw new OfertaYaCerrada();
+    }
+
     this.estado = "cerrada";
   }
 
