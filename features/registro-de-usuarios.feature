@@ -72,7 +72,7 @@ Característica: Registro de usuarios
       | email      | marta@example.com |
       | contraseña | Secreta123!#      |
     Cuando se registra con nombre "Otra", apellido "Persona", email "MARTA@example.com", contraseña "Otra-clave1!#" y confirmación "Otra-clave1!#"
-    Entonces ve el mensaje de error "El email es inválido"
+    Entonces ve el mensaje de error "Este email ya está en uso"
 
   @wip
   Escenario: REG-09 - Registración fallida por contraseña vacía
@@ -155,7 +155,7 @@ Característica: Registro de usuarios
   Escenario: REG-21 - Registracion de empresario rechazada por email perteneciente a un aspirante
     Dado que existe un aspirante registrado con email "pedro.sanchez@correo-ejemplo.com.ar"
     Cuando Pedro Sanchez intenta registrarse como empresario con email "pedro.sanchez@correo-ejemplo.com.ar", contrasena "Empresa2026!#", confirmacion "Empresa2026!#" y suscripcion "Profesional"
-    Entonces ve el mensaje de error "El email es inválido"
+    Entonces ve el mensaje de error "Este email ya está en uso"
     Y no se registra un nuevo usuario
 
   Escenario: Suscripcion Profesional seleccionada inicialmente

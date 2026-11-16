@@ -45,7 +45,7 @@ describe("SistemaUsuarios", () => {
 
       await expect(registrar).rejects.toThrow(UsuarioYaExisteError);
 
-      await expect(registrar).rejects.toThrow("El email es inválido");
+      await expect(registrar).rejects.toThrow("Este email ya está en uso");
 
       expect(mockRepositorioUsuario.recuperarPorEmail).toHaveBeenCalledWith("juana@ejemplo.com");
 
