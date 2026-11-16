@@ -137,5 +137,19 @@ describe("Oferta", () => {
 
       expect(oferta.obtenerEstado()).toBe("activa");
     });
+
+    test("deberia cambiar el estado de una oferta activa a cerrada", () => {
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        1,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      oferta.cerrarOferta();
+
+      expect(oferta.obtenerEstado()).toBe("cerrada");
+    });
   });
 });

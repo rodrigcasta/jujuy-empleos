@@ -79,6 +79,10 @@ export default class Oferta {
     return this.estado;
   }
 
+  public cerrarOferta(): void {
+    this.estado = "cerrada";
+  }
+
   public asignarId(id: number): void {
     this.id = id;
   }
