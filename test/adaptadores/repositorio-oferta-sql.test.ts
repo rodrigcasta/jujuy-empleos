@@ -48,6 +48,27 @@ describe("RepositorioOfertaSql", () => {
         fecha_publicacion: fechaPublicacion,
       });
     });
+    test("deberia persistir una oferta cerrada como inactiva", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        empresario.obtenerId(),
+        new Date("2026-11-02T15:00:00.000Z"),
+      );
+      oferta.cerrar();
+
+      await repositorioOferta.guardar(oferta);
+
+      const resultado = await pool.query<{ activa: boolean }>("SELECT activa FROM ofertas WHERE id = $1", [
+        oferta.obtenerId(),
+      ]);
+
+      expect(resultado.rows[0].activa).toBe(false);
+    });
   });
 
   describe("contarPorEmpresario", () => {

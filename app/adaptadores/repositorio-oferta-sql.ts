@@ -15,8 +15,8 @@ interface OfertaPersistida {
 export default class RepositorioOfertaSql implements IRepositorioOferta {
   public async guardar(oferta: Oferta): Promise<void> {
     const resultado = await pool.query<{ id: number }>(
-      `INSERT INTO ofertas (titulo, descripcion, ubicacion, fecha_publicacion, id_empresario)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO ofertas (titulo, descripcion, ubicacion, fecha_publicacion, id_empresario, activa)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id`,
       [
         oferta.obtenerTitulo(),
@@ -24,6 +24,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
         oferta.obtenerUbicacion(),
         oferta.obtenerFechaPublicacion(),
         oferta.obtenerIdEmpresario(),
+        oferta.estaActiva(),
       ],
     );
     oferta.asignarId(resultado.rows[0].id);
