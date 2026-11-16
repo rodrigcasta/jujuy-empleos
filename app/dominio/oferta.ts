@@ -1,6 +1,5 @@
 import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
-import EstadoOferta from "./estado-oferta";
-import OfertaYaCerrada from "./oferta-ya-cerrada";
+import OfertaYaCerradaError from "./oferta-ya-cerrada-error";
 
 export default class Oferta {
   private static readonly LARGO_MAXIMO_TITULO = 50;
@@ -12,7 +11,7 @@ export default class Oferta {
   private idEmpresario: number;
   private fechaPublicacion: Date;
   private id: number;
-  private estado: EstadoOferta = "activa";
+  private activa: boolean = true;
 
   constructor(
     titulo: string,
@@ -76,16 +75,16 @@ export default class Oferta {
     return this.id;
   }
 
-  public obtenerEstado(): EstadoOferta {
-    return this.estado;
+  public estaActiva(): boolean {
+    return this.activa;
   }
 
   public cerrarOferta(): void {
-    if (this.estado === "cerrada") {
-      throw new OfertaYaCerrada();
+    if (!this.activa) {
+      throw new OfertaYaCerradaError();
     }
 
-    this.estado = "cerrada";
+    this.activa = false;
   }
 
   public asignarId(id: number): void {

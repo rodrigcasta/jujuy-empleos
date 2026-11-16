@@ -1,5 +1,6 @@
 import Oferta from "../../app/dominio/oferta";
 import DatosDeOfertaInvalidos from "../../app/dominio/datos-de-oferta-invalidos";
+import OfertaYaCerradaError from "../../app/dominio/oferta-ya-cerrada-error";
 
 describe("Oferta", () => {
   describe("constructor", () => {
@@ -135,7 +136,7 @@ describe("Oferta", () => {
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
-      expect(oferta.obtenerEstado()).toBe("activa");
+      expect(oferta.estaActiva()).toBe(true);
     });
 
     test("deberia cambiar el estado de una oferta activa a cerrada", () => {
@@ -149,7 +150,7 @@ describe("Oferta", () => {
 
       oferta.cerrarOferta();
 
-      expect(oferta.obtenerEstado()).toBe("cerrada");
+      expect(oferta.estaActiva()).toBe(false);
     });
 
     test("no deberia permitir cerrar una oferta que ya esta cerrada", () => {
@@ -163,7 +164,7 @@ describe("Oferta", () => {
 
       oferta.cerrarOferta();
 
-      expect(() => oferta.cerrarOferta()).toThrow("La oferta ya se encuentra cerrada");
+      expect(() => oferta.cerrarOferta()).toThrow(OfertaYaCerradaError);
     });
   });
 });
