@@ -33,7 +33,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
 
   public async contarPorEmpresario(idEmpresario: number): Promise<number> {
     const resultado = await pool.query<{ cantidad: string }>(
-      "SELECT COUNT(*) AS cantidad FROM ofertas WHERE id_empresario = $1",
+      "SELECT COUNT(*) AS cantidad FROM ofertas WHERE id_empresario = $1 AND activa = true",
       [idEmpresario],
     );
     return Number(resultado.rows[0].cantidad);

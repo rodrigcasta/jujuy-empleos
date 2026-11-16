@@ -101,6 +101,41 @@ describe("RepositorioOfertaSql", () => {
 
       expect(cantidad).toBe(2);
     });
+
+    test("deberia contar solamente las ofertas activas del empresario indicado", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const fechaPublicacion = new Date("2026-11-02T15:00:00.000Z");
+      const ofertaActiva1 = new Oferta(
+        "Oferta 1",
+        "Primera oferta",
+        "Buenos Aires",
+        empresario.obtenerId(),
+        fechaPublicacion,
+      );
+      const ofertaActiva2 = new Oferta(
+        "Oferta 2",
+        "Segunda oferta",
+        "Cordoba",
+        empresario.obtenerId(),
+        fechaPublicacion,
+      );
+      const ofertaCerrada = new Oferta(
+        "Oferta 3",
+        "Tercera oferta",
+        "Mendoza",
+        empresario.obtenerId(),
+        fechaPublicacion,
+      );
+      ofertaCerrada.cerrar();
+      await repositorioOferta.guardar(ofertaActiva1);
+      await repositorioOferta.guardar(ofertaActiva2);
+      await repositorioOferta.guardar(ofertaCerrada);
+
+      const cantidad = await repositorioOferta.contarPorEmpresario(empresario.obtenerId());
+
+      expect(cantidad).toBe(2);
+    });
   });
 
   describe("listar", () => {
