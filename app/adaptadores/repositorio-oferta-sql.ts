@@ -43,6 +43,11 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     return Number(resultado.rows[0].cantidad);
   }
 
+  public async listarVisiblesParaEmpresario(): Promise<Oferta[]> {
+    const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas ORDER BY fecha_publicacion DESC");
+    return resultado.rows.map((oferta) => this.deserializarOferta(oferta));
+  }
+
   public async listar(): Promise<Oferta[]> {
     const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas ORDER BY fecha_publicacion DESC");
     return resultado.rows.map((oferta) => {

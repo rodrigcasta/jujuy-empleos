@@ -8,6 +8,8 @@ export interface IRepositorioOferta {
 
   contarActivasPorEmpresario(idEmpresario: number): Promise<number>;
 
+  listarVisiblesParaEmpresario(idEmpresario: number): Promise<Oferta[]>;
+
   listar(): Promise<Oferta[]>;
 
   listarPublicas(): Promise<Oferta[]>;
