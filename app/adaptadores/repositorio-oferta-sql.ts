@@ -42,16 +42,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
   public async listar(): Promise<Oferta[]> {
     const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas ORDER BY fecha_publicacion DESC");
     return resultado.rows.map((oferta) => {
-      const ofertaDominio = new Oferta(
-        oferta.titulo,
-        oferta.descripcion,
-        oferta.ubicacion,
-        oferta.id_empresario,
-        oferta.fecha_publicacion,
-        oferta.id,
-        oferta.activa,
-      );
-      return ofertaDominio;
+      return this.deserializarOferta(oferta);
     });
   }
 
@@ -61,15 +52,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     if (oferta === undefined) {
       return null;
     }
-    return new Oferta(
-      oferta.titulo,
-      oferta.descripcion,
-      oferta.ubicacion,
-      oferta.id_empresario,
-      oferta.fecha_publicacion,
-      oferta.id,
-      oferta.activa,
-    );
+    return this.deserializarOferta(oferta);
   }
 
   public async recuperarDetallePorId(id: number): Promise<DetalleOferta | null> {
@@ -104,5 +87,17 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
 
   public async eliminarTodos(): Promise<void> {
     await pool.query("DELETE FROM ofertas");
+  }
+
+  private deserializarOferta(oferta: OfertaPersistida): Oferta {
+    return new Oferta(
+      oferta.titulo,
+      oferta.descripcion,
+      oferta.ubicacion,
+      oferta.id_empresario,
+      oferta.fecha_publicacion,
+      oferta.id,
+      oferta.activa,
+    );
   }
 }
