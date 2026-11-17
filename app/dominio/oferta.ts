@@ -1,4 +1,5 @@
 import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
+import OfertaYaCerradaError from "./oferta-ya-cerrada-error";
 
 export default class Oferta {
   private static readonly LARGO_MAXIMO_TITULO = 50;
@@ -10,6 +11,7 @@ export default class Oferta {
   private idEmpresario: number;
   private fechaPublicacion: Date;
   private id: number;
+  private activa: boolean;
 
   constructor(
     titulo: string,
@@ -18,6 +20,7 @@ export default class Oferta {
     idEmpresario: number,
     fechaPublicacion: Date,
     id: number = 0,
+    activa: boolean = true,
   ) {
     const tituloNormalizado = titulo.trim();
     const descripcionNormaliza = descripcion.trim();
@@ -47,6 +50,7 @@ export default class Oferta {
     this.idEmpresario = idEmpresario;
     this.fechaPublicacion = fechaPublicacion;
     this.id = id;
+    this.activa = activa;
   }
 
   public obtenerTitulo(): string {
@@ -71,6 +75,18 @@ export default class Oferta {
 
   public obtenerId(): number {
     return this.id;
+  }
+
+  public estaActiva(): boolean {
+    return this.activa;
+  }
+
+  public cerrar(): void {
+    if (!this.activa) {
+      throw new OfertaYaCerradaError();
+    }
+
+    this.activa = false;
   }
 
   public asignarId(id: number): void {

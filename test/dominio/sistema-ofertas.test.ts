@@ -1,4 +1,5 @@
 import { Mock, mock } from "ts-jest-mocker";
+import CierreNoAutorizadoError from "../../app/dominio/cierre-no-autorizado-error";
 import LimiteDeOfertasAlcanzadoError from "../../app/dominio/limite-de-ofertas-alcanzado-error";
 import Oferta from "../../app/dominio/oferta";
 import OfertaNoEncontradaError from "../../app/dominio/oferta-no-encontrada-error";
@@ -20,7 +21,7 @@ describe("SistemaOfertas", () => {
   describe("publicar", () => {
     test("deberia publicar y guardar una oferta asociada al empresario", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
-      repositorioOferta.contarPorEmpresario.mockResolvedValue(0);
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(0);
       repositorioOferta.guardar.mockResolvedValue(undefined);
 
       const oferta = await sistemaOfertas.publicar(
@@ -32,13 +33,13 @@ describe("SistemaOfertas", () => {
 
       expect(oferta.obtenerIdEmpresario()).toBe(7);
       expect(oferta.obtenerFechaPublicacion()).toEqual(FECHA_ACTUAL);
-      expect(repositorioOferta.contarPorEmpresario).toHaveBeenCalledWith(7);
+      expect(repositorioOferta.contarActivasPorEmpresario).toHaveBeenCalledWith(7);
       expect(repositorioOferta.guardar).toHaveBeenCalledWith(oferta);
     });
 
     test("deberia rechazar la publicacion y no guardar cuando la suscripcion alcanzo su limite", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
-      repositorioOferta.contarPorEmpresario.mockResolvedValue(1);
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(1);
 
       const publicacion = sistemaOfertas.publicar(
         empresario,
@@ -62,7 +63,7 @@ describe("SistemaOfertas", () => {
       );
 
       await expect(publicacion).rejects.toThrow(PublicacionNoAutorizadaError);
-      expect(repositorioOferta.contarPorEmpresario).not.toHaveBeenCalled();
+      expect(repositorioOferta.contarActivasPorEmpresario).not.toHaveBeenCalled();
       expect(repositorioOferta.guardar).not.toHaveBeenCalled();
     });
   });
@@ -70,7 +71,7 @@ describe("SistemaOfertas", () => {
   describe("puedePublicar", () => {
     test("deberia permitir publicar si la suscripcion conserva capacidad", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Profesional");
-      repositorioOferta.contarPorEmpresario.mockResolvedValue(4);
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(4);
 
       const puedePublicar = await sistemaOfertas.puedePublicar(empresario);
 
@@ -79,7 +80,7 @@ describe("SistemaOfertas", () => {
 
     test("deberia rechazar publicar si la suscripcion agoto su capacidad", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
-      repositorioOferta.contarPorEmpresario.mockResolvedValue(1);
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(1);
 
       const puedePublicar = await sistemaOfertas.puedePublicar(empresario);
 
@@ -88,17 +89,41 @@ describe("SistemaOfertas", () => {
   });
 
   describe("listar", () => {
-    test("deberia listar todas las ofertas publicadas", async () => {
-      const ofertasPublicadas = [
-        new Oferta("Oferta reciente", "Descripcion reciente", "CABA", 7, FECHA_ACTUAL, 2),
-        new Oferta("Oferta anterior", "Descripcion anterior", "Moron", 8, new Date("2026-11-01T15:00:00.000Z"), 1),
-      ];
-      repositorioOferta.listar.mockResolvedValue(ofertasPublicadas);
+    test("deberia listar solo las ofertas publicas cuando no hay usuario autenticado", async () => {
+      const ofertasPublicas = [new Oferta("Oferta reciente", "Descripcion reciente", "CABA", 7, FECHA_ACTUAL, 2)];
+      repositorioOferta.listarPublicas.mockResolvedValue(ofertasPublicas);
 
       const ofertas = await sistemaOfertas.listar();
 
-      expect(ofertas).toEqual(ofertasPublicadas);
-      expect(repositorioOferta.listar).toHaveBeenCalledTimes(1);
+      expect(ofertas).toEqual(ofertasPublicas);
+      expect(repositorioOferta.listarPublicas).toHaveBeenCalledTimes(1);
+    });
+
+    test("deberia listar las ofertas visibles para un empresario autenticado", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      const ofertasVisibles = [
+        new Oferta("Oferta activa", "Descripcion", "CABA", 8, FECHA_ACTUAL, 2),
+        new Oferta("Oferta cerrada propia", "Descripcion", "CABA", 7, FECHA_ACTUAL, 1, false),
+      ];
+      repositorioOferta.listarVisiblesParaEmpresario.mockResolvedValue(ofertasVisibles);
+
+      const ofertas = await sistemaOfertas.listar(empresario);
+
+      expect(ofertas).toEqual(ofertasVisibles);
+      expect(repositorioOferta.listarVisiblesParaEmpresario).toHaveBeenCalledWith(7);
+      expect(repositorioOferta.listarPublicas).not.toHaveBeenCalled();
+    });
+
+    test("deberia listar solo las ofertas publicas cuando el usuario es aspirante", async () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 9, null, "Aspirante");
+      const ofertasPublicas = [new Oferta("Oferta activa", "Descripcion", "CABA", 7, FECHA_ACTUAL, 2)];
+      repositorioOferta.listarPublicas.mockResolvedValue(ofertasPublicas);
+
+      const ofertas = await sistemaOfertas.listar(aspirante);
+
+      expect(ofertas).toEqual(ofertasPublicas);
+      expect(repositorioOferta.listarPublicas).toHaveBeenCalledTimes(1);
+      expect(repositorioOferta.listarVisiblesParaEmpresario).not.toHaveBeenCalled();
     });
   });
 
@@ -111,6 +136,7 @@ describe("SistemaOfertas", () => {
         descripcion: "Se busca desarrollador para trabajo remoto",
         ubicacion: "Pilar",
         emailEmpresario: "empresa1@empresa1.com",
+        activa: true,
       };
       repositorioOferta.recuperarDetallePorId.mockResolvedValue(detalleEsperado);
 
@@ -127,6 +153,45 @@ describe("SistemaOfertas", () => {
 
       await expect(consulta).rejects.toThrow(OfertaNoEncontradaError);
       await expect(consulta).rejects.toThrow("No se encontró la oferta solicitada");
+    });
+  });
+  describe("cerrar", () => {
+    test("deberia cerrar una oferta existente y persistirla", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      const oferta = new Oferta("Programador Jr.", "Backend junior", "CABA", 7, FECHA_ACTUAL, 12);
+      repositorioOferta.recuperarPorId.mockResolvedValue(oferta);
+      repositorioOferta.actualizar.mockResolvedValue(undefined);
+      await sistemaOfertas.cerrar(empresario, 12);
+      expect(oferta.estaActiva()).toBe(false);
+      expect(repositorioOferta.recuperarPorId).toHaveBeenCalledWith(12);
+      expect(repositorioOferta.actualizar).toHaveBeenCalledWith(oferta);
+    });
+
+    test("deberia impedir que otro empresario cierre una oferta ajena", async () => {
+      const otroEmpresario = new Usuario("Mario", "Perez", "mario@example.com", "hash", 8, "Profesional");
+      const oferta = new Oferta("Programador Jr.", "Backend junior", "CABA", 7, FECHA_ACTUAL, 12);
+      repositorioOferta.recuperarPorId.mockResolvedValue(oferta);
+
+      await expect(sistemaOfertas.cerrar(otroEmpresario, 12)).rejects.toThrow(CierreNoAutorizadoError);
+
+      expect(oferta.estaActiva()).toBe(true);
+      expect(repositorioOferta.actualizar).not.toHaveBeenCalled();
+    });
+
+    test("deberia impedir que un aspirante cierre una oferta", async () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 7, null, "Aspirante");
+
+      await expect(sistemaOfertas.cerrar(aspirante, 12)).rejects.toThrow(CierreNoAutorizadoError);
+
+      expect(repositorioOferta.recuperarPorId).not.toHaveBeenCalled();
+      expect(repositorioOferta.actualizar).not.toHaveBeenCalled();
+    });
+
+    test("deberia informar si la oferta no existe", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      repositorioOferta.recuperarPorId.mockResolvedValue(null);
+      await expect(sistemaOfertas.cerrar(empresario, 999)).rejects.toThrow(OfertaNoEncontradaError);
+      expect(repositorioOferta.actualizar).not.toHaveBeenCalled();
     });
   });
 });

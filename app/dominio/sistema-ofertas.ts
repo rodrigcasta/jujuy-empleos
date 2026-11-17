@@ -1,3 +1,4 @@
+import CierreNoAutorizadoError from "./cierre-no-autorizado-error";
 import { DetalleOferta } from "./detalle-oferta";
 import LimiteDeOfertasAlcanzadoError from "./limite-de-ofertas-alcanzado-error";
 import Oferta from "./oferta";
@@ -26,14 +27,32 @@ export default class SistemaOfertas {
     return oferta;
   }
 
+  public async cerrar(empresario: Usuario, idOferta: number): Promise<void> {
+    if (!empresario.esEmpresario()) {
+      throw new CierreNoAutorizadoError();
+    }
+    const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
+    if (oferta === null) {
+      throw new OfertaNoEncontradaError();
+    }
+    if (oferta.obtenerIdEmpresario() !== empresario.obtenerId()) {
+      throw new CierreNoAutorizadoError();
+    }
+    oferta.cerrar();
+    await this.repositorioOferta.actualizar(oferta);
+  }
+
   public async puedePublicar(empresario: Usuario): Promise<boolean> {
     this.validarEmpresario(empresario);
-    const cantidadOfertasPublicadas = await this.repositorioOferta.contarPorEmpresario(empresario.obtenerId());
+    const cantidadOfertasPublicadas = await this.repositorioOferta.contarActivasPorEmpresario(empresario.obtenerId());
     return empresario.puedePublicar(cantidadOfertasPublicadas);
   }
 
-  public async listar(): Promise<Oferta[]> {
-    return this.repositorioOferta.listar();
+  public async listar(usuario?: Usuario): Promise<Oferta[]> {
+    if (usuario?.esEmpresario()) {
+      return this.repositorioOferta.listarVisiblesParaEmpresario(usuario.obtenerId());
+    }
+    return this.repositorioOferta.listarPublicas();
   }
 
   public async obtenerDetallePorId(id: number): Promise<DetalleOferta> {

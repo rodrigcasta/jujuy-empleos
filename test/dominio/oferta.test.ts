@@ -1,5 +1,6 @@
 import Oferta from "../../app/dominio/oferta";
 import DatosDeOfertaInvalidos from "../../app/dominio/datos-de-oferta-invalidos";
+import OfertaYaCerradaError from "../../app/dominio/oferta-ya-cerrada-error";
 
 describe("Oferta", () => {
   describe("constructor", () => {
@@ -122,6 +123,48 @@ describe("Oferta", () => {
       expect(oferta.obtenerTitulo()).toBe("Desarrollador backend");
       expect(oferta.obtenerDescripcion()).toBe("Se busca desarrollador backend junior");
       expect(oferta.obtenerUbicacion()).toBe("Tres de Febrero");
+    });
+  });
+
+  describe("estadoOferta", () => {
+    test("deberia crear una oferta en estado activo", () => {
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        1,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      expect(oferta.estaActiva()).toBe(true);
+    });
+
+    test("deberia cambiar el estado de una oferta activa a cerrada", () => {
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        1,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      oferta.cerrar();
+
+      expect(oferta.estaActiva()).toBe(false);
+    });
+
+    test("no deberia permitir cerrar una oferta que ya esta cerrada", () => {
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        1,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      oferta.cerrar();
+
+      expect(() => oferta.cerrar()).toThrow(OfertaYaCerradaError);
     });
   });
 });

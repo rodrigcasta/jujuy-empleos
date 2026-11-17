@@ -48,6 +48,27 @@ describe("RepositorioOfertaSql", () => {
         fecha_publicacion: fechaPublicacion,
       });
     });
+    test("deberia persistir una oferta cerrada como inactiva", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        empresario.obtenerId(),
+        new Date("2026-11-02T15:00:00.000Z"),
+      );
+      oferta.cerrar();
+
+      await repositorioOferta.guardar(oferta);
+
+      const resultado = await pool.query<{ activa: boolean }>("SELECT activa FROM ofertas WHERE id = $1", [
+        oferta.obtenerId(),
+      ]);
+
+      expect(resultado.rows[0].activa).toBe(false);
+    });
   });
 
   describe("contarPorEmpresario", () => {
@@ -55,7 +76,7 @@ describe("RepositorioOfertaSql", () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
       await repositorioUsuario.guardar(empresario);
 
-      const cantidad = await repositorioOferta.contarPorEmpresario(empresario.obtenerId());
+      const cantidad = await repositorioOferta.contarActivasPorEmpresario(empresario.obtenerId());
 
       expect(cantidad).toBe(0);
     });
@@ -76,13 +97,48 @@ describe("RepositorioOfertaSql", () => {
         new Oferta("Oferta 3", "Tercera oferta", "Mendoza", segundoEmpresario.obtenerId(), fechaPublicacion),
       );
 
-      const cantidad = await repositorioOferta.contarPorEmpresario(primerEmpresario.obtenerId());
+      const cantidad = await repositorioOferta.contarActivasPorEmpresario(primerEmpresario.obtenerId());
+
+      expect(cantidad).toBe(2);
+    });
+
+    test("deberia contar solamente las ofertas activas del empresario indicado", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const fechaPublicacion = new Date("2026-11-02T15:00:00.000Z");
+      const ofertaActiva1 = new Oferta(
+        "Oferta 1",
+        "Primera oferta",
+        "Buenos Aires",
+        empresario.obtenerId(),
+        fechaPublicacion,
+      );
+      const ofertaActiva2 = new Oferta(
+        "Oferta 2",
+        "Segunda oferta",
+        "Cordoba",
+        empresario.obtenerId(),
+        fechaPublicacion,
+      );
+      const ofertaCerrada = new Oferta(
+        "Oferta 3",
+        "Tercera oferta",
+        "Mendoza",
+        empresario.obtenerId(),
+        fechaPublicacion,
+      );
+      ofertaCerrada.cerrar();
+      await repositorioOferta.guardar(ofertaActiva1);
+      await repositorioOferta.guardar(ofertaActiva2);
+      await repositorioOferta.guardar(ofertaCerrada);
+
+      const cantidad = await repositorioOferta.contarActivasPorEmpresario(empresario.obtenerId());
 
       expect(cantidad).toBe(2);
     });
   });
 
-  describe("listar", () => {
+  describe("listarPublicas", () => {
     test("deberia recuperar una oferta persistida", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
       await repositorioUsuario.guardar(empresario);
@@ -96,7 +152,7 @@ describe("RepositorioOfertaSql", () => {
       );
       await repositorioOferta.guardar(oferta);
 
-      const ofertas = await repositorioOferta.listar();
+      const ofertas = await repositorioOferta.listarPublicas();
 
       expect(ofertas).toHaveLength(1);
       expect(ofertas[0]).toMatchObject(oferta);
@@ -122,13 +178,111 @@ describe("RepositorioOfertaSql", () => {
       await repositorioOferta.guardar(ofertaAnterior);
       await repositorioOferta.guardar(ofertaReciente);
 
-      const ofertas = await repositorioOferta.listar();
+      const ofertas = await repositorioOferta.listarPublicas();
 
       expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta reciente", "Oferta anterior"]);
+    });
+
+    test("deberia excluir las ofertas cerradas del listado publico", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const ofertaActiva = new Oferta(
+        "Oferta activa",
+        "Descripcion de la oferta activa",
+        "CABA",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      const ofertaCerrada = new Oferta(
+        "Oferta cerrada",
+        "Descripcion de la oferta cerrada",
+        "CABA",
+        empresario.obtenerId(),
+        new Date("2026-11-03T15:00:00.000Z"),
+      );
+      ofertaCerrada.cerrar();
+
+      await repositorioOferta.guardar(ofertaActiva);
+      await repositorioOferta.guardar(ofertaCerrada);
+
+      const ofertas = await repositorioOferta.listarPublicas();
+
+      expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta activa"]);
+    });
+  });
+
+  describe("listarVisiblesParaEmpresario", () => {
+    test("deberia incluir las ofertas cerradas propias junto con las activas", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const ofertaActiva = new Oferta(
+        "Oferta activa",
+        "Descripcion activa",
+        "CABA",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      const ofertaCerrada = new Oferta(
+        "Oferta cerrada propia",
+        "Descripcion cerrada",
+        "CABA",
+        empresario.obtenerId(),
+        new Date("2026-11-03T15:00:00.000Z"),
+      );
+      ofertaCerrada.cerrar();
+      await repositorioOferta.guardar(ofertaActiva);
+      await repositorioOferta.guardar(ofertaCerrada);
+      const ofertas = await repositorioOferta.listarVisiblesParaEmpresario(empresario.obtenerId());
+      expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta activa", "Oferta cerrada propia"]);
+    });
+    test("deberia excluir las ofertas cerradas de otros empresarios pero incluir sus activas", async () => {
+      const dueno = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      const otroEmpresario = new Usuario("Mario", "Perez", "mario@example.com", "hash");
+      await repositorioUsuario.guardar(dueno);
+      await repositorioUsuario.guardar(otroEmpresario);
+
+      const activaAjena = new Oferta(
+        "Activa ajena",
+        "Descripcion activa ajena",
+        "CABA",
+        otroEmpresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      const cerradaAjena = new Oferta(
+        "Cerrada ajena",
+        "Descripcion cerrada ajena",
+        "CABA",
+        otroEmpresario.obtenerId(),
+        new Date("2026-11-03T15:00:00.000Z"),
+      );
+      cerradaAjena.cerrar();
+
+      await repositorioOferta.guardar(activaAjena);
+      await repositorioOferta.guardar(cerradaAjena);
+
+      const ofertas = await repositorioOferta.listarVisiblesParaEmpresario(dueno.obtenerId());
+
+      expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Activa ajena"]);
     });
   });
 
   describe("recuperarDetallePorId", () => {
+    test("deberia indicar que el detalle de una oferta cerrada no esta activa", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const oferta = new Oferta(
+        "Desarrollador Backend",
+        "Se busca desarrollador para trabajo remoto",
+        "Pilar",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      oferta.cerrar();
+      await repositorioOferta.guardar(oferta);
+      const detalle = await repositorioOferta.recuperarDetallePorId(oferta.obtenerId());
+      expect(detalle?.activa).toBe(false);
+    });
     test("deberia recuperar el detalle de una oferta con el email del empresario", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");
       await repositorioUsuario.guardar(empresario);
@@ -150,7 +304,69 @@ describe("RepositorioOfertaSql", () => {
         descripcion: "Se busca desarrollador para trabajo remoto",
         ubicacion: "Pilar",
         emailEmpresario: "empresa1@empresa1.com",
+        activa: true,
       });
+    });
+  });
+
+  describe("recuperarPorId", () => {
+    test("deberia recuperar una oferta persistida por su id", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const oferta = new Oferta(
+        "Desarrollador Backend",
+        "Se busca desarrollador para trabajo remoto",
+        "Pilar",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      await repositorioOferta.guardar(oferta);
+
+      const ofertaRecuperada = await repositorioOferta.recuperarPorId(oferta.obtenerId());
+
+      expect(ofertaRecuperada).toEqual(oferta);
+    });
+
+    test("deberia recuperar una oferta cerrada como inactiva", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        empresario.obtenerId(),
+        new Date("2026-11-02T15:00:00.000Z"),
+      );
+      oferta.cerrar();
+
+      await repositorioOferta.guardar(oferta);
+
+      const ofertaRecuperada = await repositorioOferta.recuperarPorId(oferta.obtenerId());
+
+      expect(ofertaRecuperada?.estaActiva()).toBe(false);
+    });
+  });
+
+  describe("actualizar", () => {
+    test("deberia de cerrar una oferta y persistir el nuevo estado", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const oferta = new Oferta(
+        "Desarrollador Backend",
+        "Se busca desarrollador para trabajo remoto",
+        "Pilar",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      await repositorioOferta.guardar(oferta);
+      oferta.cerrar();
+      await repositorioOferta.actualizar(oferta);
+
+      const ofertaRecuperada = await repositorioOferta.recuperarPorId(oferta.obtenerId());
+
+      expect(ofertaRecuperada?.estaActiva()).toBe(false);
     });
   });
 });
