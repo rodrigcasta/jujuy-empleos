@@ -204,6 +204,36 @@ describe("RepositorioOfertaSql", () => {
     });
   });
 
+  describe("listarPublicas", () => {
+    test("deberia excluir las ofertas cerradas del listado publico", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const ofertaActiva = new Oferta(
+        "Oferta activa",
+        "Descripcion de la oferta activa",
+        "CABA",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      const ofertaCerrada = new Oferta(
+        "Oferta cerrada",
+        "Descripcion de la oferta cerrada",
+        "CABA",
+        empresario.obtenerId(),
+        new Date("2026-11-03T15:00:00.000Z"),
+      );
+      ofertaCerrada.cerrar();
+
+      await repositorioOferta.guardar(ofertaActiva);
+      await repositorioOferta.guardar(ofertaCerrada);
+
+      const ofertas = await repositorioOferta.listarPublicas();
+
+      expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta activa"]);
+    });
+  });
+
   describe("recuperarDetallePorId", () => {
     test("deberia recuperar el detalle de una oferta con el email del empresario", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");

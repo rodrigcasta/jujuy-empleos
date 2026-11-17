@@ -50,6 +50,13 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     });
   }
 
+  public async listarPublicas(): Promise<Oferta[]> {
+    const resultado = await pool.query<OfertaPersistida>(
+      "SELECT * FROM ofertas WHERE activa = true ORDER BY fecha_publicacion DESC",
+    );
+    return resultado.rows.map((oferta) => this.deserializarOferta(oferta));
+  }
+
   public async recuperarPorId(id: number): Promise<Oferta | null> {
     const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas WHERE id = $1", [id]);
     const oferta = resultado.rows[0];
