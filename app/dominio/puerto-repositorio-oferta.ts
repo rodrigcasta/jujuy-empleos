@@ -10,8 +10,6 @@ export interface IRepositorioOferta {
 
   listarVisiblesParaEmpresario(idEmpresario: number): Promise<Oferta[]>;
 
-  listar(): Promise<Oferta[]>;
-
   listarPublicas(): Promise<Oferta[]>;
 
   recuperarPorId(id: number): Promise<Oferta | null>;

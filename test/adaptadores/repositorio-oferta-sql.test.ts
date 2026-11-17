@@ -138,7 +138,7 @@ describe("RepositorioOfertaSql", () => {
     });
   });
 
-  describe("listar", () => {
+  describe("listarPublicas", () => {
     test("deberia recuperar una oferta persistida", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
       await repositorioUsuario.guardar(empresario);
@@ -152,7 +152,7 @@ describe("RepositorioOfertaSql", () => {
       );
       await repositorioOferta.guardar(oferta);
 
-      const ofertas = await repositorioOferta.listar();
+      const ofertas = await repositorioOferta.listarPublicas();
 
       expect(ofertas).toHaveLength(1);
       expect(ofertas[0]).toMatchObject(oferta);
@@ -178,33 +178,11 @@ describe("RepositorioOfertaSql", () => {
       await repositorioOferta.guardar(ofertaAnterior);
       await repositorioOferta.guardar(ofertaReciente);
 
-      const ofertas = await repositorioOferta.listar();
+      const ofertas = await repositorioOferta.listarPublicas();
 
       expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta reciente", "Oferta anterior"]);
     });
 
-    test("deberia recuperar una oferta cerrada como inactiva", async () => {
-      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
-      await repositorioUsuario.guardar(empresario);
-
-      const oferta = new Oferta(
-        "Programador Jr.",
-        "Se busca desarrollador backend junior",
-        "Tres de Febrero",
-        empresario.obtenerId(),
-        new Date("2026-11-02T15:00:00.000Z"),
-      );
-      oferta.cerrar();
-
-      await repositorioOferta.guardar(oferta);
-
-      const ofertas = await repositorioOferta.listar();
-
-      expect(ofertas[0].estaActiva()).toBe(false);
-    });
-  });
-
-  describe("listarPublicas", () => {
     test("deberia excluir las ofertas cerradas del listado publico", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
       await repositorioUsuario.guardar(empresario);
@@ -347,6 +325,26 @@ describe("RepositorioOfertaSql", () => {
       const ofertaRecuperada = await repositorioOferta.recuperarPorId(oferta.obtenerId());
 
       expect(ofertaRecuperada).toEqual(oferta);
+    });
+
+    test("deberia recuperar una oferta cerrada como inactiva", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const oferta = new Oferta(
+        "Programador Jr.",
+        "Se busca desarrollador backend junior",
+        "Tres de Febrero",
+        empresario.obtenerId(),
+        new Date("2026-11-02T15:00:00.000Z"),
+      );
+      oferta.cerrar();
+
+      await repositorioOferta.guardar(oferta);
+
+      const ofertaRecuperada = await repositorioOferta.recuperarPorId(oferta.obtenerId());
+
+      expect(ofertaRecuperada?.estaActiva()).toBe(false);
     });
   });
 
