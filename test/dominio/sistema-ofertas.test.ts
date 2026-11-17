@@ -1,4 +1,5 @@
 import { Mock, mock } from "ts-jest-mocker";
+import CierreNoAutorizadoError from "../../app/dominio/cierre-no-autorizado-error";
 import LimiteDeOfertasAlcanzadoError from "../../app/dominio/limite-de-ofertas-alcanzado-error";
 import Oferta from "../../app/dominio/oferta";
 import OfertaNoEncontradaError from "../../app/dominio/oferta-no-encontrada-error";
@@ -139,6 +140,17 @@ describe("SistemaOfertas", () => {
       expect(oferta.estaActiva()).toBe(false);
       expect(repositorioOferta.recuperarPorId).toHaveBeenCalledWith(12);
       expect(repositorioOferta.actualizar).toHaveBeenCalledWith(oferta);
+    });
+
+    test("deberia impedir que otro empresario cierre una oferta ajena", async () => {
+      const otroEmpresario = new Usuario("Mario", "Perez", "mario@example.com", "hash", 8, "Profesional");
+      const oferta = new Oferta("Programador Jr.", "Backend junior", "CABA", 7, FECHA_ACTUAL, 12);
+      repositorioOferta.recuperarPorId.mockResolvedValue(oferta);
+
+      await expect(sistemaOfertas.cerrar(otroEmpresario, 12)).rejects.toThrow(CierreNoAutorizadoError);
+
+      expect(oferta.estaActiva()).toBe(true);
+      expect(repositorioOferta.actualizar).not.toHaveBeenCalled();
     });
 
     test("deberia informar si la oferta no existe", async () => {

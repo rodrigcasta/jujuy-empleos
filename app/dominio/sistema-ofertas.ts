@@ -1,3 +1,4 @@
+import CierreNoAutorizadoError from "./cierre-no-autorizado-error";
 import { DetalleOferta } from "./detalle-oferta";
 import LimiteDeOfertasAlcanzadoError from "./limite-de-ofertas-alcanzado-error";
 import Oferta from "./oferta";
@@ -26,10 +27,13 @@ export default class SistemaOfertas {
     return oferta;
   }
 
-  public async cerrar(_empresario: Usuario, idOferta: number): Promise<void> {
+  public async cerrar(empresario: Usuario, idOferta: number): Promise<void> {
     const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
     if (oferta === null) {
       throw new OfertaNoEncontradaError();
+    }
+    if (oferta.obtenerIdEmpresario() !== empresario.obtenerId()) {
+      throw new CierreNoAutorizadoError();
     }
     oferta.cerrar();
     await this.repositorioOferta.actualizar(oferta);
