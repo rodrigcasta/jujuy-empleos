@@ -1,8 +1,10 @@
 import express, { Request, Response } from "express";
 import SistemaOfertas from "../dominio/sistema-ofertas";
 import DatosDeOfertaInvalidos from "../dominio/datos-de-oferta-invalidos";
+import CierreNoAutorizadoError from "../dominio/cierre-no-autorizado-error";
 import LimiteDeOfertasAlcanzadoError from "../dominio/limite-de-ofertas-alcanzado-error";
 import OfertaNoEncontradaError from "../dominio/oferta-no-encontrada-error";
+import OfertaYaCerradaError from "../dominio/oferta-ya-cerrada-error";
 import { EstadoHttp } from "../web/estado-http";
 import { registrarExcepcion, renderizarError } from "../web/registrar-excepcion";
 import { usuarioActual } from "../web/autenticacion";
@@ -48,8 +50,9 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
     return usuario;
   };
 
-  router.get("/", async (_req: Request, res: Response) => {
-    const ofertas = await sistemaOfertas.listar();
+  router.get("/", async (req: Request, res: Response) => {
+    const usuario = usuarioActual(req);
+    const ofertas = await sistemaOfertas.listar(usuario);
     res.render("ofertas/listado", {
       titulo: "Ofertas laborales",
       sinOfertas: ofertas.length === 0,
@@ -58,6 +61,12 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
         titulo: oferta.obtenerTitulo(),
         descripcion: resumirDescripcion(oferta.obtenerDescripcion()),
         ubicacion: oferta.obtenerUbicacion(),
+        cerrada: !oferta.estaActiva(),
+        puedeCerrar:
+          usuario !== undefined &&
+          usuario.esEmpresario() &&
+          usuario.obtenerId() === oferta.obtenerIdEmpresario() &&
+          oferta.estaActiva(),
       })),
     });
   });
@@ -106,7 +115,13 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
       res.render("ofertas/detalle", {
         titulo: "Detalle de la oferta",
         detalle,
-        puedePostularse: usuario === undefined || usuario.esAspirante(),
+        cerrada: !detalle.activa,
+        puedeCerrar:
+          usuario !== undefined &&
+          usuario.esEmpresario() &&
+          usuario.obtenerId() === detalle.idEmpresario &&
+          detalle.activa,
+        puedePostularse: detalle.activa && (usuario === undefined || usuario.esAspirante()),
         postulacionRegistrada,
         errorDePostulacion: errorDePostulacion?.mensaje,
         mostrarPostulaciones: postulaciones !== null,
@@ -130,6 +145,30 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
           EstadoHttp.ERROR_INTERNO,
           "No se pudo obtener el detalle de la oferta y sus postulaciones",
         );
+      }
+    }
+  });
+
+  router.post("/:id/cerrar", async (req: Request<{ id: string }>, res: Response) => {
+    const empresario = obtenerEmpresarioAutenticado(req, res);
+    if (!empresario) {
+      return;
+    }
+
+    const idOferta = Number(req.params.id);
+    try {
+      await sistemaOfertas.cerrar(empresario, idOferta);
+      res.redirect(EstadoHttp.VER_OTRO, `/ofertas/${idOferta}`);
+    } catch (error: unknown) {
+      registrarExcepcion(req, error);
+      if (error instanceof OfertaNoEncontradaError) {
+        renderizarError(res, EstadoHttp.NO_ENCONTRADO, error.message);
+      } else if (error instanceof CierreNoAutorizadoError) {
+        renderizarError(res, EstadoHttp.PROHIBIDO, error.message);
+      } else if (error instanceof OfertaYaCerradaError) {
+        renderizarError(res, EstadoHttp.CONFLICTO, error.message);
+      } else {
+        renderizarError(res, EstadoHttp.ERROR_INTERNO, "No se pudo cerrar la oferta");
       }
     }
   });
