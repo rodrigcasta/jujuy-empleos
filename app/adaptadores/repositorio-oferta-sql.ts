@@ -31,6 +31,10 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     oferta.asignarId(resultado.rows[0].id);
   }
 
+  public async actualizar(oferta: Oferta): Promise<void> {
+    await pool.query(`UPDATE ofertas SET activa = $1 WHERE id = $2`, [oferta.estaActiva(), oferta.obtenerId()]);
+  }
+
   public async contarActivasPorEmpresario(idEmpresario: number): Promise<number> {
     const resultado = await pool.query<{ cantidad: string }>(
       "SELECT COUNT(*) AS cantidad FROM ofertas WHERE id_empresario = $1 AND activa = true",

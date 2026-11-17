@@ -248,4 +248,26 @@ describe("RepositorioOfertaSql", () => {
       expect(ofertaRecuperada).toEqual(oferta);
     });
   });
+
+  describe("actualizar", () => {
+    test("deberia de cerrar una oferta y persistir el nuevo estado", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+
+      const oferta = new Oferta(
+        "Desarrollador Backend",
+        "Se busca desarrollador para trabajo remoto",
+        "Pilar",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      await repositorioOferta.guardar(oferta);
+      oferta.cerrar();
+      await repositorioOferta.actualizar(oferta);
+
+      const ofertaRecuperada = await repositorioOferta.recuperarPorId(oferta.obtenerId());
+
+      expect(ofertaRecuperada?.estaActiva()).toBe(false);
+    });
+  });
 });
