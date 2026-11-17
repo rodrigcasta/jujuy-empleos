@@ -41,10 +41,21 @@
         Volver
       </a>
 
-      {{#if puedePostularse}}
-      <form action="/ofertas/{{detalle.id}}/postulaciones" method="post">
-        <button type="submit" class="btn btn-primary">Postularse</button>
-      </form>
+      {{#if cerrada}}
+      <span class="fw-semibold text-dark">Cerrada</span>
+      {{else}}
+        {{#if puedeCerrar}}
+        <form action="/ofertas/{{detalle.id}}/cerrar" method="post">
+          <button type="submit" class="btn btn-outline-danger fw-semibold px-3"
+            style="--bs-btn-bg: var(--bs-danger-bg-subtle);">Cerrar oferta</button>
+        </form>
+        {{/if}}
+
+        {{#if puedePostularse}}
+        <form action="/ofertas/{{detalle.id}}/postulaciones" method="post">
+          <button type="submit" class="btn btn-primary">Postularse</button>
+        </form>
+        {{/if}}
       {{/if}}
     </div>
   </article>
