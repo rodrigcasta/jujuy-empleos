@@ -82,9 +82,10 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
       descripcion: string;
       ubicacion: string;
       email_empresario: string;
+      activa: boolean;
     }>(
       `SELECT ofertas.id, ofertas.id_empresario, ofertas.titulo, ofertas.descripcion, ofertas.ubicacion,
-              usuarios.email AS email_empresario
+              usuarios.email AS email_empresario, ofertas.activa
        FROM ofertas
        INNER JOIN usuarios ON usuarios.id = ofertas.id_empresario
        WHERE ofertas.id = $1`,
@@ -101,6 +102,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
       descripcion: oferta.descripcion,
       ubicacion: oferta.ubicacion,
       emailEmpresario: oferta.email_empresario,
+      activa: oferta.activa,
     };
   }
 

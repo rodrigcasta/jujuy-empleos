@@ -112,6 +112,7 @@ describe("SistemaOfertas", () => {
         descripcion: "Se busca desarrollador para trabajo remoto",
         ubicacion: "Pilar",
         emailEmpresario: "empresa1@empresa1.com",
+        activa: true,
       };
       repositorioOferta.recuperarDetallePorId.mockResolvedValue(detalleEsperado);
 

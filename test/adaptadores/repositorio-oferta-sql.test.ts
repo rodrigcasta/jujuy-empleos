@@ -290,6 +290,21 @@ describe("RepositorioOfertaSql", () => {
   });
 
   describe("recuperarDetallePorId", () => {
+    test("deberia indicar que el detalle de una oferta cerrada no esta activa", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const oferta = new Oferta(
+        "Desarrollador Backend",
+        "Se busca desarrollador para trabajo remoto",
+        "Pilar",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      oferta.cerrar();
+      await repositorioOferta.guardar(oferta);
+      const detalle = await repositorioOferta.recuperarDetallePorId(oferta.obtenerId());
+      expect(detalle?.activa).toBe(false);
+    });
     test("deberia recuperar el detalle de una oferta con el email del empresario", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");
       await repositorioUsuario.guardar(empresario);
@@ -311,6 +326,7 @@ describe("RepositorioOfertaSql", () => {
         descripcion: "Se busca desarrollador para trabajo remoto",
         ubicacion: "Pilar",
         emailEmpresario: "empresa1@empresa1.com",
+        activa: true,
       });
     });
   });

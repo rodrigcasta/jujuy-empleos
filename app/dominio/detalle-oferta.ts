@@ -5,4 +5,5 @@ export interface DetalleOferta {
   descripcion: string;
   ubicacion: string;
   emailEmpresario: string;
+  activa: boolean;
 }
