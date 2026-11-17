@@ -153,6 +153,15 @@ describe("SistemaOfertas", () => {
       expect(repositorioOferta.actualizar).not.toHaveBeenCalled();
     });
 
+    test("deberia impedir que un aspirante cierre una oferta", async () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 7, null, "Aspirante");
+
+      await expect(sistemaOfertas.cerrar(aspirante, 12)).rejects.toThrow(CierreNoAutorizadoError);
+
+      expect(repositorioOferta.recuperarPorId).not.toHaveBeenCalled();
+      expect(repositorioOferta.actualizar).not.toHaveBeenCalled();
+    });
+
     test("deberia informar si la oferta no existe", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
       repositorioOferta.recuperarPorId.mockResolvedValue(null);

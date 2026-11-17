@@ -28,6 +28,9 @@ export default class SistemaOfertas {
   }
 
   public async cerrar(empresario: Usuario, idOferta: number): Promise<void> {
+    if (!empresario.esEmpresario()) {
+      throw new CierreNoAutorizadoError();
+    }
     const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
     if (oferta === null) {
       throw new OfertaNoEncontradaError();
