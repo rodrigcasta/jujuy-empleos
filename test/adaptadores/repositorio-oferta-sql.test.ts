@@ -76,7 +76,7 @@ describe("RepositorioOfertaSql", () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
       await repositorioUsuario.guardar(empresario);
 
-      const cantidad = await repositorioOferta.contarPorEmpresario(empresario.obtenerId());
+      const cantidad = await repositorioOferta.contarActivasPorEmpresario(empresario.obtenerId());
 
       expect(cantidad).toBe(0);
     });
@@ -97,7 +97,7 @@ describe("RepositorioOfertaSql", () => {
         new Oferta("Oferta 3", "Tercera oferta", "Mendoza", segundoEmpresario.obtenerId(), fechaPublicacion),
       );
 
-      const cantidad = await repositorioOferta.contarPorEmpresario(primerEmpresario.obtenerId());
+      const cantidad = await repositorioOferta.contarActivasPorEmpresario(primerEmpresario.obtenerId());
 
       expect(cantidad).toBe(2);
     });
@@ -132,7 +132,7 @@ describe("RepositorioOfertaSql", () => {
       await repositorioOferta.guardar(ofertaActiva2);
       await repositorioOferta.guardar(ofertaCerrada);
 
-      const cantidad = await repositorioOferta.contarPorEmpresario(empresario.obtenerId());
+      const cantidad = await repositorioOferta.contarActivasPorEmpresario(empresario.obtenerId());
 
       expect(cantidad).toBe(2);
     });

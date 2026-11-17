@@ -20,7 +20,7 @@ describe("SistemaOfertas", () => {
   describe("publicar", () => {
     test("deberia publicar y guardar una oferta asociada al empresario", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
-      repositorioOferta.contarPorEmpresario.mockResolvedValue(0);
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(0);
       repositorioOferta.guardar.mockResolvedValue(undefined);
 
       const oferta = await sistemaOfertas.publicar(
@@ -32,13 +32,13 @@ describe("SistemaOfertas", () => {
 
       expect(oferta.obtenerIdEmpresario()).toBe(7);
       expect(oferta.obtenerFechaPublicacion()).toEqual(FECHA_ACTUAL);
-      expect(repositorioOferta.contarPorEmpresario).toHaveBeenCalledWith(7);
+      expect(repositorioOferta.contarActivasPorEmpresario).toHaveBeenCalledWith(7);
       expect(repositorioOferta.guardar).toHaveBeenCalledWith(oferta);
     });
 
     test("deberia rechazar la publicacion y no guardar cuando la suscripcion alcanzo su limite", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
-      repositorioOferta.contarPorEmpresario.mockResolvedValue(1);
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(1);
 
       const publicacion = sistemaOfertas.publicar(
         empresario,
@@ -62,7 +62,7 @@ describe("SistemaOfertas", () => {
       );
 
       await expect(publicacion).rejects.toThrow(PublicacionNoAutorizadaError);
-      expect(repositorioOferta.contarPorEmpresario).not.toHaveBeenCalled();
+      expect(repositorioOferta.contarActivasPorEmpresario).not.toHaveBeenCalled();
       expect(repositorioOferta.guardar).not.toHaveBeenCalled();
     });
   });
@@ -70,7 +70,7 @@ describe("SistemaOfertas", () => {
   describe("puedePublicar", () => {
     test("deberia permitir publicar si la suscripcion conserva capacidad", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Profesional");
-      repositorioOferta.contarPorEmpresario.mockResolvedValue(4);
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(4);
 
       const puedePublicar = await sistemaOfertas.puedePublicar(empresario);
 
@@ -79,7 +79,7 @@ describe("SistemaOfertas", () => {
 
     test("deberia rechazar publicar si la suscripcion agoto su capacidad", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
-      repositorioOferta.contarPorEmpresario.mockResolvedValue(1);
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(1);
 
       const puedePublicar = await sistemaOfertas.puedePublicar(empresario);
 
