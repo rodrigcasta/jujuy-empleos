@@ -98,6 +98,21 @@ describe("SistemaOfertas", () => {
       expect(ofertas).toEqual(ofertasPublicas);
       expect(repositorioOferta.listarPublicas).toHaveBeenCalledTimes(1);
     });
+
+    test("deberia listar las ofertas visibles para un empresario autenticado", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      const ofertasVisibles = [
+        new Oferta("Oferta activa", "Descripcion", "CABA", 8, FECHA_ACTUAL, 2),
+        new Oferta("Oferta cerrada propia", "Descripcion", "CABA", 7, FECHA_ACTUAL, 1, false),
+      ];
+      repositorioOferta.listarVisiblesParaEmpresario.mockResolvedValue(ofertasVisibles);
+
+      const ofertas = await sistemaOfertas.listar(empresario);
+
+      expect(ofertas).toEqual(ofertasVisibles);
+      expect(repositorioOferta.listarVisiblesParaEmpresario).toHaveBeenCalledWith(7);
+      expect(repositorioOferta.listarPublicas).not.toHaveBeenCalled();
+    });
   });
 
   describe("obtenerDetallePorId", () => {

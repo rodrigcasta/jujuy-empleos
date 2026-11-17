@@ -48,7 +48,10 @@ export default class SistemaOfertas {
     return empresario.puedePublicar(cantidadOfertasPublicadas);
   }
 
-  public async listar(): Promise<Oferta[]> {
+  public async listar(usuario?: Usuario): Promise<Oferta[]> {
+    if (usuario?.esEmpresario()) {
+      return this.repositorioOferta.listarVisiblesParaEmpresario(usuario.obtenerId());
+    }
     return this.repositorioOferta.listarPublicas();
   }
 
