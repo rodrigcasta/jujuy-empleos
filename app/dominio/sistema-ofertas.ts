@@ -28,8 +28,11 @@ export default class SistemaOfertas {
 
   public async cerrar(_empresario: Usuario, idOferta: number): Promise<void> {
     const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
-    oferta!.cerrar();
-    await this.repositorioOferta.actualizar(oferta!);
+    if (oferta === null) {
+      throw new OfertaNoEncontradaError();
+    }
+    oferta.cerrar();
+    await this.repositorioOferta.actualizar(oferta);
   }
 
   public async puedePublicar(empresario: Usuario): Promise<boolean> {

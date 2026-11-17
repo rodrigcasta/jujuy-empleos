@@ -140,5 +140,12 @@ describe("SistemaOfertas", () => {
       expect(repositorioOferta.recuperarPorId).toHaveBeenCalledWith(12);
       expect(repositorioOferta.actualizar).toHaveBeenCalledWith(oferta);
     });
+
+    test("deberia informar si la oferta no existe", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      repositorioOferta.recuperarPorId.mockResolvedValue(null);
+      await expect(sistemaOfertas.cerrar(empresario, 999)).rejects.toThrow(OfertaNoEncontradaError);
+      expect(repositorioOferta.actualizar).not.toHaveBeenCalled();
+    });
   });
 });
