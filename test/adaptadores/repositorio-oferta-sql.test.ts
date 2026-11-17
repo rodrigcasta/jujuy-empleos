@@ -255,8 +255,37 @@ describe("RepositorioOfertaSql", () => {
       ofertaCerrada.cerrar();
       await repositorioOferta.guardar(ofertaActiva);
       await repositorioOferta.guardar(ofertaCerrada);
-      const ofertas = await repositorioOferta.listarVisiblesParaEmpresario();
+      const ofertas = await repositorioOferta.listarVisiblesParaEmpresario(empresario.obtenerId());
       expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Oferta activa", "Oferta cerrada propia"]);
+    });
+    test("deberia excluir las ofertas cerradas de otros empresarios pero incluir sus activas", async () => {
+      const dueno = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      const otroEmpresario = new Usuario("Mario", "Perez", "mario@example.com", "hash");
+      await repositorioUsuario.guardar(dueno);
+      await repositorioUsuario.guardar(otroEmpresario);
+
+      const activaAjena = new Oferta(
+        "Activa ajena",
+        "Descripcion activa ajena",
+        "CABA",
+        otroEmpresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      const cerradaAjena = new Oferta(
+        "Cerrada ajena",
+        "Descripcion cerrada ajena",
+        "CABA",
+        otroEmpresario.obtenerId(),
+        new Date("2026-11-03T15:00:00.000Z"),
+      );
+      cerradaAjena.cerrar();
+
+      await repositorioOferta.guardar(activaAjena);
+      await repositorioOferta.guardar(cerradaAjena);
+
+      const ofertas = await repositorioOferta.listarVisiblesParaEmpresario(dueno.obtenerId());
+
+      expect(ofertas.map((oferta) => oferta.obtenerTitulo())).toEqual(["Activa ajena"]);
     });
   });
 
