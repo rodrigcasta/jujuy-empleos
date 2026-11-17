@@ -129,4 +129,16 @@ describe("SistemaOfertas", () => {
       await expect(consulta).rejects.toThrow("No se encontró la oferta solicitada");
     });
   });
+  describe("cerrar", () => {
+    test("deberia cerrar una oferta existente y persistirla", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      const oferta = new Oferta("Programador Jr.", "Backend junior", "CABA", 7, FECHA_ACTUAL, 12);
+      repositorioOferta.recuperarPorId.mockResolvedValue(oferta);
+      repositorioOferta.actualizar.mockResolvedValue(undefined);
+      await sistemaOfertas.cerrar(empresario, 12);
+      expect(oferta.estaActiva()).toBe(false);
+      expect(repositorioOferta.recuperarPorId).toHaveBeenCalledWith(12);
+      expect(repositorioOferta.actualizar).toHaveBeenCalledWith(oferta);
+    });
+  });
 });
