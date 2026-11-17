@@ -25,6 +25,9 @@
           <h2 class="h5 mb-2">
             <a href="/ofertas/{{id}}" class="text-decoration-none">{{titulo}}</a>
           </h2>
+          {{#if cerrada}}
+          <span class="badge text-bg-secondary mb-2">Cerrada</span>
+          {{/if}}
           <p class="text-secondary mb-3">{{descripcion}}</p>
           <span class="fw-semibold">{{ubicacion}}</span>
         </div>
