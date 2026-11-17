@@ -49,7 +49,7 @@ export default class SistemaOfertas {
   }
 
   public async listar(): Promise<Oferta[]> {
-    return this.repositorioOferta.listar();
+    return this.repositorioOferta.listarPublicas();
   }
 
   public async obtenerDetallePorId(id: number): Promise<DetalleOferta> {

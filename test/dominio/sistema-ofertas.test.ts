@@ -89,17 +89,14 @@ describe("SistemaOfertas", () => {
   });
 
   describe("listar", () => {
-    test("deberia listar todas las ofertas publicadas", async () => {
-      const ofertasPublicadas = [
-        new Oferta("Oferta reciente", "Descripcion reciente", "CABA", 7, FECHA_ACTUAL, 2),
-        new Oferta("Oferta anterior", "Descripcion anterior", "Moron", 8, new Date("2026-11-01T15:00:00.000Z"), 1),
-      ];
-      repositorioOferta.listar.mockResolvedValue(ofertasPublicadas);
+    test("deberia listar solo las ofertas publicas cuando no hay usuario autenticado", async () => {
+      const ofertasPublicas = [new Oferta("Oferta reciente", "Descripcion reciente", "CABA", 7, FECHA_ACTUAL, 2)];
+      repositorioOferta.listarPublicas.mockResolvedValue(ofertasPublicas);
 
       const ofertas = await sistemaOfertas.listar();
 
-      expect(ofertas).toEqual(ofertasPublicadas);
-      expect(repositorioOferta.listar).toHaveBeenCalledTimes(1);
+      expect(ofertas).toEqual(ofertasPublicas);
+      expect(repositorioOferta.listarPublicas).toHaveBeenCalledTimes(1);
     });
   });
 
