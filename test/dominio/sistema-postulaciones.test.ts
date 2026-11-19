@@ -5,6 +5,7 @@ import Postulacion from "../../app/dominio/postulacion";
 import { IRepositorioPostulacion } from "../../app/dominio/puerto-repositorio-postulacion";
 import SistemaPostulaciones from "../../app/dominio/sistema-postulaciones";
 import Usuario from "../../app/dominio/usuario";
+import DatosDePostulacionInvalidos from "../../app/dominio/datos-de-postulacion-invalidos";
 
 describe("SistemaPostulaciones", () => {
   const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
@@ -17,6 +18,18 @@ describe("SistemaPostulaciones", () => {
   });
 
   describe("postular", () => {
+    test("deberia rechazar una fecha invalida sin guardar la postulacion", async () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
+      const sistemaConFechaInvalida = new SistemaPostulaciones(
+        repositorioPostulacion,
+        () => new Date("fecha invalida"),
+      );
+      repositorioPostulacion.existePara.mockResolvedValue(false);
+
+      await expect(sistemaConFechaInvalida.postular(aspirante, 5)).rejects.toThrow(DatosDePostulacionInvalidos);
+      expect(repositorioPostulacion.guardar).not.toHaveBeenCalled();
+    });
+
     test("deberia registrar una postulacion del aspirante a la oferta", async () => {
       const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
       repositorioPostulacion.existePara.mockResolvedValue(false);
