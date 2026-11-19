@@ -19,5 +19,24 @@ describe("Postulacion", () => {
       expect(postulacion.obtenerFechaPostulacion()).toEqual(fechaPostulacion);
       expect(postulacion.obtenerId()).toBe(1);
     });
+
+    test("deberia conservar una fecha valida aunque se modifique la fecha recibida", () => {
+      const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
+      const postulacion = new Postulacion(2, 5, fechaPostulacion);
+
+      fechaPostulacion.setTime(NaN);
+
+      expect(postulacion.obtenerFechaPostulacion()).toEqual(new Date("2026-11-09T20:00:00.000Z"));
+    });
+  });
+
+  describe("obtenerFechaPostulacion", () => {
+    test("deberia conservar una fecha valida aunque se modifique la fecha devuelta", () => {
+      const postulacion = new Postulacion(2, 5, new Date("2026-11-09T20:00:00.000Z"));
+
+      postulacion.obtenerFechaPostulacion().setTime(NaN);
+
+      expect(postulacion.obtenerFechaPostulacion()).toEqual(new Date("2026-11-09T20:00:00.000Z"));
+    });
   });
 });

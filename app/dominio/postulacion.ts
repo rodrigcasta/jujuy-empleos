@@ -12,7 +12,7 @@ export default class Postulacion {
     }
     this.idAspirante = idAspirante;
     this.idOferta = idOferta;
-    this.fechaPostulacion = fechaPostulacion;
+    this.fechaPostulacion = new Date(fechaPostulacion.getTime());
     this.id = id;
   }
 
@@ -25,7 +25,7 @@ export default class Postulacion {
   }
 
   public obtenerFechaPostulacion(): Date {
-    return this.fechaPostulacion;
+    return new Date(this.fechaPostulacion.getTime());
   }
 
   public obtenerId(): number {
