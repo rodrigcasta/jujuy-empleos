@@ -6,27 +6,28 @@ import { IRepositorioPostulacion } from "../../app/dominio/puerto-repositorio-po
 import SistemaPostulaciones from "../../app/dominio/sistema-postulaciones";
 import Usuario from "../../app/dominio/usuario";
 import DatosDePostulacionInvalidos from "../../app/dominio/datos-de-postulacion-invalidos";
+import { ProveedorFecha } from "../../app/dominio/puerto-proveedor-fecha";
 
 describe("SistemaPostulaciones", () => {
   const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
   let repositorioPostulacion: Mock<IRepositorioPostulacion>;
+  let proveedorFecha: Mock<ProveedorFecha>;
   let sistemaPostulaciones: SistemaPostulaciones;
 
   beforeEach(() => {
     repositorioPostulacion = mock<IRepositorioPostulacion>();
-    sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, () => fechaPostulacion);
+    proveedorFecha = mock<ProveedorFecha>();
+    proveedorFecha.obtenerFechaActual.mockReturnValue(fechaPostulacion);
+    sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, proveedorFecha);
   });
 
   describe("postular", () => {
     test("deberia rechazar una fecha invalida sin guardar la postulacion", async () => {
       const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
-      const sistemaConFechaInvalida = new SistemaPostulaciones(
-        repositorioPostulacion,
-        () => new Date("fecha invalida"),
-      );
+      proveedorFecha.obtenerFechaActual.mockReturnValue(new Date("fecha invalida"));
       repositorioPostulacion.existePara.mockResolvedValue(false);
 
-      await expect(sistemaConFechaInvalida.postular(aspirante, 5)).rejects.toThrow(DatosDePostulacionInvalidos);
+      await expect(sistemaPostulaciones.postular(aspirante, 5)).rejects.toThrow(DatosDePostulacionInvalidos);
       expect(repositorioPostulacion.guardar).not.toHaveBeenCalled();
     });
 

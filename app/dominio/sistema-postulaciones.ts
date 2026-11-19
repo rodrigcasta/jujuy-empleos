@@ -3,14 +3,15 @@ import PostulacionDuplicadaError from "./postulacion-duplicada-error";
 import PostulacionNoAutorizadaError from "./postulacion-no-autorizada-error";
 import { DatosDePostulacion, IRepositorioPostulacion } from "./puerto-repositorio-postulacion";
 import Usuario from "./usuario";
+import { ProveedorFecha } from "./puerto-proveedor-fecha";
 
 export default class SistemaPostulaciones {
   private repositorioPostulacion: IRepositorioPostulacion;
-  private obtenerFechaActual: () => Date;
+  private proveedorFecha: ProveedorFecha;
 
-  constructor(repositorioPostulacion: IRepositorioPostulacion, obtenerFechaActual: () => Date = () => new Date()) {
+  constructor(repositorioPostulacion: IRepositorioPostulacion, proveedorFecha: ProveedorFecha) {
     this.repositorioPostulacion = repositorioPostulacion;
-    this.obtenerFechaActual = obtenerFechaActual;
+    this.proveedorFecha = proveedorFecha;
   }
 
   public async listarParaEmpresario(
@@ -31,7 +32,7 @@ export default class SistemaPostulaciones {
     if (await this.repositorioPostulacion.existePara(idOferta, aspirante.obtenerId())) {
       throw new PostulacionDuplicadaError();
     }
-    const postulacion = new Postulacion(aspirante.obtenerId(), idOferta, this.obtenerFechaActual());
+    const postulacion = new Postulacion(aspirante.obtenerId(), idOferta, this.proveedorFecha.obtenerFechaActual());
     await this.repositorioPostulacion.guardar(postulacion);
     return postulacion;
   }

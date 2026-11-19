@@ -13,6 +13,7 @@ import { crearControladorOfertas } from "./controladores/controlador-ofertas";
 import RepositorioPostulacionSql from "./adaptadores/repositorio-postulacion-sql";
 import SistemaPostulaciones from "./dominio/sistema-postulaciones";
 import { crearControladorCuenta } from "./controladores/controlador-cuenta";
+import ProveedorFechaDelSistema from "./adaptadores/proveedor-fecha-del-sistema";
 
 const app = express();
 const port = parseInt(process.env.PORT || "3000");
@@ -30,7 +31,7 @@ app.use(logDeRequests);
 
 const sistemaUsuarios = new SistemaUsuarios(new RepositorioUsuarioSql());
 const sistemaOfertas = new SistemaOfertas(new RepositorioOfertaSql());
-const sistemaPostulaciones = new SistemaPostulaciones(new RepositorioPostulacionSql());
+const sistemaPostulaciones = new SistemaPostulaciones(new RepositorioPostulacionSql(), new ProveedorFechaDelSistema());
 
 configurarAutenticacion(app, sistemaUsuarios);
 

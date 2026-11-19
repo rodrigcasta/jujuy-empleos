@@ -1,3 +1,4 @@
+import { mock } from "ts-jest-mocker";
 import pool from "../../app/adaptadores/pool";
 import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
 import RepositorioPostulacionSql from "../../app/adaptadores/repositorio-postulacion-sql";
@@ -5,6 +6,8 @@ import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql
 import Oferta from "../../app/dominio/oferta";
 import Postulacion from "../../app/dominio/postulacion";
 import Usuario from "../../app/dominio/usuario";
+import SistemaPostulaciones from "../../app/dominio/sistema-postulaciones";
+import { ProveedorFecha } from "../../app/dominio/puerto-proveedor-fecha";
 
 describe("RepositorioPostulacionSql", () => {
   const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
@@ -30,12 +33,14 @@ describe("RepositorioPostulacionSql", () => {
   });
 
   describe("guardar", () => {
-    test("deberia persistir una postulacion y asignarle un id", async () => {
+    test("deberia persistir una postulacion con la fecha del proveedor y asignarle un id", async () => {
       const aspirante = await crearAspirante();
       const oferta = await crearOferta();
-      const postulacion = new Postulacion(aspirante.obtenerId(), oferta.obtenerId(), fechaPostulacion);
+      const proveedorFecha = mock<ProveedorFecha>();
+      proveedorFecha.obtenerFechaActual.mockReturnValue(fechaPostulacion);
+      const sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, proveedorFecha);
 
-      await repositorioPostulacion.guardar(postulacion);
+      const postulacion = await sistemaPostulaciones.postular(aspirante, oferta.obtenerId());
 
       expect(postulacion.obtenerId()).toBeGreaterThan(0);
       const resultado = await pool.query("SELECT * FROM postulaciones WHERE id = $1", [postulacion.obtenerId()]);
@@ -44,6 +49,8 @@ describe("RepositorioPostulacionSql", () => {
         id_oferta: oferta.obtenerId(),
         fecha_postulacion: fechaPostulacion,
       });
+      const postulaciones = await repositorioPostulacion.listarPorOferta(oferta.obtenerId());
+      expect(postulaciones[0].fechaPostulacion).toEqual(fechaPostulacion);
     });
   });
 
