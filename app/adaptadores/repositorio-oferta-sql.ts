@@ -1,5 +1,4 @@
 import Oferta from "../dominio/oferta";
-import { DetalleOferta } from "../dominio/detalle-oferta";
 import { IRepositorioOferta } from "../dominio/puerto-repositorio-oferta";
 import { IRepositorioUsuario } from "../dominio/puerto-repositorio-usuario";
 import Usuario from "../dominio/usuario";
@@ -70,27 +69,6 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     }
     const titular = await this.repositorioUsuario.recuperarPorId(oferta.id_empresario);
     return titular === null ? null : this.deserializarOferta(oferta, titular);
-  }
-
-  public async recuperarDetallePorId(id: number): Promise<DetalleOferta | null> {
-    const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas WHERE id = $1", [id]);
-    const oferta = resultado.rows[0];
-    if (oferta === undefined) {
-      return null;
-    }
-    const titular = await this.repositorioUsuario.recuperarPorId(oferta.id_empresario);
-    if (titular === null) {
-      return null;
-    }
-    return {
-      id: oferta.id,
-      idEmpresario: oferta.id_empresario,
-      titulo: oferta.titulo,
-      descripcion: oferta.descripcion,
-      ubicacion: oferta.ubicacion,
-      emailEmpresario: titular.obtenerEmail(),
-      activa: oferta.activa,
-    };
   }
 
   public async eliminarTodos(): Promise<void> {

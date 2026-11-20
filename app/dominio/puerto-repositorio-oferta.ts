@@ -1,4 +1,3 @@
-import { DetalleOferta } from "./detalle-oferta";
 import Oferta from "./oferta";
 
 export interface IRepositorioOferta {
@@ -13,6 +12,4 @@ export interface IRepositorioOferta {
   listarPublicas(): Promise<Oferta[]>;
 
   recuperarPorId(id: number): Promise<Oferta | null>;
-
-  recuperarDetallePorId(id: number): Promise<DetalleOferta | null>;
 }

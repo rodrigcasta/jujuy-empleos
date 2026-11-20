@@ -272,12 +272,12 @@ describe("RepositorioOfertaSql", () => {
     });
   });
 
-  describe("recuperarDetallePorId", () => {
+  describe("recuperarPorId", () => {
     test("deberia devolver null sin buscar titular cuando la oferta no existe", async () => {
       const recuperarTitular = jest.spyOn(repositorioUsuario, "recuperarPorId");
 
       try {
-        await expect(repositorioOferta.recuperarDetallePorId(9999)).resolves.toBeNull();
+        await expect(repositorioOferta.recuperarPorId(9999)).resolves.toBeNull();
         expect(recuperarTitular).not.toHaveBeenCalled();
       } finally {
         recuperarTitular.mockRestore();
@@ -298,7 +298,7 @@ describe("RepositorioOfertaSql", () => {
       const recuperarTitular = jest.spyOn(repositorioUsuario, "recuperarPorId").mockResolvedValue(null);
 
       try {
-        await expect(repositorioOferta.recuperarDetallePorId(oferta.obtenerId())).resolves.toBeNull();
+        await expect(repositorioOferta.recuperarPorId(oferta.obtenerId())).resolves.toBeNull();
       } finally {
         recuperarTitular.mockRestore();
       }
@@ -318,31 +318,16 @@ describe("RepositorioOfertaSql", () => {
       const recuperarTitular = jest.spyOn(repositorioUsuario, "recuperarPorId");
 
       try {
-        const detalle = await repositorioOferta.recuperarDetallePorId(oferta.obtenerId());
+        const detalle = await repositorioOferta.recuperarPorId(oferta.obtenerId());
 
-        expect(detalle?.emailEmpresario).toBe(empresario.obtenerEmail());
+        expect(detalle?.obtenerTitular().obtenerEmail()).toBe(empresario.obtenerEmail());
         expect(recuperarTitular).toHaveBeenCalledWith(empresario.obtenerId());
       } finally {
         recuperarTitular.mockRestore();
       }
     });
 
-    test("deberia indicar que el detalle de una oferta cerrada no esta activa", async () => {
-      const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");
-      await repositorioUsuario.guardar(empresario);
-      const oferta = new Oferta(
-        "Desarrollador Backend",
-        "Se busca desarrollador para trabajo remoto",
-        "Pilar",
-        empresario,
-        new Date("2026-11-04T15:00:00.000Z"),
-      );
-      oferta.cerrar();
-      await repositorioOferta.guardar(oferta);
-      const detalle = await repositorioOferta.recuperarDetallePorId(oferta.obtenerId());
-      expect(detalle?.activa).toBe(false);
-    });
-    test("deberia recuperar el detalle de una oferta con el email del empresario", async () => {
+    test("deberia recuperar una oferta persistida con su titular y email", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");
       await repositorioUsuario.guardar(empresario);
       const oferta = new Oferta(
@@ -354,38 +339,11 @@ describe("RepositorioOfertaSql", () => {
       );
       await repositorioOferta.guardar(oferta);
 
-      const detalle = await repositorioOferta.recuperarDetallePorId(oferta.obtenerId());
+      const detalle = await repositorioOferta.recuperarPorId(oferta.obtenerId());
 
-      expect(detalle).toEqual({
-        id: oferta.obtenerId(),
-        idEmpresario: empresario.obtenerId(),
-        titulo: "Desarrollador Backend",
-        descripcion: "Se busca desarrollador para trabajo remoto",
-        ubicacion: "Pilar",
-        emailEmpresario: "empresa1@empresa1.com",
-        activa: true,
-      });
+      expect(detalle).toEqual(oferta);
+      expect(detalle?.obtenerTitular().obtenerEmail()).toBe("empresa1@empresa1.com");
     });
-  });
-
-  describe("recuperarPorId", () => {
-    test("deberia recuperar una oferta persistida por su id", async () => {
-      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
-      await repositorioUsuario.guardar(empresario);
-      const oferta = new Oferta(
-        "Desarrollador Backend",
-        "Se busca desarrollador para trabajo remoto",
-        "Pilar",
-        empresario,
-        new Date("2026-11-04T15:00:00.000Z"),
-      );
-      await repositorioOferta.guardar(oferta);
-
-      const ofertaRecuperada = await repositorioOferta.recuperarPorId(oferta.obtenerId());
-
-      expect(ofertaRecuperada).toEqual(oferta);
-    });
-
     test("deberia recuperar una oferta cerrada como inactiva", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
       await repositorioUsuario.guardar(empresario);
