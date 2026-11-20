@@ -4,6 +4,7 @@ import { expect } from "@playwright/test";
 import pool from "../../app/adaptadores/pool";
 import RepositorioPostulacionSql from "../../app/adaptadores/repositorio-postulacion-sql";
 import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
+import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
 import Postulacion from "../../app/dominio/postulacion";
 import SistemaUsuarios from "../../app/dominio/sistema-usuarios";
 import { MundoDeLaAplicacion } from "../support/mundo";
@@ -13,6 +14,8 @@ Given(
   async function (titulo: string, nombre: string, apellido: string, email: string, fecha: string) {
     const resultado = await pool.query<{ id: number }>("SELECT id FROM ofertas WHERE titulo = $1", [titulo]);
     assert.equal(resultado.rows.length, 1);
+    const oferta = await new RepositorioOfertaSql(new RepositorioUsuarioSql()).recuperarPorId(resultado.rows[0].id);
+    assert.ok(oferta);
     const aspirante = await new SistemaUsuarios(new RepositorioUsuarioSql()).registrarAspirante(
       nombre,
       apellido,
@@ -20,7 +23,7 @@ Given(
       "Aspirante2026!#",
     );
     await new RepositorioPostulacionSql().guardar(
-      new Postulacion(aspirante.obtenerId(), resultado.rows[0].id, new Date(`${fecha}T12:00:00.000Z`)),
+      new Postulacion(aspirante, oferta, new Date(`${fecha}T12:00:00.000Z`)),
     );
   },
 );

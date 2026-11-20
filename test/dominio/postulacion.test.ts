@@ -1,10 +1,22 @@
 import Postulacion from "../../app/dominio/postulacion";
 import DatosDePostulacionInvalidos from "../../app/dominio/datos-de-postulacion-invalidos";
+import Usuario from "../../app/dominio/usuario";
+import Oferta from "../../app/dominio/oferta";
+import PostulacionNoAutorizadaError from "../../app/dominio/postulacion-no-autorizada-error";
 
 describe("Postulacion", () => {
+  const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
+  const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7);
+  const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-09"), 5);
+
   describe("constructor", () => {
+    test("deberia rechazar una postulacion cuyo postulante no es aspirante", () => {
+      const crearPostulacion = () => new Postulacion(titular, oferta, new Date("2026-11-09"));
+
+      expect(crearPostulacion).toThrow(PostulacionNoAutorizadaError);
+    });
     test("deberia rechazar una fecha de postulacion invalida", () => {
-      const crearPostulacion = () => new Postulacion(2, 5, new Date("fecha invalida"));
+      const crearPostulacion = () => new Postulacion(aspirante, oferta, new Date("fecha invalida"));
 
       expect(crearPostulacion).toThrow(DatosDePostulacionInvalidos);
       expect(crearPostulacion).toThrow("La fecha de postulación es inválida");
@@ -12,17 +24,17 @@ describe("Postulacion", () => {
 
     test("deberia crear una postulacion entre un aspirante y una oferta", () => {
       const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
-      const postulacion = new Postulacion(2, 5, fechaPostulacion, 1);
+      const postulacion = new Postulacion(aspirante, oferta, fechaPostulacion, 1);
 
-      expect(postulacion.obtenerIdAspirante()).toBe(2);
-      expect(postulacion.obtenerIdOferta()).toBe(5);
+      expect(postulacion.obtenerAspirante()).toBe(aspirante);
+      expect(postulacion.obtenerOferta()).toBe(oferta);
       expect(postulacion.obtenerFechaPostulacion()).toEqual(fechaPostulacion);
       expect(postulacion.obtenerId()).toBe(1);
     });
 
     test("deberia conservar una fecha valida aunque se modifique la fecha recibida", () => {
       const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
-      const postulacion = new Postulacion(2, 5, fechaPostulacion);
+      const postulacion = new Postulacion(aspirante, oferta, fechaPostulacion);
 
       fechaPostulacion.setTime(NaN);
 
@@ -32,7 +44,7 @@ describe("Postulacion", () => {
 
   describe("obtenerFechaPostulacion", () => {
     test("deberia conservar una fecha valida aunque se modifique la fecha devuelta", () => {
-      const postulacion = new Postulacion(2, 5, new Date("2026-11-09T20:00:00.000Z"));
+      const postulacion = new Postulacion(aspirante, oferta, new Date("2026-11-09T20:00:00.000Z"));
 
       postulacion.obtenerFechaPostulacion().setTime(NaN);
 

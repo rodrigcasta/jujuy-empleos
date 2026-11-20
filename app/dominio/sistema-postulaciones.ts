@@ -1,17 +1,24 @@
 import Postulacion from "./postulacion";
 import PostulacionDuplicadaError from "./postulacion-duplicada-error";
-import PostulacionNoAutorizadaError from "./postulacion-no-autorizada-error";
 import { DatosDePostulacion, IRepositorioPostulacion } from "./puerto-repositorio-postulacion";
 import Usuario from "./usuario";
 import { ProveedorFecha } from "./puerto-proveedor-fecha";
+import { IRepositorioOferta } from "./puerto-repositorio-oferta";
+import OfertaNoEncontradaError from "./oferta-no-encontrada-error";
 
 export default class SistemaPostulaciones {
   private repositorioPostulacion: IRepositorioPostulacion;
   private proveedorFecha: ProveedorFecha;
+  private repositorioOferta: IRepositorioOferta;
 
-  constructor(repositorioPostulacion: IRepositorioPostulacion, proveedorFecha: ProveedorFecha) {
+  constructor(
+    repositorioPostulacion: IRepositorioPostulacion,
+    proveedorFecha: ProveedorFecha,
+    repositorioOferta: IRepositorioOferta,
+  ) {
     this.repositorioPostulacion = repositorioPostulacion;
     this.proveedorFecha = proveedorFecha;
+    this.repositorioOferta = repositorioOferta;
   }
 
   public async listarParaEmpresario(
@@ -26,13 +33,14 @@ export default class SistemaPostulaciones {
   }
 
   public async postular(aspirante: Usuario, idOferta: number): Promise<Postulacion> {
-    if (!aspirante.esAspirante()) {
-      throw new PostulacionNoAutorizadaError();
+    const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
+    if (oferta === null) {
+      throw new OfertaNoEncontradaError();
     }
+    const postulacion = new Postulacion(aspirante, oferta, this.proveedorFecha.obtenerFechaActual());
     if (await this.repositorioPostulacion.existePara(idOferta, aspirante.obtenerId())) {
       throw new PostulacionDuplicadaError();
     }
-    const postulacion = new Postulacion(aspirante.obtenerId(), idOferta, this.proveedorFecha.obtenerFechaActual());
     await this.repositorioPostulacion.guardar(postulacion);
     return postulacion;
   }

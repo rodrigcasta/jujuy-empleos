@@ -8,7 +8,11 @@ export default class RepositorioPostulacionSql implements IRepositorioPostulacio
       `INSERT INTO postulaciones (id_aspirante, id_oferta, fecha_postulacion)
        VALUES ($1, $2, $3)
        RETURNING id`,
-      [postulacion.obtenerIdAspirante(), postulacion.obtenerIdOferta(), postulacion.obtenerFechaPostulacion()],
+      [
+        postulacion.obtenerAspirante().obtenerId(),
+        postulacion.obtenerOferta().obtenerId(),
+        postulacion.obtenerFechaPostulacion(),
+      ],
     );
     postulacion.asignarId(resultado.rows[0].id);
   }

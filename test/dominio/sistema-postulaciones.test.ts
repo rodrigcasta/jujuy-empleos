@@ -7,18 +7,27 @@ import SistemaPostulaciones from "../../app/dominio/sistema-postulaciones";
 import Usuario from "../../app/dominio/usuario";
 import DatosDePostulacionInvalidos from "../../app/dominio/datos-de-postulacion-invalidos";
 import { ProveedorFecha } from "../../app/dominio/puerto-proveedor-fecha";
+import { IRepositorioOferta } from "../../app/dominio/puerto-repositorio-oferta";
+import Oferta from "../../app/dominio/oferta";
+import OfertaNoEncontradaError from "../../app/dominio/oferta-no-encontrada-error";
 
 describe("SistemaPostulaciones", () => {
   const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
   let repositorioPostulacion: Mock<IRepositorioPostulacion>;
   let proveedorFecha: Mock<ProveedorFecha>;
+  let repositorioOferta: Mock<IRepositorioOferta>;
+  let oferta: Oferta;
   let sistemaPostulaciones: SistemaPostulaciones;
 
   beforeEach(() => {
     repositorioPostulacion = mock<IRepositorioPostulacion>();
     proveedorFecha = mock<ProveedorFecha>();
     proveedorFecha.obtenerFechaActual.mockReturnValue(fechaPostulacion);
-    sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, proveedorFecha);
+    repositorioOferta = mock<IRepositorioOferta>();
+    const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7);
+    oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, fechaPostulacion, 5);
+    repositorioOferta.recuperarPorId.mockResolvedValue(oferta);
+    sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, proveedorFecha, repositorioOferta);
   });
 
   describe("postular", () => {
@@ -38,12 +47,22 @@ describe("SistemaPostulaciones", () => {
 
       const postulacion = await sistemaPostulaciones.postular(aspirante, 5);
 
-      expect(postulacion.obtenerIdAspirante()).toBe(2);
-      expect(postulacion.obtenerIdOferta()).toBe(5);
+      expect(postulacion.obtenerAspirante()).toBe(aspirante);
+      expect(postulacion.obtenerOferta()).toBe(oferta);
       expect(postulacion.obtenerFechaPostulacion()).toEqual(fechaPostulacion);
       expect(postulacion).toBeInstanceOf(Postulacion);
       expect(repositorioPostulacion.existePara).toHaveBeenCalledWith(5, 2);
       expect(repositorioPostulacion.guardar).toHaveBeenCalledWith(postulacion);
+      expect(repositorioOferta.recuperarPorId).toHaveBeenCalledWith(5);
+    });
+
+    test("deberia rechazar una postulacion si la oferta no existe", async () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
+      repositorioOferta.recuperarPorId.mockResolvedValue(null);
+
+      await expect(sistemaPostulaciones.postular(aspirante, 5)).rejects.toThrow(OfertaNoEncontradaError);
+      expect(repositorioPostulacion.existePara).not.toHaveBeenCalled();
+      expect(repositorioPostulacion.guardar).not.toHaveBeenCalled();
     });
 
     test("deberia impedir que un empresario se postule", async () => {

@@ -38,7 +38,7 @@ describe("RepositorioPostulacionSql", () => {
       const oferta = await crearOferta();
       const proveedorFecha = mock<ProveedorFecha>();
       proveedorFecha.obtenerFechaActual.mockReturnValue(fechaPostulacion);
-      const sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, proveedorFecha);
+      const sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, proveedorFecha, repositorioOferta);
 
       const postulacion = await sistemaPostulaciones.postular(aspirante, oferta.obtenerId());
 
@@ -67,9 +67,7 @@ describe("RepositorioPostulacionSql", () => {
     test("deberia devolver verdadero si el aspirante ya se postulo a la oferta", async () => {
       const aspirante = await crearAspirante();
       const oferta = await crearOferta();
-      await repositorioPostulacion.guardar(
-        new Postulacion(aspirante.obtenerId(), oferta.obtenerId(), fechaPostulacion),
-      );
+      await repositorioPostulacion.guardar(new Postulacion(aspirante, oferta, fechaPostulacion));
 
       const existe = await repositorioPostulacion.existePara(oferta.obtenerId(), aspirante.obtenerId());
 
@@ -81,9 +79,7 @@ describe("RepositorioPostulacionSql", () => {
     test("deberia listar los datos de los aspirantes postulados a una oferta", async () => {
       const aspirante = await crearAspirante();
       const oferta = await crearOferta();
-      await repositorioPostulacion.guardar(
-        new Postulacion(aspirante.obtenerId(), oferta.obtenerId(), fechaPostulacion),
-      );
+      await repositorioPostulacion.guardar(new Postulacion(aspirante, oferta, fechaPostulacion));
 
       const postulaciones = await repositorioPostulacion.listarPorOferta(oferta.obtenerId());
 

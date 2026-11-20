@@ -1,27 +1,33 @@
 import DatosDePostulacionInvalidos from "./datos-de-postulacion-invalidos";
+import Usuario from "./usuario";
+import Oferta from "./oferta";
+import PostulacionNoAutorizadaError from "./postulacion-no-autorizada-error";
 
 export default class Postulacion {
-  private idAspirante: number;
-  private idOferta: number;
+  private aspirante: Usuario;
+  private oferta: Oferta;
   private fechaPostulacion: Date;
   private id: number;
 
-  constructor(idAspirante: number, idOferta: number, fechaPostulacion: Date, id: number = 0) {
+  constructor(aspirante: Usuario, oferta: Oferta, fechaPostulacion: Date, id: number = 0) {
+    if (!aspirante.esAspirante()) {
+      throw new PostulacionNoAutorizadaError();
+    }
     if (Number.isNaN(fechaPostulacion.getTime())) {
       throw new DatosDePostulacionInvalidos("La fecha de postulación es inválida");
     }
-    this.idAspirante = idAspirante;
-    this.idOferta = idOferta;
+    this.aspirante = aspirante;
+    this.oferta = oferta;
     this.fechaPostulacion = new Date(fechaPostulacion.getTime());
     this.id = id;
   }
 
-  public obtenerIdAspirante(): number {
-    return this.idAspirante;
+  public obtenerAspirante(): Usuario {
+    return this.aspirante;
   }
 
-  public obtenerIdOferta(): number {
-    return this.idOferta;
+  public obtenerOferta(): Oferta {
+    return this.oferta;
   }
 
   public obtenerFechaPostulacion(): Date {

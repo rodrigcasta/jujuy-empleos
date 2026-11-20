@@ -29,9 +29,15 @@ app.use("/vendor/bootstrap", express.static(directorioBootstrap));
 
 app.use(logDeRequests);
 
-const sistemaUsuarios = new SistemaUsuarios(new RepositorioUsuarioSql());
-const sistemaOfertas = new SistemaOfertas(new RepositorioOfertaSql(new RepositorioUsuarioSql()));
-const sistemaPostulaciones = new SistemaPostulaciones(new RepositorioPostulacionSql(), new ProveedorFechaDelSistema());
+const repositorioUsuario = new RepositorioUsuarioSql();
+const repositorioOferta = new RepositorioOfertaSql(repositorioUsuario);
+const sistemaUsuarios = new SistemaUsuarios(repositorioUsuario);
+const sistemaOfertas = new SistemaOfertas(repositorioOferta);
+const sistemaPostulaciones = new SistemaPostulaciones(
+  new RepositorioPostulacionSql(),
+  new ProveedorFechaDelSistema(),
+  repositorioOferta,
+);
 
 configurarAutenticacion(app, sistemaUsuarios);
 
