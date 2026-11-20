@@ -2,6 +2,7 @@ import Oferta from "../dominio/oferta";
 import { DetalleOferta } from "../dominio/detalle-oferta";
 import { IRepositorioOferta } from "../dominio/puerto-repositorio-oferta";
 import { IRepositorioUsuario } from "../dominio/puerto-repositorio-usuario";
+import Usuario from "../dominio/usuario";
 import pool from "./pool";
 
 interface OfertaPersistida {
@@ -27,7 +28,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
         oferta.obtenerDescripcion(),
         oferta.obtenerUbicacion(),
         oferta.obtenerFechaPublicacion(),
-        oferta.obtenerIdEmpresario(),
+        oferta.obtenerTitular().obtenerId(),
         oferta.estaActiva(),
       ],
     );
@@ -51,14 +52,14 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
       "SELECT * FROM ofertas WHERE activa = true OR id_empresario = $1 ORDER BY fecha_publicacion DESC",
       [idEmpresario],
     );
-    return resultado.rows.map((oferta) => this.deserializarOferta(oferta));
+    return this.deserializarOfertas(resultado.rows);
   }
 
   public async listarPublicas(): Promise<Oferta[]> {
     const resultado = await pool.query<OfertaPersistida>(
       "SELECT * FROM ofertas WHERE activa = true ORDER BY fecha_publicacion DESC",
     );
-    return resultado.rows.map((oferta) => this.deserializarOferta(oferta));
+    return this.deserializarOfertas(resultado.rows);
   }
 
   public async recuperarPorId(id: number): Promise<Oferta | null> {
@@ -67,7 +68,8 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     if (oferta === undefined) {
       return null;
     }
-    return this.deserializarOferta(oferta);
+    const titular = await this.repositorioUsuario.recuperarPorId(oferta.id_empresario);
+    return titular === null ? null : this.deserializarOferta(oferta, titular);
   }
 
   public async recuperarDetallePorId(id: number): Promise<DetalleOferta | null> {
@@ -95,12 +97,30 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
     await pool.query("DELETE FROM ofertas");
   }
 
-  private deserializarOferta(oferta: OfertaPersistida): Oferta {
+  private async deserializarOfertas(filas: OfertaPersistida[]): Promise<Oferta[]> {
+    const titulares = new Map<number, Usuario>();
+    const ofertas: Oferta[] = [];
+    for (const fila of filas) {
+      let titular = titulares.get(fila.id_empresario);
+      if (titular === undefined) {
+        const recuperado = await this.repositorioUsuario.recuperarPorId(fila.id_empresario);
+        if (recuperado === null) {
+          throw new Error("No se encontró el titular de una oferta recuperada");
+        }
+        titular = recuperado;
+        titulares.set(fila.id_empresario, titular);
+      }
+      ofertas.push(this.deserializarOferta(fila, titular));
+    }
+    return ofertas;
+  }
+
+  private deserializarOferta(oferta: OfertaPersistida, titular: Usuario): Oferta {
     return new Oferta(
       oferta.titulo,
       oferta.descripcion,
       oferta.ubicacion,
-      oferta.id_empresario,
+      titular,
       oferta.fecha_publicacion,
       oferta.id,
       oferta.activa,

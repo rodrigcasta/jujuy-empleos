@@ -9,6 +9,8 @@ import SistemaOfertas from "../../app/dominio/sistema-ofertas";
 import Usuario from "../../app/dominio/usuario";
 
 describe("SistemaOfertas", () => {
+  const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7);
+  const otroTitular = new Usuario("Mario", "Perez", "mario@example.com", "hash", 8);
   const FECHA_ACTUAL = new Date("2026-11-02T15:00:00.000Z");
   let repositorioOferta: Mock<IRepositorioOferta>;
   let sistemaOfertas: SistemaOfertas;
@@ -31,7 +33,8 @@ describe("SistemaOfertas", () => {
         "Tres de Febrero",
       );
 
-      expect(oferta.obtenerIdEmpresario()).toBe(7);
+      expect(oferta.obtenerTitular().obtenerId()).toBe(7);
+      expect(oferta.obtenerTitular()).toBe(empresario);
       expect(oferta.obtenerFechaPublicacion()).toEqual(FECHA_ACTUAL);
       expect(repositorioOferta.contarActivasPorEmpresario).toHaveBeenCalledWith(7);
       expect(repositorioOferta.guardar).toHaveBeenCalledWith(oferta);
@@ -90,7 +93,7 @@ describe("SistemaOfertas", () => {
 
   describe("listar", () => {
     test("deberia listar solo las ofertas publicas cuando no hay usuario autenticado", async () => {
-      const ofertasPublicas = [new Oferta("Oferta reciente", "Descripcion reciente", "CABA", 7, FECHA_ACTUAL, 2)];
+      const ofertasPublicas = [new Oferta("Oferta reciente", "Descripcion reciente", "CABA", titular, FECHA_ACTUAL, 2)];
       repositorioOferta.listarPublicas.mockResolvedValue(ofertasPublicas);
 
       const ofertas = await sistemaOfertas.listar();
@@ -102,8 +105,8 @@ describe("SistemaOfertas", () => {
     test("deberia listar las ofertas visibles para un empresario autenticado", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
       const ofertasVisibles = [
-        new Oferta("Oferta activa", "Descripcion", "CABA", 8, FECHA_ACTUAL, 2),
-        new Oferta("Oferta cerrada propia", "Descripcion", "CABA", 7, FECHA_ACTUAL, 1, false),
+        new Oferta("Oferta activa", "Descripcion", "CABA", otroTitular, FECHA_ACTUAL, 2),
+        new Oferta("Oferta cerrada propia", "Descripcion", "CABA", titular, FECHA_ACTUAL, 1, false),
       ];
       repositorioOferta.listarVisiblesParaEmpresario.mockResolvedValue(ofertasVisibles);
 
@@ -116,7 +119,7 @@ describe("SistemaOfertas", () => {
 
     test("deberia listar solo las ofertas publicas cuando el usuario es aspirante", async () => {
       const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 9, null, "Aspirante");
-      const ofertasPublicas = [new Oferta("Oferta activa", "Descripcion", "CABA", 7, FECHA_ACTUAL, 2)];
+      const ofertasPublicas = [new Oferta("Oferta activa", "Descripcion", "CABA", titular, FECHA_ACTUAL, 2)];
       repositorioOferta.listarPublicas.mockResolvedValue(ofertasPublicas);
 
       const ofertas = await sistemaOfertas.listar(aspirante);
@@ -158,7 +161,7 @@ describe("SistemaOfertas", () => {
   describe("cerrar", () => {
     test("deberia cerrar una oferta existente y persistirla", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
-      const oferta = new Oferta("Programador Jr.", "Backend junior", "CABA", 7, FECHA_ACTUAL, 12);
+      const oferta = new Oferta("Programador Jr.", "Backend junior", "CABA", titular, FECHA_ACTUAL, 12);
       repositorioOferta.recuperarPorId.mockResolvedValue(oferta);
       repositorioOferta.actualizar.mockResolvedValue(undefined);
       await sistemaOfertas.cerrar(empresario, 12);
@@ -169,7 +172,7 @@ describe("SistemaOfertas", () => {
 
     test("deberia impedir que otro empresario cierre una oferta ajena", async () => {
       const otroEmpresario = new Usuario("Mario", "Perez", "mario@example.com", "hash", 8, "Profesional");
-      const oferta = new Oferta("Programador Jr.", "Backend junior", "CABA", 7, FECHA_ACTUAL, 12);
+      const oferta = new Oferta("Programador Jr.", "Backend junior", "CABA", titular, FECHA_ACTUAL, 12);
       repositorioOferta.recuperarPorId.mockResolvedValue(oferta);
 
       await expect(sistemaOfertas.cerrar(otroEmpresario, 12)).rejects.toThrow(CierreNoAutorizadoError);

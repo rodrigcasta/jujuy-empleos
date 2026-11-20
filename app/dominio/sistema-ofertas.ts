@@ -22,7 +22,7 @@ export default class SistemaOfertas {
       throw new LimiteDeOfertasAlcanzadoError();
     }
 
-    const oferta = new Oferta(titulo, descripcion, ubicacion, empresario.obtenerId(), this.obtenerFechaActual());
+    const oferta = new Oferta(titulo, descripcion, ubicacion, empresario, this.obtenerFechaActual());
     await this.repositorioOferta.guardar(oferta);
     return oferta;
   }
@@ -35,7 +35,7 @@ export default class SistemaOfertas {
     if (oferta === null) {
       throw new OfertaNoEncontradaError();
     }
-    if (oferta.obtenerIdEmpresario() !== empresario.obtenerId()) {
+    if (oferta.obtenerTitular().obtenerId() !== empresario.obtenerId()) {
       throw new CierreNoAutorizadoError();
     }
     oferta.cerrar();

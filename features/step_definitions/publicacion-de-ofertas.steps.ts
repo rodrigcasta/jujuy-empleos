@@ -76,10 +76,8 @@ Given("todavia no publico ninguna oferta", async function (this: MundoDeLaAplica
 
 Given(/^ya publico (\d+) ofertas?$/, async function (this: MundoDeLaAplicacion, cantidad: string) {
   assert.ok(this.emailEmpresario);
-  const resultado = await pool.query<{ id: number }>("SELECT id FROM usuarios WHERE email = $1", [
-    this.emailEmpresario,
-  ]);
-  assert.equal(resultado.rows.length, 1);
+  const empresario = await new RepositorioUsuarioSql().recuperarPorEmail(this.emailEmpresario);
+  assert.ok(empresario);
   const repositorioOferta = new RepositorioOfertaSql(new RepositorioUsuarioSql());
   this.cantidadOfertasAntes = Number(cantidad);
   for (let numero = 1; numero <= this.cantidadOfertasAntes; numero += 1) {
@@ -88,7 +86,7 @@ Given(/^ya publico (\d+) ofertas?$/, async function (this: MundoDeLaAplicacion, 
         `Oferta ${numero}`,
         `Descripcion de la oferta ${numero}`,
         "Buenos Aires",
-        resultado.rows[0].id,
+        empresario,
         new Date("2026-11-02T15:00:00.000Z"),
       ),
     );

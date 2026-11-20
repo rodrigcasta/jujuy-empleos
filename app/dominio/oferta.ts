@@ -1,5 +1,6 @@
 import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
 import OfertaYaCerradaError from "./oferta-ya-cerrada-error";
+import Usuario from "./usuario";
 
 export default class Oferta {
   private static readonly LARGO_MAXIMO_TITULO = 50;
@@ -8,7 +9,7 @@ export default class Oferta {
   private titulo: string;
   private descripcion: string;
   private ubicacion: string;
-  private idEmpresario: number;
+  private titular: Usuario;
   private fechaPublicacion: Date;
   private id: number;
   private activa: boolean;
@@ -17,7 +18,7 @@ export default class Oferta {
     titulo: string,
     descripcion: string,
     ubicacion: string,
-    idEmpresario: number,
+    titular: Usuario,
     fechaPublicacion: Date,
     id: number = 0,
     activa: boolean = true,
@@ -44,10 +45,13 @@ export default class Oferta {
     if (tituloNormalizado.length > Oferta.LARGO_MAXIMO_TITULO) {
       throw new DatosDeOfertaInvalidos("El titulo tiene más de 50 caracteres");
     }
+    if (!titular.esEmpresario()) {
+      throw new DatosDeOfertaInvalidos("El titular de la oferta debe ser empresario");
+    }
     this.titulo = tituloNormalizado;
     this.descripcion = descripcionNormaliza;
     this.ubicacion = ubicacionNormalizada;
-    this.idEmpresario = idEmpresario;
+    this.titular = titular;
     this.fechaPublicacion = fechaPublicacion;
     this.id = id;
     this.activa = activa;
@@ -65,8 +69,8 @@ export default class Oferta {
     return this.ubicacion;
   }
 
-  public obtenerIdEmpresario(): number {
-    return this.idEmpresario;
+  public obtenerTitular(): Usuario {
+    return this.titular;
   }
 
   public obtenerFechaPublicacion(): Date {

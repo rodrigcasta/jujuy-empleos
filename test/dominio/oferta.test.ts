@@ -1,9 +1,29 @@
 import Oferta from "../../app/dominio/oferta";
 import DatosDeOfertaInvalidos from "../../app/dominio/datos-de-oferta-invalidos";
 import OfertaYaCerradaError from "../../app/dominio/oferta-ya-cerrada-error";
+import Usuario from "../../app/dominio/usuario";
 
 describe("Oferta", () => {
+  const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 1);
   describe("constructor", () => {
+    test("deberia conservar al empresario titular como objeto asociado", () => {
+      const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7);
+
+      const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-01"));
+
+      expect(oferta.obtenerTitular()).toBe(titular);
+      expect(oferta.obtenerTitular().obtenerEmail()).toBe("laura@example.com");
+    });
+
+    test("deberia rechazar una oferta cuyo titular es aspirante", () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 9, null, "Aspirante");
+      const crearOferta = () =>
+        new Oferta("Backend", "Desarrollo backend", "Remoto", aspirante, new Date("2026-11-01"));
+
+      expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
+      expect(crearOferta).toThrow("El titular de la oferta debe ser empresario");
+    });
+
     test("deberia realizar una oferta con sus atributos correspondientes", () => {
       const fechaPublicacion = new Date("2026-11-01T15:00:00.000Z");
 
@@ -11,14 +31,14 @@ describe("Oferta", () => {
         "Programador Jr.",
         "Se busca desarrollador backend junior",
         "Tres de Febrero",
-        1,
+        titular,
         fechaPublicacion,
       );
 
       expect(oferta.obtenerTitulo()).toBe("Programador Jr.");
       expect(oferta.obtenerDescripcion()).toBe("Se busca desarrollador backend junior");
       expect(oferta.obtenerUbicacion()).toBe("Tres de Febrero");
-      expect(oferta.obtenerIdEmpresario()).toBe(1);
+      expect(oferta.obtenerTitular().obtenerId()).toBe(1);
       expect(oferta.obtenerFechaPublicacion()).toBe(fechaPublicacion);
     });
 
@@ -30,7 +50,8 @@ describe("Oferta", () => {
       ["ubicacion", "Titulo valido", "Descripcion valida", ""],
       ["ubicacion", "Titulo valido", "Descripcion valida", "   "],
     ])("deberia rechazar %s vacio", (campo, titulo, descripcion, ubicacion) => {
-      const crearOferta = () => new Oferta(titulo, descripcion, ubicacion, 1, new Date("2026-11-01T15:00:00.000Z"));
+      const crearOferta = () =>
+        new Oferta(titulo, descripcion, ubicacion, titular, new Date("2026-11-01T15:00:00.000Z"));
 
       expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
       expect(crearOferta).toThrow(`${campo} es obligatorio`);
@@ -40,7 +61,13 @@ describe("Oferta", () => {
       const fechaPublicacion = new Date("2026-11-01T15:00:00.000Z");
 
       const crearOferta = () =>
-        new Oferta("a".repeat(51), "Se busca desarrollador backend junior", "Tres de Febrero", 1, fechaPublicacion);
+        new Oferta(
+          "a".repeat(51),
+          "Se busca desarrollador backend junior",
+          "Tres de Febrero",
+          titular,
+          fechaPublicacion,
+        );
 
       expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
       expect(crearOferta).toThrow("El titulo tiene más de 50 caracteres");
@@ -53,7 +80,7 @@ describe("Oferta", () => {
         titulo,
         "Se busca desarrollador backend junior",
         "Tres de Febrero",
-        1,
+        titular,
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
@@ -62,7 +89,13 @@ describe("Oferta", () => {
 
     test("deberia rechazar una descripcion de 251 caracteres", () => {
       const crearOferta = () =>
-        new Oferta("Programador Jr.", "a".repeat(251), "Tres de Febrero", 1, new Date("2026-11-01T15:00:00.000Z"));
+        new Oferta(
+          "Programador Jr.",
+          "a".repeat(251),
+          "Tres de Febrero",
+          titular,
+          new Date("2026-11-01T15:00:00.000Z"),
+        );
 
       expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
       expect(crearOferta).toThrow("La descripción tiene mas de 250 caracteres");
@@ -75,7 +108,7 @@ describe("Oferta", () => {
         "Desarrollador backend",
         descripcion,
         "Tres de Febrero",
-        1,
+        titular,
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
@@ -88,7 +121,7 @@ describe("Oferta", () => {
           "Programador Jr.",
           "Se busca desarrollador backend junior",
           "a".repeat(71),
-          1,
+          titular,
           new Date("2026-11-01T15:00:00.000Z"),
         );
 
@@ -103,7 +136,7 @@ describe("Oferta", () => {
         "Programador Jr.",
         "Se busca desarrollador backend junior",
         ubicacion,
-        1,
+        titular,
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
@@ -117,7 +150,7 @@ describe("Oferta", () => {
         "  Desarrollador backend  ",
         "  Se busca desarrollador backend junior  ",
         "  Tres de Febrero  ",
-        1,
+        titular,
         fechaPublicacion,
       );
       expect(oferta.obtenerTitulo()).toBe("Desarrollador backend");
@@ -132,7 +165,7 @@ describe("Oferta", () => {
         "Programador Jr.",
         "Se busca desarrollador backend junior",
         "Tres de Febrero",
-        1,
+        titular,
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
@@ -144,7 +177,7 @@ describe("Oferta", () => {
         "Programador Jr.",
         "Se busca desarrollador backend junior",
         "Tres de Febrero",
-        1,
+        titular,
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
@@ -158,7 +191,7 @@ describe("Oferta", () => {
         "Programador Jr.",
         "Se busca desarrollador backend junior",
         "Tres de Febrero",
-        1,
+        titular,
         new Date("2026-11-01T15:00:00.000Z"),
       );
 

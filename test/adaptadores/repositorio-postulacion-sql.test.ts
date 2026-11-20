@@ -105,7 +105,7 @@ describe("RepositorioPostulacionSql", () => {
       "Desarrollador Backend",
       "Se busca desarrollador para trabajo remoto",
       "Pilar",
-      empresario.obtenerId(),
+      empresario,
       new Date("2026-11-09T15:00:00.000Z"),
     );
     await repositorioOferta.guardar(oferta);

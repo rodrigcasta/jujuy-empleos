@@ -16,7 +16,7 @@ Given(
     const empresario = new Usuario("Laura", "Fernandez", emailEmpresario, "hash");
     await new RepositorioUsuarioSql().guardar(empresario);
     await new RepositorioOfertaSql(new RepositorioUsuarioSql()).guardar(
-      new Oferta(titulo, descripcion, ubicacion, empresario.obtenerId(), new Date("2026-11-04T15:00:00.000Z")),
+      new Oferta(titulo, descripcion, ubicacion, empresario, new Date("2026-11-04T15:00:00.000Z")),
     );
     this.emailEmpresario = emailEmpresario;
   },
@@ -39,7 +39,7 @@ Given(
     const empresario = new Usuario("Laura", "Fernandez", `laura${diasDesdePublicacion}@example.com`, "hash");
     await new RepositorioUsuarioSql().guardar(empresario);
     await new RepositorioOfertaSql(new RepositorioUsuarioSql()).guardar(
-      new Oferta(titulo, `Descripcion de ${titulo}`, "Buenos Aires", empresario.obtenerId(), fechaPublicacion),
+      new Oferta(titulo, `Descripcion de ${titulo}`, "Buenos Aires", empresario, fechaPublicacion),
     );
   },
 );
@@ -54,7 +54,7 @@ Given("que existen {int} ofertas", async function (cantidadOfertas: number) {
         `Oferta ${numeroOferta}`,
         `Descripcion de la oferta ${numeroOferta}`,
         "Buenos Aires",
-        empresario.obtenerId(),
+        empresario,
         FECHA_DE_REFERENCIA,
       ),
     );

@@ -5,16 +5,17 @@ import pool from "../../app/adaptadores/pool";
 import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
 import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
 import Oferta from "../../app/dominio/oferta";
+import Usuario from "../../app/dominio/usuario";
 import { MundoDeLaAplicacion } from "../support/mundo";
 
 const FECHA_PUBLICACION = new Date("2026-11-16T15:00:00.000Z");
 const DESCRIPCION = "Descripcion de una oferta laboral";
 const UBICACION = "CABA";
 
-const obtenerIdEmpresario = async (email: string): Promise<number> => {
-  const resultado = await pool.query<{ id: number }>("SELECT id FROM usuarios WHERE email = $1", [email]);
-  assert.equal(resultado.rows.length, 1, `No se encontró un empresario con email ${email}`);
-  return resultado.rows[0].id;
+const obtenerEmpresario = async (email: string): Promise<Usuario> => {
+  const empresario = await new RepositorioUsuarioSql().recuperarPorEmail(email);
+  assert.ok(empresario, `No se encontró un empresario con email ${email}`);
+  return empresario;
 };
 
 const obtenerOferta = async (titulo: string): Promise<{ id: number; activa: boolean }> => {
@@ -27,7 +28,7 @@ const obtenerOferta = async (titulo: string): Promise<{ id: number; activa: bool
 };
 
 const crearOferta = async (email: string, titulo: string, cerrada: boolean) => {
-  const oferta = new Oferta(titulo, DESCRIPCION, UBICACION, await obtenerIdEmpresario(email), FECHA_PUBLICACION);
+  const oferta = new Oferta(titulo, DESCRIPCION, UBICACION, await obtenerEmpresario(email), FECHA_PUBLICACION);
   if (cerrada) {
     oferta.cerrar();
   }

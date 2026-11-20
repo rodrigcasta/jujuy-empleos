@@ -65,7 +65,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
         puedeCerrar:
           usuario !== undefined &&
           usuario.esEmpresario() &&
-          usuario.obtenerId() === oferta.obtenerIdEmpresario() &&
+          usuario.obtenerId() === oferta.obtenerTitular().obtenerId() &&
           oferta.estaActiva(),
       })),
     });

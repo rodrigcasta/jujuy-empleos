@@ -30,7 +30,7 @@ Given(
         titulo,
         "Desarrollo y mantenimiento de servicios backend",
         "Buenos Aires",
-        empresario.obtenerId(),
+        empresario,
         new Date("2026-11-09T15:00:00.000Z"),
       ),
     );
