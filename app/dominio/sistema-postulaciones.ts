@@ -1,6 +1,6 @@
 import Postulacion from "./postulacion";
 import PostulacionDuplicadaError from "./postulacion-duplicada-error";
-import { DatosDePostulacion, IRepositorioPostulacion } from "./puerto-repositorio-postulacion";
+import { IRepositorioPostulacion } from "./puerto-repositorio-postulacion";
 import Usuario from "./usuario";
 import { ProveedorFecha } from "./puerto-proveedor-fecha";
 import { IRepositorioOferta } from "./puerto-repositorio-oferta";
@@ -25,11 +25,11 @@ export default class SistemaPostulaciones {
     empresario: Usuario,
     idOferta: number,
     idEmpresarioOferta: number,
-  ): Promise<DatosDePostulacion[] | null> {
+  ): Promise<Postulacion[] | null> {
     if (!empresario.esEmpresario() || empresario.obtenerId() !== idEmpresarioOferta) {
       return null;
     }
-    return this.repositorioPostulacion.listarPorOferta(idOferta);
+    return this.repositorioPostulacion.recuperarPorOferta(idOferta);
   }
 
   public async postular(aspirante: Usuario, idOferta: number): Promise<Postulacion> {

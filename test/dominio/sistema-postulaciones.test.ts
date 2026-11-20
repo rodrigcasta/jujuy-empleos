@@ -90,11 +90,27 @@ describe("SistemaPostulaciones", () => {
   });
 
   describe("listarParaEmpresario", () => {
+    test("deberia devolver las postulaciones asociadas al titular de la oferta", async () => {
+      const empresario = oferta.obtenerTitular();
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
+      const postulaciones = [new Postulacion(aspirante, oferta, fechaPostulacion, 1)];
+      repositorioPostulacion.recuperarPorOferta.mockResolvedValue(postulaciones);
+
+      await expect(sistemaPostulaciones.listarParaEmpresario(empresario, 5, 7)).resolves.toBe(postulaciones);
+      expect(repositorioPostulacion.recuperarPorOferta).toHaveBeenCalledWith(5);
+    });
+
+    test("deberia devolver una lista vacia para el titular sin postulaciones", async () => {
+      repositorioPostulacion.recuperarPorOferta.mockResolvedValue([]);
+
+      await expect(sistemaPostulaciones.listarParaEmpresario(oferta.obtenerTitular(), 5, 7)).resolves.toEqual([]);
+    });
+
     test("deberia impedir que un empresario consulte las postulaciones de una oferta ajena", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Profesional");
 
       await expect(sistemaPostulaciones.listarParaEmpresario(empresario, 5, 8)).resolves.toBeNull();
-      expect(repositorioPostulacion.listarPorOferta).not.toHaveBeenCalled();
+      expect(repositorioPostulacion.recuperarPorOferta).not.toHaveBeenCalled();
     });
   });
 });

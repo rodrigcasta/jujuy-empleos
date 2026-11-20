@@ -137,8 +137,10 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
         mostrarPostulaciones: postulaciones !== null,
         sinPostulaciones: postulaciones?.length === 0,
         postulaciones: (postulaciones ?? []).map((postulacion) => ({
-          ...postulacion,
-          fechaPostulacion: formatearFechaPostulacion(postulacion.fechaPostulacion),
+          nombre: postulacion.obtenerAspirante().obtenerNombre(),
+          apellido: postulacion.obtenerAspirante().obtenerApellido(),
+          email: postulacion.obtenerAspirante().obtenerEmail(),
+          fechaPostulacion: formatearFechaPostulacion(postulacion.obtenerFechaPostulacion()),
         })),
       });
     } catch (error: unknown) {
