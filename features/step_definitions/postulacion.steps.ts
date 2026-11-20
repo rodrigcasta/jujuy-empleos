@@ -25,7 +25,7 @@ Given(
       "Profesional",
     );
     this.contrasenasUsuarios.set(emailEmpresario, contrasena);
-    await new RepositorioOfertaSql().guardar(
+    await new RepositorioOfertaSql(new RepositorioUsuarioSql()).guardar(
       new Oferta(
         titulo,
         "Desarrollo y mantenimiento de servicios backend",

@@ -5,8 +5,8 @@ import Oferta from "../../app/dominio/oferta";
 import Usuario from "../../app/dominio/usuario";
 
 describe("RepositorioOfertaSql", () => {
-  const repositorioOferta = new RepositorioOfertaSql();
   const repositorioUsuario = new RepositorioUsuarioSql();
+  const repositorioOferta = new RepositorioOfertaSql(repositorioUsuario);
 
   beforeEach(async () => {
     await repositorioOferta.eliminarTodos();
@@ -268,6 +268,60 @@ describe("RepositorioOfertaSql", () => {
   });
 
   describe("recuperarDetallePorId", () => {
+    test("deberia devolver null sin buscar titular cuando la oferta no existe", async () => {
+      const recuperarTitular = jest.spyOn(repositorioUsuario, "recuperarPorId");
+
+      try {
+        await expect(repositorioOferta.recuperarDetallePorId(9999)).resolves.toBeNull();
+        expect(recuperarTitular).not.toHaveBeenCalled();
+      } finally {
+        recuperarTitular.mockRestore();
+      }
+    });
+
+    test("deberia devolver null cuando el repositorio no encuentra al titular", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const oferta = new Oferta(
+        "Desarrollador Backend",
+        "Desarrollo backend",
+        "Remoto",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      await repositorioOferta.guardar(oferta);
+      const recuperarTitular = jest.spyOn(repositorioUsuario, "recuperarPorId").mockResolvedValue(null);
+
+      try {
+        await expect(repositorioOferta.recuperarDetallePorId(oferta.obtenerId())).resolves.toBeNull();
+      } finally {
+        recuperarTitular.mockRestore();
+      }
+    });
+
+    test("deberia obtener el titular mediante el repositorio de usuarios", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
+      await repositorioUsuario.guardar(empresario);
+      const oferta = new Oferta(
+        "Desarrollador Backend",
+        "Desarrollo backend",
+        "Remoto",
+        empresario.obtenerId(),
+        new Date("2026-11-04T15:00:00.000Z"),
+      );
+      await repositorioOferta.guardar(oferta);
+      const recuperarTitular = jest.spyOn(repositorioUsuario, "recuperarPorId");
+
+      try {
+        const detalle = await repositorioOferta.recuperarDetallePorId(oferta.obtenerId());
+
+        expect(detalle?.emailEmpresario).toBe(empresario.obtenerEmail());
+        expect(recuperarTitular).toHaveBeenCalledWith(empresario.obtenerId());
+      } finally {
+        recuperarTitular.mockRestore();
+      }
+    });
+
     test("deberia indicar que el detalle de una oferta cerrada no esta activa", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "empresa1@empresa1.com", "hash");
       await repositorioUsuario.guardar(empresario);

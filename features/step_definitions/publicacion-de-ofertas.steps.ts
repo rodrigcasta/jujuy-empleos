@@ -3,6 +3,7 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import pool from "../../app/adaptadores/pool";
 import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
+import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
 import Oferta from "../../app/dominio/oferta";
 import { registrarse } from "../support/acciones";
 import { MundoDeLaAplicacion } from "../support/mundo";
@@ -79,7 +80,7 @@ Given(/^ya publico (\d+) ofertas?$/, async function (this: MundoDeLaAplicacion, 
     this.emailEmpresario,
   ]);
   assert.equal(resultado.rows.length, 1);
-  const repositorioOferta = new RepositorioOfertaSql();
+  const repositorioOferta = new RepositorioOfertaSql(new RepositorioUsuarioSql());
   this.cantidadOfertasAntes = Number(cantidad);
   for (let numero = 1; numero <= this.cantidadOfertasAntes; numero += 1) {
     await repositorioOferta.guardar(

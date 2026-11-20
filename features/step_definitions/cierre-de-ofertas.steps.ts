@@ -3,6 +3,7 @@ import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import pool from "../../app/adaptadores/pool";
 import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
+import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
 import Oferta from "../../app/dominio/oferta";
 import { MundoDeLaAplicacion } from "../support/mundo";
 
@@ -30,7 +31,7 @@ const crearOferta = async (email: string, titulo: string, cerrada: boolean) => {
   if (cerrada) {
     oferta.cerrar();
   }
-  await new RepositorioOfertaSql().guardar(oferta);
+  await new RepositorioOfertaSql(new RepositorioUsuarioSql()).guardar(oferta);
 };
 
 Given(

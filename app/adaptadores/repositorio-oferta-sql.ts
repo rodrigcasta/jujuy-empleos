@@ -1,6 +1,7 @@
 import Oferta from "../dominio/oferta";
 import { DetalleOferta } from "../dominio/detalle-oferta";
 import { IRepositorioOferta } from "../dominio/puerto-repositorio-oferta";
+import { IRepositorioUsuario } from "../dominio/puerto-repositorio-usuario";
 import pool from "./pool";
 
 interface OfertaPersistida {
@@ -14,6 +15,8 @@ interface OfertaPersistida {
 }
 
 export default class RepositorioOfertaSql implements IRepositorioOferta {
+  constructor(private repositorioUsuario: IRepositorioUsuario) {}
+
   public async guardar(oferta: Oferta): Promise<void> {
     const resultado = await pool.query<{ id: number }>(
       `INSERT INTO ofertas (titulo, descripcion, ubicacion, fecha_publicacion, id_empresario, activa)
@@ -68,24 +71,13 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
   }
 
   public async recuperarDetallePorId(id: number): Promise<DetalleOferta | null> {
-    const resultado = await pool.query<{
-      id: number;
-      id_empresario: number;
-      titulo: string;
-      descripcion: string;
-      ubicacion: string;
-      email_empresario: string;
-      activa: boolean;
-    }>(
-      `SELECT ofertas.id, ofertas.id_empresario, ofertas.titulo, ofertas.descripcion, ofertas.ubicacion,
-              usuarios.email AS email_empresario, ofertas.activa
-       FROM ofertas
-       INNER JOIN usuarios ON usuarios.id = ofertas.id_empresario
-       WHERE ofertas.id = $1`,
-      [id],
-    );
+    const resultado = await pool.query<OfertaPersistida>("SELECT * FROM ofertas WHERE id = $1", [id]);
     const oferta = resultado.rows[0];
     if (oferta === undefined) {
+      return null;
+    }
+    const titular = await this.repositorioUsuario.recuperarPorId(oferta.id_empresario);
+    if (titular === null) {
       return null;
     }
     return {
@@ -94,7 +86,7 @@ export default class RepositorioOfertaSql implements IRepositorioOferta {
       titulo: oferta.titulo,
       descripcion: oferta.descripcion,
       ubicacion: oferta.ubicacion,
-      emailEmpresario: oferta.email_empresario,
+      emailEmpresario: titular.obtenerEmail(),
       activa: oferta.activa,
     };
   }

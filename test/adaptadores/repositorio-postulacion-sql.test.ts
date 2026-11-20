@@ -12,7 +12,7 @@ import { ProveedorFecha } from "../../app/dominio/puerto-proveedor-fecha";
 describe("RepositorioPostulacionSql", () => {
   const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
   const repositorioPostulacion = new RepositorioPostulacionSql();
-  const repositorioOferta = new RepositorioOfertaSql();
+  const repositorioOferta = new RepositorioOfertaSql(new RepositorioUsuarioSql());
   const repositorioUsuario = new RepositorioUsuarioSql();
 
   beforeEach(async () => {

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { Given, Then, When } from "@cucumber/cucumber";
 import { expect } from "@playwright/test";
 import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
+import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
 import { MundoDeLaAplicacion } from "../support/mundo";
 
 Given("fue publicada por el empresario con email {string}", function (this: MundoDeLaAplicacion, email: string) {
@@ -37,7 +38,7 @@ Then("puedo volver al listado de ofertas", async function (this: MundoDeLaAplica
 });
 
 Given("que no existe una oferta con id {int}", async function (id: number) {
-  const detalle = await new RepositorioOfertaSql().recuperarDetallePorId(id);
+  const detalle = await new RepositorioOfertaSql(new RepositorioUsuarioSql()).recuperarDetallePorId(id);
   assert.equal(detalle, null);
 });
 

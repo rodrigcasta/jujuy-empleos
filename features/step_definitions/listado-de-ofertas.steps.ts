@@ -15,7 +15,7 @@ Given(
     const emailEmpresario = "empresa1@empresa1.com";
     const empresario = new Usuario("Laura", "Fernandez", emailEmpresario, "hash");
     await new RepositorioUsuarioSql().guardar(empresario);
-    await new RepositorioOfertaSql().guardar(
+    await new RepositorioOfertaSql(new RepositorioUsuarioSql()).guardar(
       new Oferta(titulo, descripcion, ubicacion, empresario.obtenerId(), new Date("2026-11-04T15:00:00.000Z")),
     );
     this.emailEmpresario = emailEmpresario;
@@ -27,7 +27,7 @@ Given("no soy un usuario registrado", function () {
 });
 
 Given("que no existen ofertas", async function () {
-  await new RepositorioOfertaSql().eliminarTodos();
+  await new RepositorioOfertaSql(new RepositorioUsuarioSql()).eliminarTodos();
 });
 
 Given(
@@ -38,7 +38,7 @@ Given(
     fechaPublicacion.setUTCDate(fechaPublicacion.getUTCDate() - diasDesdePublicacion);
     const empresario = new Usuario("Laura", "Fernandez", `laura${diasDesdePublicacion}@example.com`, "hash");
     await new RepositorioUsuarioSql().guardar(empresario);
-    await new RepositorioOfertaSql().guardar(
+    await new RepositorioOfertaSql(new RepositorioUsuarioSql()).guardar(
       new Oferta(titulo, `Descripcion de ${titulo}`, "Buenos Aires", empresario.obtenerId(), fechaPublicacion),
     );
   },
@@ -47,7 +47,7 @@ Given(
 Given("que existen {int} ofertas", async function (cantidadOfertas: number) {
   const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
   await new RepositorioUsuarioSql().guardar(empresario);
-  const repositorioOferta = new RepositorioOfertaSql();
+  const repositorioOferta = new RepositorioOfertaSql(new RepositorioUsuarioSql());
   for (let numeroOferta = 1; numeroOferta <= cantidadOfertas; numeroOferta += 1) {
     await repositorioOferta.guardar(
       new Oferta(
