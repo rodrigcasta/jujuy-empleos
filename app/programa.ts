@@ -34,7 +34,7 @@ const repositorioOferta = new RepositorioOfertaSql(repositorioUsuario);
 const sistemaUsuarios = new SistemaUsuarios(repositorioUsuario);
 const sistemaOfertas = new SistemaOfertas(repositorioOferta);
 const sistemaPostulaciones = new SistemaPostulaciones(
-  new RepositorioPostulacionSql(),
+  new RepositorioPostulacionSql(repositorioUsuario, repositorioOferta),
   new ProveedorFechaDelSistema(),
   repositorioOferta,
 );

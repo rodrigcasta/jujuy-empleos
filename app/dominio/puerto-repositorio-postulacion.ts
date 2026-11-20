@@ -13,4 +13,6 @@ export interface IRepositorioPostulacion {
   existePara(idOferta: number, idAspirante: number): Promise<boolean>;
 
   listarPorOferta(idOferta: number): Promise<DatosDePostulacion[]>;
+
+  recuperarPorOferta(idOferta: number): Promise<Postulacion[]>;
 }

@@ -14,15 +14,17 @@ Given(
   async function (titulo: string, nombre: string, apellido: string, email: string, fecha: string) {
     const resultado = await pool.query<{ id: number }>("SELECT id FROM ofertas WHERE titulo = $1", [titulo]);
     assert.equal(resultado.rows.length, 1);
-    const oferta = await new RepositorioOfertaSql(new RepositorioUsuarioSql()).recuperarPorId(resultado.rows[0].id);
+    const repositorioUsuario = new RepositorioUsuarioSql();
+    const repositorioOferta = new RepositorioOfertaSql(repositorioUsuario);
+    const oferta = await repositorioOferta.recuperarPorId(resultado.rows[0].id);
     assert.ok(oferta);
-    const aspirante = await new SistemaUsuarios(new RepositorioUsuarioSql()).registrarAspirante(
+    const aspirante = await new SistemaUsuarios(repositorioUsuario).registrarAspirante(
       nombre,
       apellido,
       email,
       "Aspirante2026!#",
     );
-    await new RepositorioPostulacionSql().guardar(
+    await new RepositorioPostulacionSql(repositorioUsuario, repositorioOferta).guardar(
       new Postulacion(aspirante, oferta, new Date(`${fecha}T12:00:00.000Z`)),
     );
   },

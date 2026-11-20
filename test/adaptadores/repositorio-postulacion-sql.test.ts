@@ -11,9 +11,9 @@ import { ProveedorFecha } from "../../app/dominio/puerto-proveedor-fecha";
 
 describe("RepositorioPostulacionSql", () => {
   const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
-  const repositorioPostulacion = new RepositorioPostulacionSql();
-  const repositorioOferta = new RepositorioOfertaSql(new RepositorioUsuarioSql());
   const repositorioUsuario = new RepositorioUsuarioSql();
+  const repositorioOferta = new RepositorioOfertaSql(repositorioUsuario);
+  const repositorioPostulacion = new RepositorioPostulacionSql(repositorioUsuario, repositorioOferta);
 
   beforeEach(async () => {
     await repositorioPostulacion.eliminarTodos();
@@ -94,6 +94,35 @@ describe("RepositorioPostulacionSql", () => {
     });
   });
 
+  describe("recuperarPorOferta", () => {
+    test("deberia reconstruir la postulacion con aspirante, oferta, fecha e identidad", async () => {
+      const aspirante = await crearAspirante();
+      const oferta = await crearOferta();
+      const postulacion = new Postulacion(aspirante, oferta, fechaPostulacion);
+      await repositorioPostulacion.guardar(postulacion);
+
+      const recuperadas = await repositorioPostulacion.recuperarPorOferta(oferta.obtenerId());
+
+      expect(recuperadas).toHaveLength(1);
+      expect(recuperadas[0]).toBeInstanceOf(Postulacion);
+      expect(recuperadas[0]).toEqual(postulacion);
+    });
+
+    test("deberia devolver una lista vacia sin recuperar relaciones si no hay postulaciones", async () => {
+      const recuperarOferta = jest.spyOn(repositorioOferta, "recuperarPorId");
+      const recuperarUsuario = jest.spyOn(repositorioUsuario, "recuperarPorId");
+
+      try {
+        await expect(repositorioPostulacion.recuperarPorOferta(9999)).resolves.toEqual([]);
+        expect(recuperarOferta).not.toHaveBeenCalled();
+        expect(recuperarUsuario).not.toHaveBeenCalled();
+      } finally {
+        recuperarOferta.mockRestore();
+        recuperarUsuario.mockRestore();
+      }
+    });
+  });
+
   async function crearOferta(): Promise<Oferta> {
     const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash");
     await repositorioUsuario.guardar(empresario);
@@ -108,8 +137,8 @@ describe("RepositorioPostulacionSql", () => {
     return oferta;
   }
 
-  async function crearAspirante(): Promise<Usuario> {
-    const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 0, null, "Aspirante");
+  async function crearAspirante(email: string = "sofia@example.com"): Promise<Usuario> {
+    const aspirante = new Usuario("Sofia", "Martinez", email, "hash", 0, null, "Aspirante");
     await repositorioUsuario.guardar(aspirante);
     return aspirante;
   }

@@ -46,9 +46,11 @@ BeforeAll(async () => {
 
 // Cada escenario empieza con la base de datos vacía y un navegador sin sesión
 Before(async function (this: MundoDeLaAplicacion) {
-  await new RepositorioPostulacionSql().eliminarTodos();
-  await new RepositorioOfertaSql(new RepositorioUsuarioSql()).eliminarTodos();
-  await new RepositorioUsuarioSql().eliminarTodos();
+  const repositorioUsuario = new RepositorioUsuarioSql();
+  const repositorioOferta = new RepositorioOfertaSql(repositorioUsuario);
+  await new RepositorioPostulacionSql(repositorioUsuario, repositorioOferta).eliminarTodos();
+  await repositorioOferta.eliminarTodos();
+  await repositorioUsuario.eliminarTodos();
   // Si BeforeAll falló, Cucumber no ejecuta los escenarios: acá el navegador siempre está abierto
   await this.abrirNavegador(navegador as Browser);
 });
