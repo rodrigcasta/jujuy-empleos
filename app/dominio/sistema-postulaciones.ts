@@ -21,12 +21,15 @@ export default class SistemaPostulaciones {
     this.repositorioOferta = repositorioOferta;
   }
 
-  public async listarParaEmpresario(
-    empresario: Usuario,
-    idOferta: number,
-    idEmpresarioOferta: number,
-  ): Promise<Postulacion[] | null> {
-    if (!empresario.esEmpresario() || empresario.obtenerId() !== idEmpresarioOferta) {
+  public async listarParaEmpresario(usuario: Usuario | undefined, idOferta: number): Promise<Postulacion[] | null> {
+    if (!usuario?.esEmpresario()) {
+      return null;
+    }
+    const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
+    if (oferta === null) {
+      throw new OfertaNoEncontradaError();
+    }
+    if (usuario.obtenerId() !== oferta.obtenerTitular().obtenerId()) {
       return null;
     }
     return this.repositorioPostulacion.recuperarPorOferta(idOferta);

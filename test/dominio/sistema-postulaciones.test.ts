@@ -90,26 +90,55 @@ describe("SistemaPostulaciones", () => {
   });
 
   describe("listarParaEmpresario", () => {
-    test("deberia devolver las postulaciones asociadas al titular de la oferta", async () => {
+    test("deberia devolver las postulaciones asociadas al titular real de la oferta", async () => {
       const empresario = oferta.obtenerTitular();
       const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
       const postulaciones = [new Postulacion(aspirante, oferta, fechaPostulacion, 1)];
       repositorioPostulacion.recuperarPorOferta.mockResolvedValue(postulaciones);
 
-      await expect(sistemaPostulaciones.listarParaEmpresario(empresario, 5, 7)).resolves.toBe(postulaciones);
+      await expect(sistemaPostulaciones.listarParaEmpresario(empresario, 5)).resolves.toBe(postulaciones);
+      expect(repositorioOferta.recuperarPorId).toHaveBeenCalledWith(5);
       expect(repositorioPostulacion.recuperarPorOferta).toHaveBeenCalledWith(5);
     });
 
     test("deberia devolver una lista vacia para el titular sin postulaciones", async () => {
       repositorioPostulacion.recuperarPorOferta.mockResolvedValue([]);
 
-      await expect(sistemaPostulaciones.listarParaEmpresario(oferta.obtenerTitular(), 5, 7)).resolves.toEqual([]);
+      await expect(sistemaPostulaciones.listarParaEmpresario(oferta.obtenerTitular(), 5)).resolves.toEqual([]);
     });
 
     test("deberia impedir que un empresario consulte las postulaciones de una oferta ajena", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Profesional");
+      const titular = new Usuario("Mario", "Perez", "mario@example.com", "hash", 8);
+      repositorioOferta.recuperarPorId.mockResolvedValue(
+        new Oferta("Backend", "Desarrollo backend", "Remoto", titular, fechaPostulacion, 5),
+      );
 
-      await expect(sistemaPostulaciones.listarParaEmpresario(empresario, 5, 8)).resolves.toBeNull();
+      await expect(sistemaPostulaciones.listarParaEmpresario(empresario, 5)).resolves.toBeNull();
+      expect(repositorioOferta.recuperarPorId).toHaveBeenCalledWith(5);
+      expect(repositorioPostulacion.recuperarPorOferta).not.toHaveBeenCalled();
+    });
+
+    test("deberia impedir la consulta sin usuario autenticado", async () => {
+      await expect(sistemaPostulaciones.listarParaEmpresario(undefined, 5)).resolves.toBeNull();
+      expect(repositorioOferta.recuperarPorId).not.toHaveBeenCalled();
+      expect(repositorioPostulacion.recuperarPorOferta).not.toHaveBeenCalled();
+    });
+
+    test("deberia impedir que un aspirante consulte postulaciones recibidas", async () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
+
+      await expect(sistemaPostulaciones.listarParaEmpresario(aspirante, 5)).resolves.toBeNull();
+      expect(repositorioOferta.recuperarPorId).not.toHaveBeenCalled();
+      expect(repositorioPostulacion.recuperarPorOferta).not.toHaveBeenCalled();
+    });
+
+    test("deberia informar si la oferta a consultar no existe", async () => {
+      repositorioOferta.recuperarPorId.mockResolvedValue(null);
+
+      await expect(sistemaPostulaciones.listarParaEmpresario(oferta.obtenerTitular(), 5)).rejects.toThrow(
+        OfertaNoEncontradaError,
+      );
       expect(repositorioPostulacion.recuperarPorOferta).not.toHaveBeenCalled();
     });
   });

@@ -98,14 +98,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
     try {
       const oferta = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
       const usuario = usuarioActual(req);
-      const postulaciones =
-        usuario === undefined
-          ? null
-          : await sistemaPostulaciones.listarParaEmpresario(
-              usuario,
-              oferta.obtenerId(),
-              oferta.obtenerTitular().obtenerId(),
-            );
+      const postulaciones = await sistemaPostulaciones.listarParaEmpresario(usuario, oferta.obtenerId());
       const sesion = req.session as SesionDeOfertas | null | undefined;
       const postulacionRegistrada = sesion?.postulacionRegistradaEnOferta === oferta.obtenerId();
       const errorDePostulacion =
