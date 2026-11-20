@@ -49,8 +49,8 @@ describe("RepositorioPostulacionSql", () => {
         id_oferta: oferta.obtenerId(),
         fecha_postulacion: fechaPostulacion,
       });
-      const postulaciones = await repositorioPostulacion.listarPorOferta(oferta.obtenerId());
-      expect(postulaciones[0].fechaPostulacion).toEqual(fechaPostulacion);
+      const postulaciones = await repositorioPostulacion.recuperarPorOferta(oferta.obtenerId());
+      expect(postulaciones[0].obtenerFechaPostulacion()).toEqual(fechaPostulacion);
     });
   });
 
@@ -72,25 +72,6 @@ describe("RepositorioPostulacionSql", () => {
       const existe = await repositorioPostulacion.existePara(oferta.obtenerId(), aspirante.obtenerId());
 
       expect(existe).toBe(true);
-    });
-  });
-
-  describe("listarPorOferta", () => {
-    test("deberia listar los datos de los aspirantes postulados a una oferta", async () => {
-      const aspirante = await crearAspirante();
-      const oferta = await crearOferta();
-      await repositorioPostulacion.guardar(new Postulacion(aspirante, oferta, fechaPostulacion));
-
-      const postulaciones = await repositorioPostulacion.listarPorOferta(oferta.obtenerId());
-
-      expect(postulaciones).toEqual([
-        {
-          nombre: "Sofia",
-          apellido: "Martinez",
-          email: "sofia@example.com",
-          fechaPostulacion,
-        },
-      ]);
     });
   });
 

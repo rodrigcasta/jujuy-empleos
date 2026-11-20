@@ -1,5 +1,5 @@
 import Postulacion from "../dominio/postulacion";
-import { DatosDePostulacion, IRepositorioPostulacion } from "../dominio/puerto-repositorio-postulacion";
+import { IRepositorioPostulacion } from "../dominio/puerto-repositorio-postulacion";
 import { IRepositorioUsuario } from "../dominio/puerto-repositorio-usuario";
 import { IRepositorioOferta } from "../dominio/puerto-repositorio-oferta";
 import DatosDePostulacionInvalidos from "../dominio/datos-de-postulacion-invalidos";
@@ -43,16 +43,6 @@ export default class RepositorioPostulacionSql implements IRepositorioPostulacio
       [idOferta, idAspirante],
     );
     return resultado.rows[0].existe;
-  }
-
-  public async listarPorOferta(idOferta: number): Promise<DatosDePostulacion[]> {
-    const postulaciones = await this.recuperarPorOferta(idOferta);
-    return postulaciones.map((postulacion) => ({
-      nombre: postulacion.obtenerAspirante().obtenerNombre(),
-      apellido: postulacion.obtenerAspirante().obtenerApellido(),
-      email: postulacion.obtenerAspirante().obtenerEmail(),
-      fechaPostulacion: postulacion.obtenerFechaPostulacion(),
-    }));
   }
 
   public async recuperarPorOferta(idOferta: number): Promise<Postulacion[]> {
