@@ -3,6 +3,7 @@ import { DatosDePostulacion, IRepositorioPostulacion } from "../dominio/puerto-r
 import { IRepositorioUsuario } from "../dominio/puerto-repositorio-usuario";
 import { IRepositorioOferta } from "../dominio/puerto-repositorio-oferta";
 import DatosDePostulacionInvalidos from "../dominio/datos-de-postulacion-invalidos";
+import Usuario from "../dominio/usuario";
 import pool from "./pool";
 
 interface PostulacionPersistida {
@@ -64,15 +65,21 @@ export default class RepositorioPostulacionSql implements IRepositorioPostulacio
     if (resultado.rows.length === 0) {
       return [];
     }
+    const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
+    if (oferta === null) {
+      throw new DatosDePostulacionInvalidos("No se encontró la oferta de las postulaciones recuperadas");
+    }
+    const aspirantes = new Map<number, Usuario>();
     const postulaciones: Postulacion[] = [];
     for (const fila of resultado.rows) {
-      const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
-      if (oferta === null) {
-        throw new DatosDePostulacionInvalidos("No se encontró la oferta de las postulaciones recuperadas");
-      }
-      const aspirante = await this.repositorioUsuario.recuperarPorId(fila.id_aspirante);
-      if (aspirante === null) {
-        throw new DatosDePostulacionInvalidos("No se encontró el aspirante de la postulación recuperada");
+      let aspirante = aspirantes.get(fila.id_aspirante);
+      if (aspirante === undefined) {
+        const recuperado = await this.repositorioUsuario.recuperarPorId(fila.id_aspirante);
+        if (recuperado === null) {
+          throw new DatosDePostulacionInvalidos("No se encontró el aspirante de la postulación recuperada");
+        }
+        aspirante = recuperado;
+        aspirantes.set(fila.id_aspirante, aspirante);
       }
       postulaciones.push(new Postulacion(aspirante, oferta, fila.fecha_postulacion, fila.id));
     }

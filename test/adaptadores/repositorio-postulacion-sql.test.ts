@@ -121,6 +121,54 @@ describe("RepositorioPostulacionSql", () => {
         recuperarUsuario.mockRestore();
       }
     });
+
+    test("deberia ordenar por fecha e identidad y recuperar una sola vez la oferta", async () => {
+      const primero = await crearAspirante("primero@example.com");
+      const segundo = await crearAspirante("segundo@example.com");
+      const tercero = await crearAspirante("tercero@example.com");
+      const oferta = await crearOferta();
+      const postulaciones = [
+        new Postulacion(primero, oferta, fechaPostulacion),
+        new Postulacion(segundo, oferta, new Date("2026-11-09T19:00:00.000Z")),
+        new Postulacion(tercero, oferta, fechaPostulacion),
+      ];
+      for (const postulacion of postulaciones) {
+        await repositorioPostulacion.guardar(postulacion);
+      }
+      const recuperarOferta = jest.spyOn(repositorioOferta, "recuperarPorId");
+
+      try {
+        const recuperadas = await repositorioPostulacion.recuperarPorOferta(oferta.obtenerId());
+
+        expect(recuperadas.map((postulacion) => postulacion.obtenerId())).toEqual([
+          postulaciones[1].obtenerId(),
+          postulaciones[0].obtenerId(),
+          postulaciones[2].obtenerId(),
+        ]);
+        expect(recuperadas[1].obtenerOferta()).toBe(recuperadas[0].obtenerOferta());
+        expect(recuperadas[2].obtenerOferta()).toBe(recuperadas[0].obtenerOferta());
+        expect(recuperarOferta).toHaveBeenCalledTimes(1);
+        expect(recuperarOferta).toHaveBeenCalledWith(oferta.obtenerId());
+      } finally {
+        recuperarOferta.mockRestore();
+      }
+    });
+
+    test("deberia recuperar postulaciones historicas aunque su oferta haya cerrado", async () => {
+      const aspirante = await crearAspirante();
+      const oferta = await crearOferta();
+      const postulacion = new Postulacion(aspirante, oferta, fechaPostulacion);
+      await repositorioPostulacion.guardar(postulacion);
+      oferta.cerrar();
+      await repositorioOferta.actualizar(oferta);
+
+      const recuperadas = await repositorioPostulacion.recuperarPorOferta(oferta.obtenerId());
+
+      expect(recuperadas).toHaveLength(1);
+      expect(recuperadas[0].obtenerId()).toBe(postulacion.obtenerId());
+      expect(recuperadas[0].obtenerOferta().estaActiva()).toBe(false);
+      expect(recuperadas[0].obtenerFechaPostulacion()).toEqual(fechaPostulacion);
+    });
   });
 
   async function crearOferta(): Promise<Oferta> {
