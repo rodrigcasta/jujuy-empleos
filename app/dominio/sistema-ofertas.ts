@@ -1,5 +1,4 @@
 import CierreNoAutorizadoError from "./cierre-no-autorizado-error";
-import { DetalleOferta } from "./detalle-oferta";
 import LimiteDeOfertasAlcanzadoError from "./limite-de-ofertas-alcanzado-error";
 import Oferta from "./oferta";
 import OfertaNoEncontradaError from "./oferta-no-encontrada-error";
@@ -55,12 +54,12 @@ export default class SistemaOfertas {
     return this.repositorioOferta.listarPublicas();
   }
 
-  public async obtenerDetallePorId(id: number): Promise<DetalleOferta> {
-    const detalle = await this.repositorioOferta.recuperarDetallePorId(id);
-    if (detalle === null) {
+  public async obtenerDetallePorId(id: number): Promise<Oferta> {
+    const oferta = await this.repositorioOferta.recuperarPorId(id);
+    if (oferta === null) {
       throw new OfertaNoEncontradaError();
     }
-    return detalle;
+    return oferta;
   }
 
   private validarEmpresario(usuario: Usuario): void {

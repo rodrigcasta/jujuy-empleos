@@ -132,25 +132,25 @@ describe("SistemaOfertas", () => {
 
   describe("obtenerDetallePorId", () => {
     test("deberia obtener el detalle de una oferta existente", async () => {
-      const detalleEsperado = {
-        id: 2,
-        idEmpresario: 7,
-        titulo: "Desarrollador Backend",
-        descripcion: "Se busca desarrollador para trabajo remoto",
-        ubicacion: "Pilar",
-        emailEmpresario: "empresa1@empresa1.com",
-        activa: true,
-      };
-      repositorioOferta.recuperarDetallePorId.mockResolvedValue(detalleEsperado);
+      const ofertaEsperada = new Oferta(
+        "Desarrollador Backend",
+        "Se busca desarrollador para trabajo remoto",
+        "Pilar",
+        titular,
+        FECHA_ACTUAL,
+        2,
+      );
+      repositorioOferta.recuperarPorId.mockResolvedValue(ofertaEsperada);
 
       const detalle = await sistemaOfertas.obtenerDetallePorId(2);
 
-      expect(detalle).toEqual(detalleEsperado);
-      expect(repositorioOferta.recuperarDetallePorId).toHaveBeenCalledWith(2);
+      expect(detalle).toBeInstanceOf(Oferta);
+      expect(detalle).toBe(ofertaEsperada);
+      expect(repositorioOferta.recuperarPorId).toHaveBeenCalledWith(2);
     });
 
     test("deberia informar si la oferta no existe", async () => {
-      repositorioOferta.recuperarDetallePorId.mockResolvedValue(null);
+      repositorioOferta.recuperarPorId.mockResolvedValue(null);
 
       const consulta = sistemaOfertas.obtenerDetallePorId(9999);
 

@@ -96,16 +96,20 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
 
   router.get("/:id", async (req: Request<{ id: string }>, res: Response) => {
     try {
-      const detalle = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
+      const oferta = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
       const usuario = usuarioActual(req);
       const postulaciones =
         usuario === undefined
           ? null
-          : await sistemaPostulaciones.listarParaEmpresario(usuario, detalle.id, detalle.idEmpresario);
+          : await sistemaPostulaciones.listarParaEmpresario(
+              usuario,
+              oferta.obtenerId(),
+              oferta.obtenerTitular().obtenerId(),
+            );
       const sesion = req.session as SesionDeOfertas | null | undefined;
-      const postulacionRegistrada = sesion?.postulacionRegistradaEnOferta === detalle.id;
+      const postulacionRegistrada = sesion?.postulacionRegistradaEnOferta === oferta.obtenerId();
       const errorDePostulacion =
-        sesion?.errorDePostulacion?.idOferta === detalle.id ? sesion.errorDePostulacion : undefined;
+        sesion?.errorDePostulacion?.idOferta === oferta.obtenerId() ? sesion.errorDePostulacion : undefined;
       if (postulacionRegistrada && sesion) {
         delete sesion.postulacionRegistradaEnOferta;
       }
@@ -114,14 +118,20 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
       }
       res.render("ofertas/detalle", {
         titulo: "Detalle de la oferta",
-        detalle,
-        cerrada: !detalle.activa,
+        detalle: {
+          id: oferta.obtenerId(),
+          titulo: oferta.obtenerTitulo(),
+          descripcion: oferta.obtenerDescripcion(),
+          ubicacion: oferta.obtenerUbicacion(),
+          emailEmpresario: oferta.obtenerTitular().obtenerEmail(),
+        },
+        cerrada: !oferta.estaActiva(),
         puedeCerrar:
           usuario !== undefined &&
           usuario.esEmpresario() &&
-          usuario.obtenerId() === detalle.idEmpresario &&
-          detalle.activa,
-        puedePostularse: detalle.activa && (usuario === undefined || usuario.esAspirante()),
+          usuario.obtenerId() === oferta.obtenerTitular().obtenerId() &&
+          oferta.estaActiva(),
+        puedePostularse: oferta.estaActiva() && (usuario === undefined || usuario.esAspirante()),
         postulacionRegistrada,
         errorDePostulacion: errorDePostulacion?.mensaje,
         mostrarPostulaciones: postulaciones !== null,
