@@ -14,6 +14,46 @@ describe("SistemaUsuarios", () => {
     sistemaUsuarios = new SistemaUsuarios(mockRepositorioUsuario);
   });
 
+  describe("registrarSegunTipo", () => {
+    test.each<[string, string | null]>([
+      ["Aspirante", null],
+      ["Empresario", "Corporativa"],
+    ])("deberia guardar un %s con su suscripcion correspondiente", async (tipoUsuario, planEsperado) => {
+      mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(null);
+      mockRepositorioUsuario.guardar.mockResolvedValue(undefined);
+
+      const usuario = await sistemaUsuarios.registrarSegunTipo(
+        tipoUsuario,
+        "Juana",
+        "Lopez",
+        "juana@example.com",
+        "Secreta123!#",
+        "Secreta123!#",
+        "Corporativa",
+      );
+
+      expect(usuario.obtenerTipoUsuario()).toBe(tipoUsuario);
+      expect(usuario.obtenerSuscripcion()?.obtenerPlan() ?? null).toBe(planEsperado);
+      expect(mockRepositorioUsuario.guardar).toHaveBeenCalledTimes(1);
+      expect(mockRepositorioUsuario.guardar).toHaveBeenCalledWith(usuario);
+    });
+
+    test("deberia rechazar un tipo desconocido antes de acceder al repositorio", async () => {
+      const registrar = sistemaUsuarios.registrarSegunTipo(
+        "Administrador",
+        "Juana",
+        "Lopez",
+        "juana@example.com",
+        "Secreta123!#",
+      );
+
+      await expect(registrar).rejects.toThrow(DatosDeUsuarioInvalidos);
+      await expect(registrar).rejects.toThrow("Debe seleccionar un tipo de usuario");
+      expect(mockRepositorioUsuario.recuperarPorEmail).not.toHaveBeenCalled();
+      expect(mockRepositorioUsuario.guardar).not.toHaveBeenCalled();
+    });
+  });
+
   describe("registrarEmpresario", () => {
     test("deberia crear un Usuario con la contraseña hasheada y guardarlo en el repositorio", async () => {
       mockRepositorioUsuario.recuperarPorEmail.mockResolvedValue(null);

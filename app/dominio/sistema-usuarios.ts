@@ -9,6 +9,22 @@ export default class SistemaUsuarios {
     this.repositorioUsuario = repoUsuario;
   }
 
+  public async registrarSegunTipo(
+    tipoUsuario: string | undefined,
+    nombre: string,
+    apellido: string,
+    email: string,
+    contrasena: string,
+    confirmacion?: string,
+    suscripcion?: string,
+  ): Promise<Usuario> {
+    const tipoValidado = Usuario.resolverTipoUsuario(tipoUsuario);
+    if (tipoValidado === "Aspirante") {
+      return this.registrarAspirante(nombre, apellido, email, contrasena, confirmacion);
+    }
+    return this.registrarEmpresario(nombre, apellido, email, contrasena, confirmacion, suscripcion);
+  }
+
   public async registrarEmpresario(
     nombre: string,
     apellido: string,
