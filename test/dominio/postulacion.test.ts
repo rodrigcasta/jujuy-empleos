@@ -42,6 +42,21 @@ describe("Postulacion", () => {
     });
   });
 
+  describe("reconstruir", () => {
+    test("deberia reconstruir una postulacion existente aunque su oferta haya cerrado", () => {
+      const ofertaCerrada = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-09"), 5);
+      ofertaCerrada.cerrar();
+      const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
+
+      const postulacion = Postulacion.reconstruir(aspirante, ofertaCerrada, fechaPostulacion, 1);
+
+      expect(postulacion.obtenerAspirante()).toBe(aspirante);
+      expect(postulacion.obtenerOferta()).toBe(ofertaCerrada);
+      expect(postulacion.obtenerFechaPostulacion()).toEqual(fechaPostulacion);
+      expect(postulacion.obtenerId()).toBe(1);
+    });
+  });
+
   describe("obtenerFechaPostulacion", () => {
     test("deberia conservar una fecha valida aunque se modifique la fecha devuelta", () => {
       const postulacion = new Postulacion(aspirante, oferta, new Date("2026-11-09T20:00:00.000Z"));

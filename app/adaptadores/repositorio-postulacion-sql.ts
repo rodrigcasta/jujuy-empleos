@@ -71,7 +71,7 @@ export default class RepositorioPostulacionSql implements IRepositorioPostulacio
         aspirante = recuperado;
         aspirantes.set(fila.id_aspirante, aspirante);
       }
-      postulaciones.push(new Postulacion(aspirante, oferta, fila.fecha_postulacion, fila.id));
+      postulaciones.push(Postulacion.reconstruir(aspirante, oferta, fila.fecha_postulacion, fila.id));
     }
     return postulaciones;
   }

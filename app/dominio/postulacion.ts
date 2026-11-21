@@ -22,6 +22,10 @@ export default class Postulacion {
     this.id = id;
   }
 
+  public static reconstruir(aspirante: Usuario, oferta: Oferta, fechaPostulacion: Date, id: number): Postulacion {
+    return new Postulacion(aspirante, oferta, fechaPostulacion, id);
+  }
+
   public obtenerAspirante(): Usuario {
     return this.aspirante;
   }
