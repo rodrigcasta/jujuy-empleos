@@ -16,4 +16,18 @@ describe("Suscripcion", () => {
       expect(crearSuscripcion).toThrow("La suscripción es inválida");
     });
   });
+
+  describe("puedePublicar con Gratuita", () => {
+    test("deberia permitir publicar sin ofertas activas", () => {
+      const suscripcion = new Suscripcion("Gratuita");
+
+      expect(suscripcion.puedePublicar(0)).toBe(true);
+    });
+
+    test("deberia impedir publicar cuando ya tiene una oferta activa", () => {
+      const suscripcion = new Suscripcion("Gratuita");
+
+      expect(suscripcion.puedePublicar(1)).toBe(false);
+    });
+  });
 });
