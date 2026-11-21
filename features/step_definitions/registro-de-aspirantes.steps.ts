@@ -130,6 +130,17 @@ When(
   },
 );
 
+Then(
+  "el formulario conserva nombre {string}, apellido {string} y email {string}, sin las contrasenas",
+  async function (this: MundoDeLaAplicacion, nombre: string, apellido: string, email: string) {
+    await expect(this.pagina.getByLabel("Nombre")).toHaveValue(nombre);
+    await expect(this.pagina.getByLabel("Apellido")).toHaveValue(apellido);
+    await expect(this.pagina.getByLabel("Email")).toHaveValue(email);
+    await expect(this.pagina.getByLabel("Contraseña *", { exact: true })).toHaveValue("");
+    await expect(this.pagina.getByLabel("Repetir contraseña *", { exact: true })).toHaveValue("");
+  },
+);
+
 Then("la registracion resulta exitosa", async function (this: MundoDeLaAplicacion) {
   await expect(this.pagina).toHaveURL("/");
 });

@@ -33,6 +33,7 @@ Característica: Registracion para aspirante
   Escenario: ASP-05 - Registracion fallida sin seleccionar tipo de usuario
     Cuando intenta registrarse sin seleccionar tipo de usuario con nombre "Sofia", apellido "Martinez", email "sofia.martinez@correo-ejemplo.com.ar", contrasena "Empleo2026!#" y confirmacion "Empleo2026!#"
     Entonces ve el mensaje de error "Debe seleccionar un tipo de usuario"
+    Y el formulario conserva nombre "Sofia", apellido "Martinez" y email "sofia.martinez@correo-ejemplo.com.ar", sin las contrasenas
     Y no se registra un nuevo usuario
 
   Escenario: ASP-06 - Un aspirante no puede publicar ofertas
