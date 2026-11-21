@@ -48,6 +48,9 @@ export default class Oferta {
     if (!titular.esEmpresario()) {
       throw new DatosDeOfertaInvalidos("El titular de la oferta debe ser empresario");
     }
+    if (Number.isNaN(fechaPublicacion.getTime())) {
+      throw new DatosDeOfertaInvalidos("La fecha de publicación es inválida");
+    }
     this.titulo = tituloNormalizado;
     this.descripcion = descripcionNormaliza;
     this.ubicacion = ubicacionNormalizada;

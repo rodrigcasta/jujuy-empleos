@@ -6,6 +6,14 @@ import Usuario from "../../app/dominio/usuario";
 describe("Oferta", () => {
   const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 1);
   describe("constructor", () => {
+    test("deberia rechazar una fecha de publicacion invalida", () => {
+      const crearOferta = () =>
+        new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("fecha invalida"));
+
+      expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
+      expect(crearOferta).toThrow("La fecha de publicación es inválida");
+    });
+
     test("deberia conservar al empresario titular como objeto asociado", () => {
       const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7);
 
