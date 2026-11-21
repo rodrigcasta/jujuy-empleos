@@ -53,8 +53,8 @@ export default class Usuario {
     this.tipoUsuario = tipoUsuario;
   }
 
-  public obtenerSuscripcion(): string | null {
-    return this.suscripcion?.obtenerPlan() ?? null;
+  public obtenerSuscripcion(): Suscripcion | null {
+    return this.suscripcion;
   }
 
   public obtenerTipoUsuario(): TipoUsuario {

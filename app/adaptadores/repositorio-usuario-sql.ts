@@ -27,7 +27,7 @@ export default class RepositorioUsuarioSql implements IRepositorioUsuario {
           usuario.obtenerApellido(),
           usuario.obtenerEmail(),
           usuario.obtenerHashContrasena(),
-          usuario.obtenerSuscripcion(),
+          usuario.obtenerSuscripcion()?.obtenerPlan() ?? null,
           usuario.obtenerTipoUsuario(),
         ],
       );

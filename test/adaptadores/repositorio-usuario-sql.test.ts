@@ -3,6 +3,7 @@ import UsuarioYaExisteError from "../../app/dominio/usuario-ya-existe-error";
 import { describe, expect, test } from "@jest/globals";
 import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
 import pool from "../../app/adaptadores/pool";
+import Suscripcion from "../../app/dominio/suscripcion";
 
 describe("RepositorioUsuario", () => {
   const repositorioUsuario = new RepositorioUsuarioSql();
@@ -17,6 +18,38 @@ describe("RepositorioUsuario", () => {
   });
 
   describe("guardar", () => {
+    test("deberia persistir Gratuita como texto y recuperar su objeto con el mismo limite", async () => {
+      const usuario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 0, "Gratuita");
+
+      await repositorioUsuario.guardar(usuario);
+      const resultado = await repositorioUsuario.recuperarPorId(usuario.obtenerId());
+      const fila = await pool.query<{ suscripcion: string }>("SELECT suscripcion FROM usuarios WHERE id = $1", [
+        usuario.obtenerId(),
+      ]);
+
+      expect(fila.rows[0].suscripcion).toBe("Gratuita");
+      expect(resultado?.obtenerSuscripcion()).toBeInstanceOf(Suscripcion);
+      expect(resultado?.obtenerSuscripcion()?.obtenerPlan()).toBe("Gratuita");
+      expect(resultado?.puedePublicar(0)).toBe(true);
+      expect(resultado?.puedePublicar(1)).toBe(false);
+    });
+
+    test("deberia persistir Profesional como texto y recuperarlo por email con el mismo limite", async () => {
+      const usuario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 0, "Profesional");
+
+      await repositorioUsuario.guardar(usuario);
+      const resultado = await repositorioUsuario.recuperarPorEmail(usuario.obtenerEmail());
+      const fila = await pool.query<{ suscripcion: string }>("SELECT suscripcion FROM usuarios WHERE id = $1", [
+        usuario.obtenerId(),
+      ]);
+
+      expect(fila.rows[0].suscripcion).toBe("Profesional");
+      expect(resultado?.obtenerSuscripcion()).toBeInstanceOf(Suscripcion);
+      expect(resultado?.obtenerSuscripcion()?.obtenerPlan()).toBe("Profesional");
+      expect(resultado?.puedePublicar(4)).toBe(true);
+      expect(resultado?.puedePublicar(5)).toBe(false);
+    });
+
     test("deberia persistir un usuario en sql y asignarle un id", async () => {
       const usuario: Usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash");
       await repositorioUsuario.guardar(usuario);
@@ -75,7 +108,9 @@ describe("RepositorioUsuario", () => {
       const resultado = await repositorioUsuario.recuperarPorId(usuario.obtenerId());
 
       expect(resultado?.obtenerEmail()).toEqual("juana@example.com");
-      expect(resultado?.obtenerSuscripcion()).toEqual("Corporativa");
+      expect(resultado?.obtenerSuscripcion()).toBeInstanceOf(Suscripcion);
+      expect(resultado?.obtenerSuscripcion()?.obtenerPlan()).toEqual("Corporativa");
+      expect(resultado?.puedePublicar(50)).toBe(true);
     });
 
     test("deberia devolver null si no existe un usuario con ese id", async () => {

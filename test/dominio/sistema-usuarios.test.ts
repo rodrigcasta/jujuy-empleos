@@ -33,7 +33,7 @@ describe("SistemaUsuarios", () => {
       expect(usuarioGuardado).toBe(usuario);
       expect(usuarioGuardado.obtenerEmail()).toEqual("juana@example.com");
       expect(usuarioGuardado.obtenerHashContrasena()).not.toEqual("Secreta123!#");
-      expect(usuarioGuardado.obtenerSuscripcion()).toEqual("Corporativa");
+      expect(usuarioGuardado.obtenerSuscripcion()?.obtenerPlan()).toEqual("Corporativa");
       expect(await usuarioGuardado.verificarContrasena("Secreta123!#")).toBe(true);
     });
 

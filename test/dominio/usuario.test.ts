@@ -109,7 +109,7 @@ describe("Usuario", () => {
         "Profesional",
       );
 
-      expect(usuario.obtenerSuscripcion()).toBe("Profesional");
+      expect(usuario.obtenerSuscripcion()?.obtenerPlan()).toBe("Profesional");
     });
 
     test("deberia rechazar un email de mas de 254 caracteres", async () => {
@@ -257,7 +257,7 @@ describe("Usuario", () => {
         suscripcion,
       );
 
-      expect(usuario.obtenerSuscripcion()).toBe(suscripcion);
+      expect(usuario.obtenerSuscripcion()?.obtenerPlan()).toBe(suscripcion);
     });
 
     test("deberia registrar un empresario con suscripcion profesional de forma predeterminada", async () => {
@@ -269,7 +269,7 @@ describe("Usuario", () => {
         "Empresa2026!#",
       );
 
-      expect(usuario.obtenerSuscripcion()).toBe("Profesional");
+      expect(usuario.obtenerSuscripcion()?.obtenerPlan()).toBe("Profesional");
     });
 
     test("deberia registrar un aspirante sin suscripcion", async () => {
