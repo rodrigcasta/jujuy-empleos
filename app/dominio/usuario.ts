@@ -61,6 +61,13 @@ export default class Usuario {
     return this.tipoUsuario;
   }
 
+  public static resolverTipoUsuario(tipoUsuario: string | undefined): TipoUsuario {
+    if (tipoUsuario !== Usuario.TIPO_USUARIO_ASPIRANTE && tipoUsuario !== Usuario.TIPO_USUARIO_EMPRESARIO) {
+      throw new DatosDeUsuarioInvalidos("Debe seleccionar un tipo de usuario");
+    }
+    return tipoUsuario;
+  }
+
   public esEmpresario(): boolean {
     return this.tipoUsuario === Usuario.TIPO_USUARIO_EMPRESARIO;
   }
@@ -234,6 +241,7 @@ export default class Usuario {
   }
 
   private static validarTipoYSuscripcion(tipoUsuario: TipoUsuario, suscripcion: string | null): void {
+    Usuario.resolverTipoUsuario(tipoUsuario);
     const esEmpresarioValido = tipoUsuario === Usuario.TIPO_USUARIO_EMPRESARIO && suscripcion !== null;
     const esAspiranteValido = tipoUsuario === Usuario.TIPO_USUARIO_ASPIRANTE && suscripcion === null;
     if (!esEmpresarioValido && !esAspiranteValido) {

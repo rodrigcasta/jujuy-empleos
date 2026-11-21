@@ -3,6 +3,19 @@ import DatosDeUsuarioInvalidos from "../../app/dominio/datos-de-usuario-invalido
 import DatosDeSuscripcionInvalidos from "../../app/dominio/datos-de-suscripcion-invalidos";
 
 describe("Usuario", () => {
+  describe("resolverTipoUsuario", () => {
+    test.each([
+      ["ausente", undefined],
+      ["vacio", ""],
+      ["desconocido", "Administrador"],
+    ])("deberia rechazar un tipo de usuario %s", (_caso, tipoUsuario) => {
+      const resolver = () => Usuario.resolverTipoUsuario(tipoUsuario);
+
+      expect(resolver).toThrow(DatosDeUsuarioInvalidos);
+      expect(resolver).toThrow("Debe seleccionar un tipo de usuario");
+    });
+  });
+
   describe("constructor", () => {
     test("deberia rechazar un empresario con un plan desconocido", () => {
       const crearUsuario = () => new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 1, "Desconocido");
