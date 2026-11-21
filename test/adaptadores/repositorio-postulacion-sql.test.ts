@@ -67,7 +67,7 @@ describe("RepositorioPostulacionSql", () => {
     test("deberia devolver verdadero si el aspirante ya se postulo a la oferta", async () => {
       const aspirante = await crearAspirante();
       const oferta = await crearOferta();
-      await repositorioPostulacion.guardar(new Postulacion(aspirante, oferta, fechaPostulacion));
+      await repositorioPostulacion.guardar(Postulacion.crear(aspirante, oferta, fechaPostulacion));
 
       const existe = await repositorioPostulacion.existePara(oferta.obtenerId(), aspirante.obtenerId());
 
@@ -79,7 +79,7 @@ describe("RepositorioPostulacionSql", () => {
     test("deberia reconstruir la postulacion con aspirante, oferta, fecha e identidad", async () => {
       const aspirante = await crearAspirante();
       const oferta = await crearOferta();
-      const postulacion = new Postulacion(aspirante, oferta, fechaPostulacion);
+      const postulacion = Postulacion.crear(aspirante, oferta, fechaPostulacion);
       await repositorioPostulacion.guardar(postulacion);
 
       const recuperadas = await repositorioPostulacion.recuperarPorOferta(oferta.obtenerId());
@@ -109,9 +109,9 @@ describe("RepositorioPostulacionSql", () => {
       const tercero = await crearAspirante("tercero@example.com");
       const oferta = await crearOferta();
       const postulaciones = [
-        new Postulacion(primero, oferta, fechaPostulacion),
-        new Postulacion(segundo, oferta, new Date("2026-11-09T19:00:00.000Z")),
-        new Postulacion(tercero, oferta, fechaPostulacion),
+        Postulacion.crear(primero, oferta, fechaPostulacion),
+        Postulacion.crear(segundo, oferta, new Date("2026-11-09T19:00:00.000Z")),
+        Postulacion.crear(tercero, oferta, fechaPostulacion),
       ];
       for (const postulacion of postulaciones) {
         await repositorioPostulacion.guardar(postulacion);
@@ -138,7 +138,7 @@ describe("RepositorioPostulacionSql", () => {
     test("deberia recuperar postulaciones historicas aunque su oferta haya cerrado", async () => {
       const aspirante = await crearAspirante();
       const oferta = await crearOferta();
-      const postulacion = new Postulacion(aspirante, oferta, fechaPostulacion);
+      const postulacion = Postulacion.crear(aspirante, oferta, fechaPostulacion);
       await repositorioPostulacion.guardar(postulacion);
       oferta.cerrar();
       await repositorioOferta.actualizar(oferta);

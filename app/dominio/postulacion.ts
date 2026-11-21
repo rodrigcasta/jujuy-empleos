@@ -1,3 +1,4 @@
+import OfertaYaCerradaError from "./oferta-ya-cerrada-error";
 import DatosDePostulacionInvalidos from "./datos-de-postulacion-invalidos";
 import Usuario from "./usuario";
 import Oferta from "./oferta";
@@ -9,7 +10,7 @@ export default class Postulacion {
   private fechaPostulacion: Date;
   private id: number;
 
-  constructor(aspirante: Usuario, oferta: Oferta, fechaPostulacion: Date, id: number = 0) {
+  private constructor(aspirante: Usuario, oferta: Oferta, fechaPostulacion: Date, id: number = 0) {
     if (!aspirante.esAspirante()) {
       throw new PostulacionNoAutorizadaError();
     }
@@ -20,6 +21,13 @@ export default class Postulacion {
     this.oferta = oferta;
     this.fechaPostulacion = new Date(fechaPostulacion.getTime());
     this.id = id;
+  }
+
+  public static crear(aspirante: Usuario, oferta: Oferta, fechaPostulacion: Date): Postulacion {
+    if (!oferta.estaActiva()) {
+      throw new OfertaYaCerradaError();
+    }
+    return new Postulacion(aspirante, oferta, fechaPostulacion);
   }
 
   public static reconstruir(aspirante: Usuario, oferta: Oferta, fechaPostulacion: Date, id: number): Postulacion {

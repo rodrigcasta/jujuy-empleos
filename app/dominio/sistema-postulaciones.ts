@@ -40,7 +40,7 @@ export default class SistemaPostulaciones {
     if (oferta === null) {
       throw new OfertaNoEncontradaError();
     }
-    const postulacion = new Postulacion(aspirante, oferta, this.proveedorFecha.obtenerFechaActual());
+    const postulacion = Postulacion.crear(aspirante, oferta, this.proveedorFecha.obtenerFechaActual());
     if (await this.repositorioPostulacion.existePara(idOferta, aspirante.obtenerId())) {
       throw new PostulacionDuplicadaError();
     }

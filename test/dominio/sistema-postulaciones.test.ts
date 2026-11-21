@@ -1,3 +1,4 @@
+import OfertaYaCerradaError from "../../app/dominio/oferta-ya-cerrada-error";
 import { Mock, mock } from "ts-jest-mocker";
 import PostulacionDuplicadaError from "../../app/dominio/postulacion-duplicada-error";
 import PostulacionNoAutorizadaError from "../../app/dominio/postulacion-no-autorizada-error";
@@ -31,6 +32,17 @@ describe("SistemaPostulaciones", () => {
   });
 
   describe("postular", () => {
+    test("deberia rechazar una oferta cerrada sin consultar duplicados ni guardar", async () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
+      oferta.cerrar();
+      repositorioPostulacion.existePara.mockResolvedValue(false);
+      repositorioPostulacion.guardar.mockResolvedValue(undefined);
+
+      await expect(sistemaPostulaciones.postular(aspirante, 5)).rejects.toThrow(OfertaYaCerradaError);
+      expect(repositorioPostulacion.existePara).not.toHaveBeenCalled();
+      expect(repositorioPostulacion.guardar).not.toHaveBeenCalled();
+    });
+
     test("deberia rechazar una fecha invalida sin guardar la postulacion", async () => {
       const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
       proveedorFecha.obtenerFechaActual.mockReturnValue(new Date("fecha invalida"));
@@ -93,7 +105,7 @@ describe("SistemaPostulaciones", () => {
     test("deberia devolver las postulaciones asociadas al titular real de la oferta", async () => {
       const empresario = oferta.obtenerTitular();
       const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
-      const postulaciones = [new Postulacion(aspirante, oferta, fechaPostulacion, 1)];
+      const postulaciones = [Postulacion.reconstruir(aspirante, oferta, fechaPostulacion, 1)];
       repositorioPostulacion.recuperarPorOferta.mockResolvedValue(postulaciones);
 
       await expect(sistemaPostulaciones.listarParaEmpresario(empresario, 5)).resolves.toBe(postulaciones);

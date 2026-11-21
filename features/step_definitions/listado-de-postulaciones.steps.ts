@@ -25,7 +25,7 @@ Given(
       "Aspirante2026!#",
     );
     await new RepositorioPostulacionSql(repositorioUsuario, repositorioOferta).guardar(
-      new Postulacion(aspirante, oferta, new Date(`${fecha}T12:00:00.000Z`)),
+      Postulacion.crear(aspirante, oferta, new Date(`${fecha}T12:00:00.000Z`)),
     );
   },
 );
