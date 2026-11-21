@@ -58,4 +58,24 @@ describe("Suscripcion", () => {
       expect(suscripcion.puedePublicar(50)).toBe(true);
     });
   });
+
+  describe("puedePublicar con cantidades invalidas", () => {
+    test("deberia rechazar una cantidad negativa", () => {
+      const suscripcion = new Suscripcion("Gratuita");
+
+      const consultarCapacidad = () => suscripcion.puedePublicar(-1);
+
+      expect(consultarCapacidad).toThrow(DatosDeSuscripcionInvalidos);
+      expect(consultarCapacidad).toThrow("La cantidad de ofertas activas es inválida");
+    });
+
+    test("deberia rechazar una cantidad fraccionaria aunque el plan no tenga limite", () => {
+      const suscripcion = new Suscripcion("Corporativa");
+
+      const consultarCapacidad = () => suscripcion.puedePublicar(1.5);
+
+      expect(consultarCapacidad).toThrow(DatosDeSuscripcionInvalidos);
+      expect(consultarCapacidad).toThrow("La cantidad de ofertas activas es inválida");
+    });
+  });
 });

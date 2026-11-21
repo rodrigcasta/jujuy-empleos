@@ -3,6 +3,7 @@ import DatosDeSuscripcionInvalidos from "./datos-de-suscripcion-invalidos";
 export default class Suscripcion {
   private static readonly LIMITE_PUBLICACION_GRATUITA = 1;
   private static readonly LIMITE_PUBLICACION_PROFESIONAL = 5;
+  private static readonly CANTIDAD_MINIMA_OFERTAS_ACTIVAS = 0;
   private static readonly SIN_LIMITE: null = null;
   private static readonly LIMITES_POR_PLAN: ReadonlyMap<string, number | null> = new Map<string, number | null>([
     ["Gratuita", Suscripcion.LIMITE_PUBLICACION_GRATUITA],
@@ -24,6 +25,12 @@ export default class Suscripcion {
   }
 
   public puedePublicar(cantidadOfertasActivas: number): boolean {
+    if (
+      !Number.isSafeInteger(cantidadOfertasActivas) ||
+      cantidadOfertasActivas < Suscripcion.CANTIDAD_MINIMA_OFERTAS_ACTIVAS
+    ) {
+      throw new DatosDeSuscripcionInvalidos("La cantidad de ofertas activas es inválida");
+    }
     return this.limitePublicacion === Suscripcion.SIN_LIMITE || cantidadOfertasActivas < this.limitePublicacion;
   }
 }
