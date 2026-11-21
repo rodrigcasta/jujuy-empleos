@@ -44,4 +44,18 @@ describe("Suscripcion", () => {
       expect(suscripcion.puedePublicar(5)).toBe(false);
     });
   });
+
+  describe("puedePublicar con Corporativa", () => {
+    test("deberia permitir publicar cuando tiene cinco ofertas activas", () => {
+      const suscripcion = new Suscripcion("Corporativa");
+
+      expect(suscripcion.puedePublicar(5)).toBe(true);
+    });
+
+    test("deberia permitir publicar cuando tiene cincuenta ofertas activas", () => {
+      const suscripcion = new Suscripcion("Corporativa");
+
+      expect(suscripcion.puedePublicar(50)).toBe(true);
+    });
+  });
 });

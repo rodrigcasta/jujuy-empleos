@@ -3,12 +3,13 @@ import DatosDeSuscripcionInvalidos from "./datos-de-suscripcion-invalidos";
 export default class Suscripcion {
   private static readonly PLAN_GRATUITA = "Gratuita";
   private static readonly PLAN_PROFESIONAL = "Profesional";
+  private static readonly PLAN_CORPORATIVA = "Corporativa";
   private static readonly LIMITE_PUBLICACION_GRATUITA = 1;
   private static readonly LIMITE_PUBLICACION_PROFESIONAL = 5;
   private static readonly PLANES_VALIDOS: readonly string[] = [
     Suscripcion.PLAN_GRATUITA,
     Suscripcion.PLAN_PROFESIONAL,
-    "Corporativa",
+    Suscripcion.PLAN_CORPORATIVA,
   ];
 
   constructor(private readonly plan: string) {
@@ -28,6 +29,6 @@ export default class Suscripcion {
     if (this.plan === Suscripcion.PLAN_PROFESIONAL) {
       return cantidadOfertasActivas < Suscripcion.LIMITE_PUBLICACION_PROFESIONAL;
     }
-    return false;
+    return this.plan === Suscripcion.PLAN_CORPORATIVA;
   }
 }
