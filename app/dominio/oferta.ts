@@ -55,7 +55,7 @@ export default class Oferta {
     this.descripcion = descripcionNormaliza;
     this.ubicacion = ubicacionNormalizada;
     this.titular = titular;
-    this.fechaPublicacion = fechaPublicacion;
+    this.fechaPublicacion = new Date(fechaPublicacion.getTime());
     this.id = id;
     this.activa = activa;
   }
@@ -77,7 +77,7 @@ export default class Oferta {
   }
 
   public obtenerFechaPublicacion(): Date {
-    return this.fechaPublicacion;
+    return new Date(this.fechaPublicacion.getTime());
   }
 
   public obtenerId(): number {

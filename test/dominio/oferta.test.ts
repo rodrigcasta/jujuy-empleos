@@ -47,7 +47,7 @@ describe("Oferta", () => {
       expect(oferta.obtenerDescripcion()).toBe("Se busca desarrollador backend junior");
       expect(oferta.obtenerUbicacion()).toBe("Tres de Febrero");
       expect(oferta.obtenerTitular().obtenerId()).toBe(1);
-      expect(oferta.obtenerFechaPublicacion()).toBe(fechaPublicacion);
+      expect(oferta.obtenerFechaPublicacion()).toEqual(fechaPublicacion);
     });
 
     test.each([
@@ -164,6 +164,31 @@ describe("Oferta", () => {
       expect(oferta.obtenerTitulo()).toBe("Desarrollador backend");
       expect(oferta.obtenerDescripcion()).toBe("Se busca desarrollador backend junior");
       expect(oferta.obtenerUbicacion()).toBe("Tres de Febrero");
+    });
+  });
+
+  describe("fechaPublicacion", () => {
+    test("deberia conservar la fecha aunque se modifique la recibida al construir", () => {
+      const fechaPublicacion = new Date("2026-11-01T15:00:00.000Z");
+      const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, fechaPublicacion);
+
+      fechaPublicacion.setTime(NaN);
+
+      expect(oferta.obtenerFechaPublicacion()).toEqual(new Date("2026-11-01T15:00:00.000Z"));
+    });
+
+    test("deberia conservar la fecha aunque se modifique la devuelta", () => {
+      const oferta = new Oferta(
+        "Backend",
+        "Desarrollo backend",
+        "Remoto",
+        titular,
+        new Date("2026-11-01T15:00:00.000Z"),
+      );
+
+      oferta.obtenerFechaPublicacion().setTime(NaN);
+
+      expect(oferta.obtenerFechaPublicacion()).toEqual(new Date("2026-11-01T15:00:00.000Z"));
     });
   });
 
