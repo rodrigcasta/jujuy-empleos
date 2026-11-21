@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import DatosDeUsuarioInvalidos from "../dominio/datos-de-usuario-invalidos";
+import DatosDeSuscripcionInvalidos from "../dominio/datos-de-suscripcion-invalidos";
 import SistemaUsuarios from "../dominio/sistema-usuarios";
 import Usuario from "../dominio/usuario";
 import UsuarioYaExisteError from "../dominio/usuario-ya-existe-error";
@@ -111,7 +112,7 @@ export const crearControladorAutenticacion = (sistemaUsuarios: SistemaUsuarios) 
       iniciarSesion(req, res, usuario);
     } catch (error: unknown) {
       registrarExcepcion(req, error);
-      if (error instanceof DatosDeUsuarioInvalidos) {
+      if (error instanceof DatosDeUsuarioInvalidos || error instanceof DatosDeSuscripcionInvalidos) {
         renderizarFormulario(EstadoHttp.SOLICITUD_INCORRECTA, error.message);
       } else if (error instanceof UsuarioYaExisteError) {
         renderizarFormulario(EstadoHttp.CONFLICTO, error.message);

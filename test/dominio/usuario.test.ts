@@ -1,8 +1,22 @@
 import Usuario, { TipoUsuario } from "../../app/dominio/usuario";
 import DatosDeUsuarioInvalidos from "../../app/dominio/datos-de-usuario-invalidos";
+import DatosDeSuscripcionInvalidos from "../../app/dominio/datos-de-suscripcion-invalidos";
 
 describe("Usuario", () => {
   describe("constructor", () => {
+    test("deberia rechazar un empresario con un plan desconocido", () => {
+      const crearUsuario = () => new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 1, "Desconocido");
+
+      expect(crearUsuario).toThrow(DatosDeSuscripcionInvalidos);
+    });
+
+    test("deberia impedir publicar a un aspirante sin suscripcion", () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
+
+      expect(aspirante.obtenerSuscripcion()).toBeNull();
+      expect(aspirante.puedePublicar(0)).toBe(false);
+    });
+
     test("deberia crear un usuario con todos los atributos", () => {
       const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash", 7);
 

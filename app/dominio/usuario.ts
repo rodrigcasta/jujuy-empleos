@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import DatosDeUsuarioInvalidos from "./datos-de-usuario-invalidos";
+import Suscripcion from "./suscripcion";
 
 export type TipoUsuario = "Aspirante" | "Empresario";
 
@@ -11,12 +12,8 @@ export default class Usuario {
   private static readonly COSTO_HASH = 10;
   private static readonly FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   private static readonly SUSCRIPCION_PREDETERMINADA = "Profesional";
-  private static readonly SUSCRIPCION_GRATUITA = "Gratuita";
-  private static readonly SUSCRIPCION_CORPORATIVA = "Corporativa";
   private static readonly TIPO_USUARIO_EMPRESARIO: TipoUsuario = "Empresario";
   private static readonly TIPO_USUARIO_ASPIRANTE: TipoUsuario = "Aspirante";
-  private static readonly LIMITE_PUBLICACION_GRATUITA = 1;
-  private static readonly LIMITE_PUBLICACION_PROFESIONAL = 5;
   private static readonly PATRON_MINUSCULA = /[a-z]/;
   private static readonly PATRON_MAYUSCULA = /[A-Z]/;
   private static readonly PATRON_NUMERO = /[0-9]/;
@@ -27,7 +24,7 @@ export default class Usuario {
   private email: string;
   private hashContrasena: string;
   private id: number;
-  private suscripcion: string | null;
+  private readonly suscripcion: Suscripcion | null;
   private tipoUsuario: TipoUsuario;
 
   constructor(
@@ -48,12 +45,16 @@ export default class Usuario {
     Usuario.validarTipoYSuscripcion(tipoUsuario, suscripcion);
     this.hashContrasena = hashContrasena;
     this.id = id;
-    this.suscripcion = suscripcion;
+    if (suscripcion === null) {
+      this.suscripcion = null;
+    } else {
+      this.suscripcion = new Suscripcion(suscripcion);
+    }
     this.tipoUsuario = tipoUsuario;
   }
 
   public obtenerSuscripcion(): string | null {
-    return this.suscripcion;
+    return this.suscripcion?.obtenerPlan() ?? null;
   }
 
   public obtenerTipoUsuario(): TipoUsuario {
@@ -212,13 +213,7 @@ export default class Usuario {
   }
 
   public puedePublicar(cantidadOfertasPublicadas: number): boolean {
-    if (this.suscripcion === Usuario.SUSCRIPCION_GRATUITA) {
-      return cantidadOfertasPublicadas < Usuario.LIMITE_PUBLICACION_GRATUITA;
-    }
-    if (this.suscripcion === Usuario.SUSCRIPCION_PREDETERMINADA) {
-      return cantidadOfertasPublicadas < Usuario.LIMITE_PUBLICACION_PROFESIONAL;
-    }
-    return this.suscripcion === Usuario.SUSCRIPCION_CORPORATIVA;
+    return this.suscripcion?.puedePublicar(cantidadOfertasPublicadas) ?? false;
   }
 
   private static validarNombre(valor: string, campo: string): string {
