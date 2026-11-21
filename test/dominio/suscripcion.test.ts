@@ -30,4 +30,18 @@ describe("Suscripcion", () => {
       expect(suscripcion.puedePublicar(1)).toBe(false);
     });
   });
+
+  describe("puedePublicar con Profesional", () => {
+    test("deberia permitir publicar cuando tiene cuatro ofertas activas", () => {
+      const suscripcion = new Suscripcion("Profesional");
+
+      expect(suscripcion.puedePublicar(4)).toBe(true);
+    });
+
+    test("deberia impedir publicar cuando ya tiene cinco ofertas activas", () => {
+      const suscripcion = new Suscripcion("Profesional");
+
+      expect(suscripcion.puedePublicar(5)).toBe(false);
+    });
+  });
 });
