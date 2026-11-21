@@ -195,7 +195,11 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
       res.redirect(EstadoHttp.VER_OTRO, `/ofertas/${idOferta}`);
     } catch (error: unknown) {
       registrarExcepcion(req, error);
-      if (error instanceof PostulacionDuplicadaError || error instanceof PostulacionNoAutorizadaError) {
+      if (
+        error instanceof PostulacionDuplicadaError ||
+        error instanceof PostulacionNoAutorizadaError ||
+        error instanceof OfertaYaCerradaError
+      ) {
         const idOferta = Number(req.params.id);
         const sesion = req.session as SesionDeOfertas | null | undefined;
         if (sesion) {

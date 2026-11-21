@@ -31,3 +31,11 @@ Característica: Postulación a ofertas
     Cuando intenta postularse a la oferta "Desarrollador Backend"
     Entonces ve el mensaje "Solo los aspirantes pueden postularse a ofertas"
     Y no se registra una postulación
+
+  Escenario: POS-05 - Rechazar una postulación directa a una oferta cerrada
+    Dado que el aspirante "sofia.martinez@correo-ejemplo.com.ar" está autenticado
+    Y que la oferta "Desarrollador Backend" fue cerrada
+    Cuando envía directamente una postulación a la oferta "Desarrollador Backend"
+    Entonces ve el mensaje "La oferta ya se encuentra cerrada"
+    Y no se registra una postulación
+    Y no ve el botón "Postularse"

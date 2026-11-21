@@ -4,6 +4,7 @@ import { expect } from "@playwright/test";
 import pool from "../../app/adaptadores/pool";
 import RepositorioOfertaSql from "../../app/adaptadores/repositorio-oferta-sql";
 import RepositorioUsuarioSql from "../../app/adaptadores/repositorio-usuario-sql";
+import { EstadoHttp } from "../../app/web/estado-http";
 import Oferta from "../../app/dominio/oferta";
 import SistemaUsuarios from "../../app/dominio/sistema-usuarios";
 import { MundoDeLaAplicacion } from "../support/mundo";
@@ -120,3 +121,26 @@ Then("conserva una única postulación a la oferta {string}", async function (th
   );
   assert.equal(Number(resultado.rows[0].cantidad), 1);
 });
+Given("que la oferta {string} fue cerrada", async function (titulo: string) {
+  const resultado = await pool.query<{ id: number }>("SELECT id FROM ofertas WHERE titulo = $1", [titulo]);
+  assert.equal(resultado.rows.length, 1);
+  const repositorioOferta = new RepositorioOfertaSql(new RepositorioUsuarioSql());
+  const oferta = await repositorioOferta.recuperarPorId(resultado.rows[0].id);
+  assert.ok(oferta);
+  oferta.cerrar();
+  await repositorioOferta.actualizar(oferta);
+});
+
+When(
+  "envía directamente una postulación a la oferta {string}",
+  async function (this: MundoDeLaAplicacion, titulo: string) {
+    const resultado = await pool.query<{ id: number }>("SELECT id FROM ofertas WHERE titulo = $1", [titulo]);
+    assert.equal(resultado.rows.length, 1);
+    const rutaDetalle = `/ofertas/${resultado.rows[0].id}`;
+    const respuesta = await this.pagina.request.post(`${rutaDetalle}/postulaciones`, { maxRedirects: 0 });
+
+    expect(respuesta.status()).toBe(EstadoHttp.VER_OTRO);
+    expect(respuesta.headers().location).toBe(rutaDetalle);
+    await this.pagina.goto(rutaDetalle);
+  },
+);
