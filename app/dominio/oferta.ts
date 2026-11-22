@@ -93,6 +93,10 @@ export default class Oferta {
     return this.activa && this.esTitular(usuario);
   }
 
+  public permiteConsultarPostulacionesA(usuario: Usuario | undefined): boolean {
+    return this.esTitular(usuario);
+  }
+
   public cerrarPor(usuario: Usuario): void {
     if (!this.esTitular(usuario)) {
       throw new CierreNoAutorizadoError();

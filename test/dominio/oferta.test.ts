@@ -193,6 +193,22 @@ describe("Oferta", () => {
     });
   });
 
+  describe("consultaDePostulaciones", () => {
+    test("deberia permitir al titular consultar las postulaciones de su oferta cerrada", () => {
+      const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-01"));
+      oferta.cerrarPor(titular);
+
+      expect(oferta.permiteConsultarPostulacionesA(titular)).toBe(true);
+    });
+
+    test("deberia impedir que otro empresario consulte sus postulaciones", () => {
+      const otroEmpresario = new Usuario("Mario", "Perez", "mario@example.com", "hash", 2);
+      const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-01"));
+
+      expect(oferta.permiteConsultarPostulacionesA(otroEmpresario)).toBe(false);
+    });
+  });
+
   describe("estadoOferta", () => {
     test.each<[string, Usuario]>([
       ["otro empresario", new Usuario("Mario", "Perez", "mario@example.com", "hash", 2)],

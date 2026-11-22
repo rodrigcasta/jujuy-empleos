@@ -29,7 +29,7 @@ export default class SistemaPostulaciones {
     if (oferta === null) {
       throw new OfertaNoEncontradaError();
     }
-    if (usuario.obtenerId() !== oferta.obtenerTitular().obtenerId()) {
+    if (!oferta.permiteConsultarPostulacionesA(usuario)) {
       return null;
     }
     return this.repositorioPostulacion.recuperarPorOferta(idOferta);
