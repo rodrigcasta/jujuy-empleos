@@ -30,7 +30,7 @@ const obtenerOferta = async (titulo: string): Promise<{ id: number; activa: bool
 const crearOferta = async (email: string, titulo: string, cerrada: boolean) => {
   const oferta = new Oferta(titulo, DESCRIPCION, UBICACION, await obtenerEmpresario(email), FECHA_PUBLICACION);
   if (cerrada) {
-    oferta.cerrar();
+    oferta.cerrarPor(oferta.obtenerTitular());
   }
   await new RepositorioOfertaSql(new RepositorioUsuarioSql()).guardar(oferta);
 };

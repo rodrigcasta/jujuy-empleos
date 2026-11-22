@@ -247,7 +247,7 @@ describe("Oferta", () => {
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
-      oferta.cerrar();
+      oferta.cerrarPor(oferta.obtenerTitular());
 
       expect(() => oferta.cerrarPor(titular)).toThrow(OfertaYaCerradaError);
     });

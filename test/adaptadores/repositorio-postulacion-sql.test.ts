@@ -140,7 +140,7 @@ describe("RepositorioPostulacionSql", () => {
       const oferta = await crearOferta();
       const postulacion = Postulacion.crear(aspirante, oferta, fechaPostulacion);
       await repositorioPostulacion.guardar(postulacion);
-      oferta.cerrar();
+      oferta.cerrarPor(oferta.obtenerTitular());
       await repositorioOferta.actualizar(oferta);
 
       const recuperadas = await repositorioPostulacion.recuperarPorOferta(oferta.obtenerId());

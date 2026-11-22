@@ -13,7 +13,7 @@ describe("Postulacion", () => {
   describe("crear", () => {
     test("deberia rechazar una nueva postulacion a una oferta cerrada", () => {
       const ofertaCerrada = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-09"), 5);
-      ofertaCerrada.cerrar();
+      ofertaCerrada.cerrarPor(ofertaCerrada.obtenerTitular());
 
       const crearPostulacion = () => Postulacion.crear(aspirante, ofertaCerrada, new Date("2026-11-09"));
 
@@ -56,7 +56,7 @@ describe("Postulacion", () => {
   describe("reconstruir", () => {
     test("deberia reconstruir una postulacion existente aunque su oferta haya cerrado", () => {
       const ofertaCerrada = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-09"), 5);
-      ofertaCerrada.cerrar();
+      ofertaCerrada.cerrarPor(ofertaCerrada.obtenerTitular());
       const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
 
       const postulacion = Postulacion.reconstruir(aspirante, ofertaCerrada, fechaPostulacion, 1);

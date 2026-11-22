@@ -100,7 +100,7 @@ export default class Oferta {
     this.cerrar();
   }
 
-  public cerrar(): void {
+  private cerrar(): void {
     if (!this.activa) {
       throw new OfertaYaCerradaError();
     }

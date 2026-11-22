@@ -127,7 +127,7 @@ Given("que la oferta {string} fue cerrada", async function (titulo: string) {
   const repositorioOferta = new RepositorioOfertaSql(new RepositorioUsuarioSql());
   const oferta = await repositorioOferta.recuperarPorId(resultado.rows[0].id);
   assert.ok(oferta);
-  oferta.cerrar();
+  oferta.cerrarPor(oferta.obtenerTitular());
   await repositorioOferta.actualizar(oferta);
 });
 

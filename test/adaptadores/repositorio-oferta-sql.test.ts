@@ -59,7 +59,7 @@ describe("RepositorioOfertaSql", () => {
         empresario,
         new Date("2026-11-02T15:00:00.000Z"),
       );
-      oferta.cerrar();
+      oferta.cerrarPor(oferta.obtenerTitular());
 
       await repositorioOferta.guardar(oferta);
 
@@ -109,7 +109,7 @@ describe("RepositorioOfertaSql", () => {
       const ofertaActiva1 = new Oferta("Oferta 1", "Primera oferta", "Buenos Aires", empresario, fechaPublicacion);
       const ofertaActiva2 = new Oferta("Oferta 2", "Segunda oferta", "Cordoba", empresario, fechaPublicacion);
       const ofertaCerrada = new Oferta("Oferta 3", "Tercera oferta", "Mendoza", empresario, fechaPublicacion);
-      ofertaCerrada.cerrar();
+      ofertaCerrada.cerrarPor(ofertaCerrada.obtenerTitular());
       await repositorioOferta.guardar(ofertaActiva1);
       await repositorioOferta.guardar(ofertaActiva2);
       await repositorioOferta.guardar(ofertaCerrada);
@@ -206,7 +206,7 @@ describe("RepositorioOfertaSql", () => {
         empresario,
         new Date("2026-11-03T15:00:00.000Z"),
       );
-      ofertaCerrada.cerrar();
+      ofertaCerrada.cerrarPor(ofertaCerrada.obtenerTitular());
 
       await repositorioOferta.guardar(ofertaActiva);
       await repositorioOferta.guardar(ofertaCerrada);
@@ -235,7 +235,7 @@ describe("RepositorioOfertaSql", () => {
         empresario,
         new Date("2026-11-03T15:00:00.000Z"),
       );
-      ofertaCerrada.cerrar();
+      ofertaCerrada.cerrarPor(ofertaCerrada.obtenerTitular());
       await repositorioOferta.guardar(ofertaActiva);
       await repositorioOferta.guardar(ofertaCerrada);
       const ofertas = await repositorioOferta.listarVisiblesParaEmpresario(empresario.obtenerId());
@@ -261,7 +261,7 @@ describe("RepositorioOfertaSql", () => {
         otroEmpresario,
         new Date("2026-11-03T15:00:00.000Z"),
       );
-      cerradaAjena.cerrar();
+      cerradaAjena.cerrarPor(cerradaAjena.obtenerTitular());
 
       await repositorioOferta.guardar(activaAjena);
       await repositorioOferta.guardar(cerradaAjena);
@@ -355,7 +355,7 @@ describe("RepositorioOfertaSql", () => {
         empresario,
         new Date("2026-11-02T15:00:00.000Z"),
       );
-      oferta.cerrar();
+      oferta.cerrarPor(oferta.obtenerTitular());
 
       await repositorioOferta.guardar(oferta);
 
@@ -378,7 +378,7 @@ describe("RepositorioOfertaSql", () => {
         new Date("2026-11-04T15:00:00.000Z"),
       );
       await repositorioOferta.guardar(oferta);
-      oferta.cerrar();
+      oferta.cerrarPor(oferta.obtenerTitular());
       await repositorioOferta.actualizar(oferta);
 
       const ofertaRecuperada = await repositorioOferta.recuperarPorId(oferta.obtenerId());

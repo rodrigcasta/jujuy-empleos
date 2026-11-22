@@ -34,7 +34,7 @@ describe("SistemaPostulaciones", () => {
   describe("postular", () => {
     test("deberia rechazar una oferta cerrada sin consultar duplicados ni guardar", async () => {
       const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
-      oferta.cerrar();
+      oferta.cerrarPor(oferta.obtenerTitular());
       repositorioPostulacion.existePara.mockResolvedValue(false);
       repositorioPostulacion.guardar.mockResolvedValue(undefined);
 
