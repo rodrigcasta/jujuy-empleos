@@ -94,7 +94,8 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
     try {
       const oferta = await sistemaOfertas.obtenerDetallePorId(Number(req.params.id));
       const usuario = usuarioActual(req);
-      const postulaciones = await sistemaPostulaciones.listarParaEmpresario(usuario, oferta.obtenerId());
+      const postulaciones = await sistemaPostulaciones.listarPostulacionesVisiblesPara(usuario, oferta.obtenerId());
+      const mostrarPostulaciones = oferta.permiteConsultarPostulacionesA(usuario);
       const sesion = req.session as SesionDeOfertas | null | undefined;
       const postulacionRegistrada = sesion?.postulacionRegistradaEnOferta === oferta.obtenerId();
       const errorDePostulacion =
@@ -119,9 +120,9 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
         puedePostularse: oferta.estaActiva() && (usuario === undefined || usuario.esAspirante()),
         postulacionRegistrada,
         errorDePostulacion: errorDePostulacion?.mensaje,
-        mostrarPostulaciones: postulaciones !== null,
-        sinPostulaciones: postulaciones?.length === 0,
-        postulaciones: (postulaciones ?? []).map((postulacion) => ({
+        mostrarPostulaciones,
+        sinPostulaciones: mostrarPostulaciones && postulaciones.length === 0,
+        postulaciones: postulaciones.map((postulacion) => ({
           nombre: postulacion.obtenerAspirante().obtenerNombre(),
           apellido: postulacion.obtenerAspirante().obtenerApellido(),
           email: postulacion.obtenerAspirante().obtenerEmail(),

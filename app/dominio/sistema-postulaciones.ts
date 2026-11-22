@@ -21,16 +21,16 @@ export default class SistemaPostulaciones {
     this.repositorioOferta = repositorioOferta;
   }
 
-  public async listarParaEmpresario(usuario: Usuario | undefined, idOferta: number): Promise<Postulacion[] | null> {
+  public async listarPostulacionesVisiblesPara(usuario: Usuario | undefined, idOferta: number): Promise<Postulacion[]> {
     if (!usuario?.esEmpresario()) {
-      return null;
+      return [];
     }
     const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
     if (oferta === null) {
       throw new OfertaNoEncontradaError();
     }
     if (!oferta.permiteConsultarPostulacionesA(usuario)) {
-      return null;
+      return [];
     }
     return this.repositorioPostulacion.recuperarPorOferta(idOferta);
   }
