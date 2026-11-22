@@ -1,6 +1,7 @@
 import DatosDeOfertaInvalidos from "./datos-de-oferta-invalidos";
 import OfertaYaCerradaError from "./oferta-ya-cerrada-error";
 import Usuario from "./usuario";
+import CierreNoAutorizadoError from "./cierre-no-autorizado-error";
 
 export default class Oferta {
   private static readonly LARGO_MAXIMO_TITULO = 50;
@@ -88,6 +89,17 @@ export default class Oferta {
     return this.activa;
   }
 
+  public puedeSerCerradaPor(usuario: Usuario | undefined): boolean {
+    return this.activa && this.esTitular(usuario);
+  }
+
+  public cerrarPor(usuario: Usuario): void {
+    if (!this.esTitular(usuario)) {
+      throw new CierreNoAutorizadoError();
+    }
+    this.cerrar();
+  }
+
   public cerrar(): void {
     if (!this.activa) {
       throw new OfertaYaCerradaError();
@@ -98,5 +110,9 @@ export default class Oferta {
 
   public asignarId(id: number): void {
     this.id = id;
+  }
+
+  private esTitular(usuario: Usuario | undefined): boolean {
+    return usuario !== undefined && usuario.esEmpresario() && usuario.obtenerId() === this.titular.obtenerId();
   }
 }

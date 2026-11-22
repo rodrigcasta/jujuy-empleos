@@ -2,6 +2,7 @@ import Oferta from "../../app/dominio/oferta";
 import DatosDeOfertaInvalidos from "../../app/dominio/datos-de-oferta-invalidos";
 import OfertaYaCerradaError from "../../app/dominio/oferta-ya-cerrada-error";
 import Usuario from "../../app/dominio/usuario";
+import CierreNoAutorizadoError from "../../app/dominio/cierre-no-autorizado-error";
 
 describe("Oferta", () => {
   const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 1);
@@ -193,6 +194,20 @@ describe("Oferta", () => {
   });
 
   describe("estadoOferta", () => {
+    test.each<[string, Usuario]>([
+      ["otro empresario", new Usuario("Mario", "Perez", "mario@example.com", "hash", 2)],
+      [
+        "un aspirante con el mismo id del titular",
+        new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 1, null, "Aspirante"),
+      ],
+    ])("deberia impedir el cierre por %s", (_caso, usuario) => {
+      const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-01"));
+
+      expect(oferta.puedeSerCerradaPor(usuario)).toBe(false);
+      expect(() => oferta.cerrarPor(usuario)).toThrow(CierreNoAutorizadoError);
+      expect(oferta.estaActiva()).toBe(true);
+    });
+
     test("deberia crear una oferta en estado activo", () => {
       const oferta = new Oferta(
         "Programador Jr.",
@@ -214,9 +229,13 @@ describe("Oferta", () => {
         new Date("2026-11-01T15:00:00.000Z"),
       );
 
-      oferta.cerrar();
+      const titularRecuperado = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 1);
+      expect(oferta.puedeSerCerradaPor(titularRecuperado)).toBe(true);
+
+      oferta.cerrarPor(titularRecuperado);
 
       expect(oferta.estaActiva()).toBe(false);
+      expect(oferta.puedeSerCerradaPor(titularRecuperado)).toBe(false);
     });
 
     test("no deberia permitir cerrar una oferta que ya esta cerrada", () => {
@@ -230,7 +249,7 @@ describe("Oferta", () => {
 
       oferta.cerrar();
 
-      expect(() => oferta.cerrar()).toThrow(OfertaYaCerradaError);
+      expect(() => oferta.cerrarPor(titular)).toThrow(OfertaYaCerradaError);
     });
   });
 });
