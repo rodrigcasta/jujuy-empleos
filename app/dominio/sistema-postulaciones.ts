@@ -5,6 +5,7 @@ import Usuario from "./usuario";
 import { ProveedorFecha } from "./puerto-proveedor-fecha";
 import { IRepositorioOferta } from "./puerto-repositorio-oferta";
 import OfertaNoEncontradaError from "./oferta-no-encontrada-error";
+import Oferta from "./oferta";
 
 export default class SistemaPostulaciones {
   private repositorioPostulacion: IRepositorioPostulacion;
@@ -19,6 +20,13 @@ export default class SistemaPostulaciones {
     this.repositorioPostulacion = repositorioPostulacion;
     this.proveedorFecha = proveedorFecha;
     this.repositorioOferta = repositorioOferta;
+  }
+
+  public puedeIniciarPostulacion(usuario: Usuario | undefined, oferta: Oferta): boolean {
+    if (usuario === undefined) {
+      return oferta.estaActiva();
+    }
+    return Postulacion.estaPermitidaPara(usuario, oferta);
   }
 
   public async listarPostulacionesVisiblesPara(usuario: Usuario | undefined, idOferta: number): Promise<Postulacion[]> {

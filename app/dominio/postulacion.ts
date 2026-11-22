@@ -23,9 +23,16 @@ export default class Postulacion {
     this.id = id;
   }
 
+  public static estaPermitidaPara(aspirante: Usuario, oferta: Oferta): boolean {
+    return oferta.estaActiva() && aspirante.esAspirante();
+  }
+
   public static crear(aspirante: Usuario, oferta: Oferta, fechaPostulacion: Date): Postulacion {
-    if (!oferta.estaActiva()) {
-      throw new OfertaYaCerradaError();
+    if (!Postulacion.estaPermitidaPara(aspirante, oferta)) {
+      if (!oferta.estaActiva()) {
+        throw new OfertaYaCerradaError();
+      }
+      throw new PostulacionNoAutorizadaError();
     }
     return new Postulacion(aspirante, oferta, fechaPostulacion);
   }

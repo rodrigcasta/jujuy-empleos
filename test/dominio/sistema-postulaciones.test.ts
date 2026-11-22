@@ -31,6 +31,25 @@ describe("SistemaPostulaciones", () => {
     sistemaPostulaciones = new SistemaPostulaciones(repositorioPostulacion, proveedorFecha, repositorioOferta);
   });
 
+  describe("puedeIniciarPostulacion", () => {
+    test("deberia permitir al visitante iniciar el recorrido solo con una oferta abierta", () => {
+      expect(sistemaPostulaciones.puedeIniciarPostulacion(undefined, oferta)).toBe(true);
+
+      oferta.cerrarPor(oferta.obtenerTitular());
+
+      expect(sistemaPostulaciones.puedeIniciarPostulacion(undefined, oferta)).toBe(false);
+    });
+
+    test("deberia aplicar el permiso del dominio para un aspirante identificado", () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");
+      expect(sistemaPostulaciones.puedeIniciarPostulacion(aspirante, oferta)).toBe(true);
+
+      oferta.cerrarPor(oferta.obtenerTitular());
+
+      expect(sistemaPostulaciones.puedeIniciarPostulacion(aspirante, oferta)).toBe(false);
+    });
+  });
+
   describe("postular", () => {
     test("deberia rechazar una oferta cerrada sin consultar duplicados ni guardar", async () => {
       const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 2, null, "Aspirante");

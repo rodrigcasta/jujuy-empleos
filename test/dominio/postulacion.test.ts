@@ -17,6 +17,7 @@ describe("Postulacion", () => {
 
       const crearPostulacion = () => Postulacion.crear(aspirante, ofertaCerrada, new Date("2026-11-09"));
 
+      expect(Postulacion.estaPermitidaPara(aspirante, ofertaCerrada)).toBe(false);
       expect(crearPostulacion).toThrow(OfertaYaCerradaError);
       expect(crearPostulacion).toThrow("La oferta ya se encuentra cerrada");
     });
@@ -24,6 +25,7 @@ describe("Postulacion", () => {
     test("deberia rechazar una postulacion cuyo postulante no es aspirante", () => {
       const crearPostulacion = () => Postulacion.crear(titular, oferta, new Date("2026-11-09"));
 
+      expect(Postulacion.estaPermitidaPara(titular, oferta)).toBe(false);
       expect(crearPostulacion).toThrow(PostulacionNoAutorizadaError);
     });
     test("deberia rechazar una fecha de postulacion invalida", () => {
@@ -35,6 +37,7 @@ describe("Postulacion", () => {
 
     test("deberia crear una postulacion entre un aspirante y una oferta", () => {
       const fechaPostulacion = new Date("2026-11-09T20:00:00.000Z");
+      expect(Postulacion.estaPermitidaPara(aspirante, oferta)).toBe(true);
       const postulacion = Postulacion.crear(aspirante, oferta, fechaPostulacion);
 
       expect(postulacion.obtenerAspirante()).toBe(aspirante);

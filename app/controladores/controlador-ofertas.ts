@@ -117,7 +117,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
         },
         cerrada: !oferta.estaActiva(),
         puedeCerrar: oferta.puedeSerCerradaPor(usuario),
-        puedePostularse: oferta.estaActiva() && (usuario === undefined || usuario.esAspirante()),
+        puedePostularse: sistemaPostulaciones.puedeIniciarPostulacion(usuario, oferta),
         postulacionRegistrada,
         errorDePostulacion: errorDePostulacion?.mensaje,
         mostrarPostulaciones,
