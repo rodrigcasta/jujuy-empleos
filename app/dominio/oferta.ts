@@ -4,6 +4,7 @@ import Usuario from "./usuario";
 import CierreNoAutorizadoError from "./cierre-no-autorizado-error";
 
 export default class Oferta {
+  private static readonly ID_SIN_ASIGNAR = 0;
   private static readonly LARGO_MAXIMO_TITULO = 50;
   private static readonly LARGO_MAXIMO_DESCRIPCION = 250;
   private static readonly LARGO_MAXIMO_UBICACION = 70;
@@ -21,7 +22,7 @@ export default class Oferta {
     ubicacion: string,
     titular: Usuario,
     fechaPublicacion: Date,
-    id: number = 0,
+    id: number = Oferta.ID_SIN_ASIGNAR,
     activa: boolean = true,
   ) {
     const tituloNormalizado = titulo.trim();
@@ -57,7 +58,7 @@ export default class Oferta {
     this.ubicacion = ubicacionNormalizada;
     this.titular = titular;
     this.fechaPublicacion = new Date(fechaPublicacion.getTime());
-    this.id = id;
+    this.id = Oferta.validarId(id);
     this.activa = activa;
   }
 
@@ -113,7 +114,14 @@ export default class Oferta {
   }
 
   public asignarId(id: number): void {
-    this.id = id;
+    this.id = Oferta.validarId(id);
+  }
+
+  private static validarId(id: number): number {
+    if (!Number.isSafeInteger(id) || id < Oferta.ID_SIN_ASIGNAR) {
+      throw new DatosDeOfertaInvalidos("El identificador de la oferta es inválido");
+    }
+    return id;
   }
 
   private esTitular(usuario: Usuario | undefined): boolean {

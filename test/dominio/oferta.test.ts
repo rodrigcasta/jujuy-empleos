@@ -7,6 +7,14 @@ import CierreNoAutorizadoError from "../../app/dominio/cierre-no-autorizado-erro
 describe("Oferta", () => {
   const titular = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 1);
   describe("constructor", () => {
+    test("deberia rechazar una identidad NaN", () => {
+      const crearOferta = () =>
+        new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-01"), NaN);
+
+      expect(crearOferta).toThrow(DatosDeOfertaInvalidos);
+      expect(crearOferta).toThrow("El identificador de la oferta es inválido");
+    });
+
     test("deberia rechazar una fecha de publicacion invalida", () => {
       const crearOferta = () =>
         new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("fecha invalida"));
@@ -165,6 +173,15 @@ describe("Oferta", () => {
       expect(oferta.obtenerTitulo()).toBe("Desarrollador backend");
       expect(oferta.obtenerDescripcion()).toBe("Se busca desarrollador backend junior");
       expect(oferta.obtenerUbicacion()).toBe("Tres de Febrero");
+    });
+  });
+
+  describe("asignarId", () => {
+    test("deberia rechazar NaN sin modificar la identidad anterior", () => {
+      const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-01"), 7);
+
+      expect(() => oferta.asignarId(NaN)).toThrow(DatosDeOfertaInvalidos);
+      expect(oferta.obtenerId()).toBe(7);
     });
   });
 
