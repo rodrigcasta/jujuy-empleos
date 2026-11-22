@@ -17,6 +17,13 @@ describe("Usuario", () => {
   });
 
   describe("constructor", () => {
+    test("deberia rechazar una identidad NaN", () => {
+      const crearUsuario = () => new Usuario("Juana", "Lopez", "juana@example.com", "hash", NaN);
+
+      expect(crearUsuario).toThrow(DatosDeUsuarioInvalidos);
+      expect(crearUsuario).toThrow("El identificador del usuario es inválido");
+    });
+
     test("deberia rechazar un empresario con un plan desconocido", () => {
       const crearUsuario = () => new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 1, "Desconocido");
 
@@ -81,6 +88,15 @@ describe("Usuario", () => {
 
       expect(crear).toThrow(DatosDeUsuarioInvalidos);
       expect(crear).toThrow("La suscripción no corresponde al tipo de usuario");
+    });
+  });
+
+  describe("cambiarId", () => {
+    test("deberia rechazar NaN sin modificar la identidad anterior", () => {
+      const usuario = new Usuario("Juana", "Lopez", "juana@example.com", "hash", 7);
+
+      expect(() => usuario.cambiarId(NaN)).toThrow(DatosDeUsuarioInvalidos);
+      expect(usuario.obtenerId()).toBe(7);
     });
   });
 

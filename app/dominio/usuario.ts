@@ -5,6 +5,7 @@ import Suscripcion from "./suscripcion";
 export type TipoUsuario = "Aspirante" | "Empresario";
 
 export default class Usuario {
+  private static readonly ID_SIN_ASIGNAR = 0;
   private static readonly LARGO_MAXIMO_NOMBRE = 20;
   private static readonly LARGO_MAXIMO_EMAIL = 254;
   private static readonly LARGO_MINIMO_CONTRASENA = 8;
@@ -32,7 +33,7 @@ export default class Usuario {
     apellido: string,
     email: string,
     hashContrasena: string,
-    id: number = 0,
+    id: number = Usuario.ID_SIN_ASIGNAR,
     suscripcion: string | null = Usuario.SUSCRIPCION_PREDETERMINADA,
     tipoUsuario: TipoUsuario = Usuario.TIPO_USUARIO_EMPRESARIO,
   ) {
@@ -44,7 +45,7 @@ export default class Usuario {
     }
     Usuario.validarTipoYSuscripcion(tipoUsuario, suscripcion);
     this.hashContrasena = hashContrasena;
-    this.id = id;
+    this.id = Usuario.validarId(id);
     if (suscripcion === null) {
       this.suscripcion = null;
     } else {
@@ -130,7 +131,7 @@ export default class Usuario {
     Usuario.validarNombre(apellido, "apellido");
     Usuario.validarEmail(email);
     const hashContrasena = await bcrypt.hash(contrasena, Usuario.COSTO_HASH);
-    return new Usuario(nombre, apellido, email, hashContrasena, 0, suscripcion, tipoUsuario);
+    return new Usuario(nombre, apellido, email, hashContrasena, Usuario.ID_SIN_ASIGNAR, suscripcion, tipoUsuario);
   }
 
   public async verificarContrasena(contrasena: string): Promise<boolean> {
@@ -162,7 +163,14 @@ export default class Usuario {
   }
 
   public cambiarId(id: number): void {
-    this.id = id;
+    this.id = Usuario.validarId(id);
+  }
+
+  private static validarId(id: number): number {
+    if (!Number.isSafeInteger(id) || id < Usuario.ID_SIN_ASIGNAR) {
+      throw new DatosDeUsuarioInvalidos("El identificador del usuario es inválido");
+    }
+    return id;
   }
 
   private static validarEmail(email: string): string {
