@@ -20,6 +20,18 @@ describe("SistemaOfertas", () => {
     sistemaOfertas = new SistemaOfertas(repositorioOferta, () => FECHA_ACTUAL);
   });
 
+  describe("puedeGestionarOfertas", () => {
+    test("deberia habilitar al empresario para gestionar ofertas", () => {
+      expect(sistemaOfertas.puedeGestionarOfertas(titular)).toBe(true);
+    });
+
+    test("deberia impedir que un aspirante gestione ofertas", () => {
+      const aspirante = new Usuario("Sofia", "Martinez", "sofia@example.com", "hash", 9, null, "Aspirante");
+
+      expect(sistemaOfertas.puedeGestionarOfertas(aspirante)).toBe(false);
+    });
+  });
+
   describe("publicar", () => {
     test("deberia publicar y guardar una oferta asociada al empresario", async () => {
       const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");

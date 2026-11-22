@@ -15,6 +15,10 @@ export default class SistemaOfertas {
     this.obtenerFechaActual = obtenerFechaActual;
   }
 
+  public puedeGestionarOfertas(usuario: Usuario): boolean {
+    return usuario.esEmpresario();
+  }
+
   public async publicar(empresario: Usuario, titulo: string, descripcion: string, ubicacion: string): Promise<Oferta> {
     this.validarEmpresario(empresario);
     if (!(await this.puedePublicar(empresario))) {
@@ -27,7 +31,7 @@ export default class SistemaOfertas {
   }
 
   public async cerrar(empresario: Usuario, idOferta: number): Promise<void> {
-    if (!empresario.esEmpresario()) {
+    if (!this.puedeGestionarOfertas(empresario)) {
       throw new CierreNoAutorizadoError();
     }
     const oferta = await this.repositorioOferta.recuperarPorId(idOferta);
@@ -60,7 +64,7 @@ export default class SistemaOfertas {
   }
 
   private validarEmpresario(usuario: Usuario): void {
-    if (!usuario.esEmpresario()) {
+    if (!this.puedeGestionarOfertas(usuario)) {
       throw new PublicacionNoAutorizadaError();
     }
   }

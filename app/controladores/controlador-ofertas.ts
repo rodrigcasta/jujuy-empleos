@@ -37,13 +37,13 @@ type SesionDeOfertas = NonNullable<Request["session"]> & {
 export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaPostulaciones: SistemaPostulaciones) => {
   const router = express.Router();
 
-  const obtenerEmpresarioAutenticado = (req: Request, res: Response): Usuario | undefined => {
+  const obtenerUsuarioHabilitadoParaOfertas = (req: Request, res: Response): Usuario | undefined => {
     const usuario = usuarioActual(req);
     if (!usuario) {
       res.redirect(EstadoHttp.ENCONTRADO, "/login");
       return undefined;
     }
-    if (!usuario.esEmpresario()) {
+    if (!sistemaOfertas.puedeGestionarOfertas(usuario)) {
       res.redirect(EstadoHttp.ENCONTRADO, "/");
       return undefined;
     }
@@ -68,7 +68,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
   });
 
   router.get("/nueva", async (req: Request, res: Response) => {
-    const empresario = obtenerEmpresarioAutenticado(req, res);
+    const empresario = obtenerUsuarioHabilitadoParaOfertas(req, res);
     if (!empresario) {
       return;
     }
@@ -148,7 +148,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
   });
 
   router.post("/:id/cerrar", async (req: Request<{ id: string }>, res: Response) => {
-    const empresario = obtenerEmpresarioAutenticado(req, res);
+    const empresario = obtenerUsuarioHabilitadoParaOfertas(req, res);
     if (!empresario) {
       return;
     }
@@ -206,7 +206,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
   });
 
   router.post("/", async (req: Request<Record<string, string>, unknown, FormularioOferta>, res: Response) => {
-    const empresario = obtenerEmpresarioAutenticado(req, res);
+    const empresario = obtenerUsuarioHabilitadoParaOfertas(req, res);
     if (!empresario) {
       return;
     }
