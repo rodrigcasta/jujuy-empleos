@@ -62,11 +62,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
         descripcion: resumirDescripcion(oferta.obtenerDescripcion()),
         ubicacion: oferta.obtenerUbicacion(),
         cerrada: !oferta.estaActiva(),
-        puedeCerrar:
-          usuario !== undefined &&
-          usuario.esEmpresario() &&
-          usuario.obtenerId() === oferta.obtenerTitular().obtenerId() &&
-          oferta.estaActiva(),
+        puedeCerrar: oferta.puedeSerCerradaPor(usuario),
       })),
     });
   });
@@ -119,11 +115,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
           emailEmpresario: oferta.obtenerTitular().obtenerEmail(),
         },
         cerrada: !oferta.estaActiva(),
-        puedeCerrar:
-          usuario !== undefined &&
-          usuario.esEmpresario() &&
-          usuario.obtenerId() === oferta.obtenerTitular().obtenerId() &&
-          oferta.estaActiva(),
+        puedeCerrar: oferta.puedeSerCerradaPor(usuario),
         puedePostularse: oferta.estaActiva() && (usuario === undefined || usuario.esAspirante()),
         postulacionRegistrada,
         errorDePostulacion: errorDePostulacion?.mensaje,

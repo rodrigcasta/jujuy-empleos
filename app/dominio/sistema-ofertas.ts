@@ -34,10 +34,7 @@ export default class SistemaOfertas {
     if (oferta === null) {
       throw new OfertaNoEncontradaError();
     }
-    if (oferta.obtenerTitular().obtenerId() !== empresario.obtenerId()) {
-      throw new CierreNoAutorizadoError();
-    }
-    oferta.cerrar();
+    oferta.cerrarPor(empresario);
     await this.repositorioOferta.actualizar(oferta);
   }
 
