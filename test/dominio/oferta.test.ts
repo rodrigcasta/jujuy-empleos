@@ -210,6 +210,29 @@ describe("Oferta", () => {
     });
   });
 
+  describe("titularidad antes de asignar los ids", () => {
+    const titularSinId = new Usuario("Ana", "Torres", "ana@example.com", "hash");
+
+    test("deberia reconocer al propio titular sin id", () => {
+      const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titularSinId, new Date("2026-11-01"));
+
+      expect(oferta.permiteConsultarPostulacionesA(titularSinId)).toBe(true);
+      expect(oferta.puedeSerCerradaPor(titularSinId)).toBe(true);
+      oferta.cerrarPor(titularSinId);
+      expect(oferta.estaActiva()).toBe(false);
+    });
+
+    test("deberia denegar los permisos del titular a otro empresario sin id", () => {
+      const otroEmpresario = new Usuario("Bruno", "Diaz", "bruno@example.com", "hash");
+      const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titularSinId, new Date("2026-11-01"));
+
+      expect(oferta.permiteConsultarPostulacionesA(otroEmpresario)).toBe(false);
+      expect(oferta.puedeSerCerradaPor(otroEmpresario)).toBe(false);
+      expect(() => oferta.cerrarPor(otroEmpresario)).toThrow(CierreNoAutorizadoError);
+      expect(oferta.estaActiva()).toBe(true);
+    });
+  });
+
   describe("consultaDePostulaciones", () => {
     test("deberia permitir al titular consultar las postulaciones de su oferta cerrada", () => {
       const oferta = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-01"));

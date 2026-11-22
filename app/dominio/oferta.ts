@@ -125,6 +125,6 @@ export default class Oferta {
   }
 
   private esTitular(usuario: Usuario | undefined): boolean {
-    return usuario !== undefined && usuario.esEmpresario() && usuario.obtenerId() === this.titular.obtenerId();
+    return usuario !== undefined && usuario.esEmpresario() && this.titular.esElMismoUsuarioQue(usuario);
   }
 }

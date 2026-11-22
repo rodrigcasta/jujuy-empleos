@@ -162,6 +162,10 @@ export default class Usuario {
     return this.id;
   }
 
+  public esElMismoUsuarioQue(otro: Usuario): boolean {
+    return this === otro || (this.id !== Usuario.ID_SIN_ASIGNAR && this.id === otro.id);
+  }
+
   public cambiarId(id: number): void {
     this.id = Usuario.validarId(id);
   }
