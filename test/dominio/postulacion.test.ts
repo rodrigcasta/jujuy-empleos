@@ -57,6 +57,13 @@ describe("Postulacion", () => {
   });
 
   describe("reconstruir", () => {
+    test("deberia rechazar una identidad NaN", () => {
+      const reconstruirPostulacion = () => Postulacion.reconstruir(aspirante, oferta, new Date("2026-11-09"), NaN);
+
+      expect(reconstruirPostulacion).toThrow(DatosDePostulacionInvalidos);
+      expect(reconstruirPostulacion).toThrow("El identificador de la postulación es inválido");
+    });
+
     test("deberia reconstruir una postulacion existente aunque su oferta haya cerrado", () => {
       const ofertaCerrada = new Oferta("Backend", "Desarrollo backend", "Remoto", titular, new Date("2026-11-09"), 5);
       ofertaCerrada.cerrarPor(ofertaCerrada.obtenerTitular());
@@ -68,6 +75,15 @@ describe("Postulacion", () => {
       expect(postulacion.obtenerOferta()).toBe(ofertaCerrada);
       expect(postulacion.obtenerFechaPostulacion()).toEqual(fechaPostulacion);
       expect(postulacion.obtenerId()).toBe(1);
+    });
+  });
+
+  describe("asignarId", () => {
+    test("deberia rechazar NaN sin modificar la identidad anterior", () => {
+      const postulacion = Postulacion.reconstruir(aspirante, oferta, new Date("2026-11-09"), 7);
+
+      expect(() => postulacion.asignarId(NaN)).toThrow(DatosDePostulacionInvalidos);
+      expect(postulacion.obtenerId()).toBe(7);
     });
   });
 

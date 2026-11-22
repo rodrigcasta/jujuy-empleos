@@ -5,12 +5,18 @@ import Oferta from "./oferta";
 import PostulacionNoAutorizadaError from "./postulacion-no-autorizada-error";
 
 export default class Postulacion {
+  private static readonly ID_SIN_ASIGNAR = 0;
   private aspirante: Usuario;
   private oferta: Oferta;
   private fechaPostulacion: Date;
   private id: number;
 
-  private constructor(aspirante: Usuario, oferta: Oferta, fechaPostulacion: Date, id: number = 0) {
+  private constructor(
+    aspirante: Usuario,
+    oferta: Oferta,
+    fechaPostulacion: Date,
+    id: number = Postulacion.ID_SIN_ASIGNAR,
+  ) {
     if (!aspirante.esAspirante()) {
       throw new PostulacionNoAutorizadaError();
     }
@@ -20,7 +26,7 @@ export default class Postulacion {
     this.aspirante = aspirante;
     this.oferta = oferta;
     this.fechaPostulacion = new Date(fechaPostulacion.getTime());
-    this.id = id;
+    this.id = Postulacion.validarId(id);
   }
 
   public static estaPermitidaPara(aspirante: Usuario, oferta: Oferta): boolean {
@@ -58,6 +64,13 @@ export default class Postulacion {
   }
 
   public asignarId(id: number): void {
-    this.id = id;
+    this.id = Postulacion.validarId(id);
+  }
+
+  private static validarId(id: number): number {
+    if (!Number.isSafeInteger(id) || id < Postulacion.ID_SIN_ASIGNAR) {
+      throw new DatosDePostulacionInvalidos("El identificador de la postulación es inválido");
+    }
+    return id;
   }
 }
