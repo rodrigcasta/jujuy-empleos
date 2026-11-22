@@ -78,7 +78,32 @@ describe("SistemaOfertas", () => {
       );
 
       await expect(publicacion).rejects.toThrow(PublicacionNoAutorizadaError);
+      await expect(sistemaOfertas.puedeAccederAPublicacion(aspirante, true)).rejects.toThrow(
+        PublicacionNoAutorizadaError,
+      );
       expect(repositorioOferta.contarActivasPorEmpresario).not.toHaveBeenCalled();
+      expect(repositorioOferta.guardar).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("puedeAccederAPublicacion", () => {
+    test("deberia impedir el acceso sin confirmacion cuando se agoto el cupo", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(1);
+
+      await expect(sistemaOfertas.puedeAccederAPublicacion(empresario, false)).resolves.toBe(false);
+      expect(repositorioOferta.contarActivasPorEmpresario).toHaveBeenCalledWith(7);
+    });
+
+    test("deberia permitir confirmar al agotar el cupo sin habilitar otra publicacion", async () => {
+      const empresario = new Usuario("Laura", "Fernandez", "laura@example.com", "hash", 7, "Gratuita");
+      repositorioOferta.contarActivasPorEmpresario.mockResolvedValue(1);
+
+      await expect(sistemaOfertas.puedeAccederAPublicacion(empresario, true)).resolves.toBe(true);
+      expect(repositorioOferta.contarActivasPorEmpresario).not.toHaveBeenCalled();
+      await expect(sistemaOfertas.publicar(empresario, "Backend", "Desarrollo backend", "Remoto")).rejects.toThrow(
+        LimiteDeOfertasAlcanzadoError,
+      );
       expect(repositorioOferta.guardar).not.toHaveBeenCalled();
     });
   });

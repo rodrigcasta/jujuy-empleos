@@ -42,6 +42,14 @@ export default class SistemaOfertas {
     await this.repositorioOferta.actualizar(oferta);
   }
 
+  public async puedeAccederAPublicacion(empresario: Usuario, esConfirmacion: boolean): Promise<boolean> {
+    this.validarEmpresario(empresario);
+    if (esConfirmacion) {
+      return true;
+    }
+    return this.puedePublicar(empresario);
+  }
+
   public async puedePublicar(empresario: Usuario): Promise<boolean> {
     this.validarEmpresario(empresario);
     const cantidadOfertasPublicadas = await this.repositorioOferta.contarActivasPorEmpresario(empresario.obtenerId());

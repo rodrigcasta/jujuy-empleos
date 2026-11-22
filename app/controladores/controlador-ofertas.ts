@@ -74,7 +74,7 @@ export const crearControladorOfertas = (sistemaOfertas: SistemaOfertas, sistemaP
     }
 
     const publicada = req.query.publicada === "1";
-    if (publicada || (await sistemaOfertas.puedePublicar(empresario))) {
+    if (await sistemaOfertas.puedeAccederAPublicacion(empresario, publicada)) {
       const sesion = req.session as SesionDeOfertas | null | undefined;
       const ofertaPublicada = publicada ? sesion?.ofertaPublicada : undefined;
       if (sesion) {
